@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pedido - AgroConecta</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <!-- Botón volver -->
+                <button onclick="volverAListaPedidos()" class="btn btn-secondary mb-3">
+                    <i class="fas fa-arrow-left"></i> Volver a Pedidos
+                </button>
+
+                <!-- Información del pedido -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-file-invoice"></i> Pedido #<span id="pedidoId"></span>
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Información del Pedido</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Fecha:</th>
+                                        <td id="fechaPedido"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Estado:</th>
+                                        <td id="estadoPedido"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fecha Entrega:</th>
+                                        <td id="fechaEntrega"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo de Pago:</th>
+                                        <td id="tipoPago"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total:</th>
+                                        <td><strong id="totalPedido"></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Información del Cliente</h5>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Nombre:</th>
+                                        <td id="nombreCliente"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo:</th>
+                                        <td id="tipoCliente"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Documento:</th>
+                                        <td id="documentoCliente"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td id="emailCliente"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Teléfono:</th>
+                                        <td id="telefonoCliente"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dirección:</th>
+                                        <td id="direccionCliente"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Acciones -->
+                        <div class="mt-3 d-flex gap-2 flex-wrap">
+                            <button id="btnCambiarEstado" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Cambiar Estado
+                            </button>
+                            <button id="btnGenerarGuia" class="btn btn-success" style="display:none;">
+                                <i class="fas fa-file-alt"></i> Generar Guía de Remisión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guía de Remisión (si existe) -->
+                <div class="card mb-4" id="cardGuiaRemision" style="display:none;">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-file-alt"></i> Guía de Remisión <span id="guiaNumero"></span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Fecha Envío:</th>
+                                        <td id="guiaFechaEnvio"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Transportista:</th>
+                                        <td id="guiaTransportista"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>RUC:</th>
+                                        <td id="guiaRuc"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Vehículo:</th>
+                                        <td id="guiaVehiculo"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Punto Partida:</th>
+                                        <td id="guiaPuntoPartida"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Punto Llegada:</th>
+                                        <td id="guiaPuntoLlegada"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Productos del pedido -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-box"></i> Productos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Cantidad</th>
+                                        <th>Unidad</th>
+                                        <th>Precio Unit.</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaProductos">
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <div class="spinner-border" role="status"></div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprobante -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-receipt"></i> Comprobante
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Tipo:</th>
+                                        <td id="tipoComprobante"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Número:</th>
+                                        <td id="numeroComprobante"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fecha Emisión:</th>
+                                        <td id="fechaEmision"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Subtotal:</th>
+                                        <td id="subtotalComprobante"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>IGV (18%):</th>
+                                        <td id="igvComprobante"></td>
+                                    </tr>
+                                    <tr>
+                                        <th><strong>Total:</strong></th>
+                                        <td><strong id="totalComprobante"></strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal cambiar estado -->
+    <div class="modal fade" id="modalCambiarEstado" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Estado del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nuevoEstado" class="form-label">Nuevo Estado</label>
+                        <select id="nuevoEstado" class="form-select">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Nota:</strong> Si cancela un pedido, el stock se restaurará automáticamente.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarCambio">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Generar Guía de Remisión -->
+    <div class="modal fade" id="modalGuiaRemision" tabindex="-1" data-bs-backdrop="true" data-bs-keyboard="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title"><i class="fas fa-file-alt me-2"></i>Generar Guía de Remisión</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formGuiaRemision">
+                        <input type="hidden" id="guiaIdPedido">
+
+                        <!-- Info del pedido -->
+                        <div class="alert alert-info mb-3">
+                            <strong>Pedido #<span id="guiaInfoPedido"></span></strong> -
+                            Cliente: <span id="guiaInfoCliente"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Transportista <span class="text-danger">*</span></label>
+                                <select class="form-select" id="guiaTransportistaSel" required>
+                                    <option value="">Seleccione transportista...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Vehículo <span class="text-danger">*</span></label>
+                                <select class="form-select" id="guiaVehiculoSel" required>
+                                    <option value="">Seleccione vehículo...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Departamento</label>
+                                <select class="form-select" id="guiaDepartamentoSel">
+                                    <option value="">Seleccione departamento...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Distrito</label>
+                                <select class="form-select" id="guiaDistritoSel">
+                                    <option value="">Seleccione distrito...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Punto de Partida <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="guiaPuntoPartidaInput"
+                                value="Asc. Popular Lomas De Ancón Mz. 44 Lote. 24 Ancón - Lima - Lima" required
+                                minlength="5">
+                            <small class="text-muted">Dirección de origen de la mercadería</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Punto de Llegada <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="guiaPuntoLlegadaInput"
+                                placeholder="Dirección del cliente" required minlength="5">
+                            <small class="text-muted">Se pre-llena con la dirección del cliente</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="btnGuardarGuia">
+                        <i class="fas fa-save me-1"></i>Generar Guía
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../javascript/panel_control/pedido/detalle.js"></script>
+</body>
+
+</html>

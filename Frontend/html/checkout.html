@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Pitahaya Perú</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root{
+      --primary:#E91E63;
+      --primary-dark:#C2185B;
+      --success:#2E7D32;
+      --secondary:#FFC107;
+      --secondary-dark:#FF8F00;
+    }
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f8f9fa}
+
+    /* Navbar estilo agroconecta */
+    .navbar{background:var(--success)!important;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+    .navbar-brand{font-weight:700;color:#fff!important}
+
+    /* Botón cliente (único) */
+    .client-button,
+    .client-button:focus,
+    .client-button:active,
+    .client-button.show,
+    .dropdown.show > .client-button {
+      background:linear-gradient(135deg,var(--secondary),var(--secondary-dark))!important;
+      color:#111!important;border:none!important;border-radius:8px!important;
+      padding:8px 16px!important;display:inline-flex!important;align-items:center;gap:8px;
+      font-weight:600!important;box-shadow:0 6px 18px rgba(255,160,0,.25)!important;
+      transition:all .2s ease;
+    }
+    .client-button:hover{
+      background:linear-gradient(135deg,#FFB300,#FF6F00)!important;
+      color:#111!important;
+      transform:translateY(-1px)
+    }
+    .client-button.dropdown-toggle::after{color:#111!important;margin-left:8px}
+
+    /* Dropdown por encima del resumen */
+    .navbar .dropdown{position:relative;z-index:1060!important}
+    .navbar .dropdown-menu{z-index:1060!important;position:absolute!important}
+    .card-checkout.sticky-top{z-index:1020!important}
+
+    /* Checkout */
+    .checkout-container{max-width:1200px;margin:0 auto}
+    .card-checkout{border:none;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);overflow:hidden}
+    .card-checkout .card-header{background:#fff;border-bottom:1px solid #eee}
+    .product-img{width:60px;height:60px;object-fit:cover;border-radius:8px}
+    .table-responsive{width: 100% !important;}
+    .table{margin-bottom:0;}
+    .table th{border-top:none;font-weight:600;color:var(--success)}
+    .table td{vertical-align:middle;padding:14px 8px}
+
+    .btn-checkout{
+      background:linear-gradient(135deg,var(--primary),var(--primary-dark))!important;
+      border:none;border-radius:8px;padding:12px 30px;font-weight:700;
+      letter-spacing:.4px;transition:all .2s ease;color:#fff;
+    }
+    .btn-checkout:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(233,30,99,.35)}
+
+    .form-select:focus,.form-control:focus{border-color:var(--primary);box-shadow:0 0 0 .2rem rgba(233,30,99,.25)}
+    .alert{border:none;border-radius:10px}
+    .btn-sm{padding:5px 10px;font-size:.875rem}
+
+    @media (max-width:768px){
+      .checkout-container{padding:0 12px}
+      .product-img{width:50px;height:50px}
+
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/html/agroconecta.html">
+        <i class="fas fa-seedling me-2"></i>PITAHAYA PERÚ
+      </a>
+
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center gap-3">
+        <!-- Botón cliente (único) -->
+        <div class="dropdown">
+          <button class="client-button dropdown-toggle" id="clientDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-user"></i> <span id="clientName">Invitado</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="clientDropdown">
+            <li><a class="dropdown-item" href="/html/miCuenta.html"><i class="fas fa-user-circle me-2"></i>Mi cuenta</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
+          </ul>
+        </div>
+
+        <!-- Seguir comprando -->
+        <a href="/html/agroconecta.html" class="btn btn-outline-light btn-sm">
+          <i class="fas fa-store me-1"></i> Seguir comprando
+        </a>
+
+        <!-- Login (solo si no está autenticado) -->
+        <a href="/html/loginagroconecta.html" id="loginButton" class="btn btn-outline-light btn-sm" style="display:none;">
+          <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid py-4">
+    <div class="checkout-container">
+      <div class="row g-4">
+        <!-- Carrito -->
+        <div class="col-lg-8">
+          <div class="card card-checkout">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Carrito de Compras</h5>
+            </div>
+            <div class="card-body">
+              <div id="emptyCart" class="text-center py-5" style="display:none;">
+                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Tu carrito está vacío</h5>
+                <a href="/html/agroconecta.html" class="btn btn-primary mt-3">
+                  <i class="fas fa-store me-2"></i>Ir a la tienda
+                </a>
+              </div>
+
+              <div class="table-responsive">
+                <table class="table table-borderless ">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th class="text-center">P. Unit.</th>
+                      <th class="text-center">Cantidad</th>
+                      <th class="text-end">Total</th>
+                      <th class="text-center">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cartItems"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen -->
+        <div class="col-lg-4">
+          <div class="card card-checkout sticky-top">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="fas fa-file-invoice me-2"></i>Resumen</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal</span>
+                <span id="subtotalAmount">S/ 0.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-3">
+                <span>IGV (18%)</span>
+                <span id="igvAmount">S/ 0.00</span>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between mb-4">
+                <strong>Total</strong>
+                <strong class="text-primary" id="totalAmount">S/ 0.00</strong>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold"><i class="fas fa-credit-card me-2"></i>Método de pago</label>
+                <select id="tipoPago" class="form-select">
+                  <option value="">Seleccione método de pago...</option>
+                </select>
+              </div>
+
+              <button id="btnPedir" class="btn btn-checkout w-100">
+                <i class="fas fa-file-invoice me-2"></i> REALIZAR PEDIDO
+              </button>
+
+              <div id="msg" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- No incluir authStatus.js aquí para evitar duplicados -->
+  <script src="/javascript/authStatus.js"></script>
+  <script src="/javascript/tienda/checkout.js"></script>
+</body>
+</html>

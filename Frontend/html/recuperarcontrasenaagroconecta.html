@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitahaya Perú - Recuperar Contraseña</title>
+    <link rel="shortcut icon" href="../icono/favicon.ico" />
+    <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #E91E63 0%, #FFC107 100%);
+            margin: 0;
+            padding: 20px;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(../imagenes_pitahaya/fondo_login_2.png);
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px) brightness(0.9);
+            z-index: -1;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+        }
+        .recuperar-card {
+            background: rgba(255,255,255,0.90);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .recuperar-title {
+            color: #E91E63;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .recuperar-subtitle {
+            color: #6c3483;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .recuperar-desc {
+            color: #444;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .icono-candado {
+            font-size: 3.5rem;
+            color: #FFC107;
+            border-radius: 50%;
+            padding: 5px;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .btn-recuperar {
+            background-color: #E91E63;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            padding: 0.7rem 0;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+        .btn-recuperar:hover {
+            background-color: #C2185B;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        .recuperar-link {
+            color: #E91E63;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        .recuperar-link:hover {
+            text-decoration: underline;
+        }
+        .form-label {
+            color: #2E7D32;
+            font-weight: 500;
+            text-align: left;
+            display: block;
+        }
+        .form-control {
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+        .btn-buscar {
+            background: linear-gradient(45deg, #E91E63, #FF6B6B);
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            padding: 12px 0;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-buscar:hover {
+            background: linear-gradient(45deg, #C2185B, #E53E3E);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-iniciar {
+            background: transparent;
+            border: 2px solid #E91E63;
+            color: #E91E63;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 8px 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .btn-iniciar:hover {
+            background: #E91E63;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .subtitle {
+            color: #6c3483;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .descripcion {
+            color: #444;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="recuperar-card">
+            <div class="text-center mb-4">
+                <h2 class="recuperar-title">¿Olvidaste tu contraseña?</h2>
+                <div class="icono-container">
+                    <i class="fas fa-lock" style="font-size: 3rem; color: #FFC107;"></i>
+                </div>
+            </div>
+            
+            <h6 class="subtitle">Recuperar cuenta</h6>
+            <p class="descripcion">Ingresa tu correo para buscar tu cuenta de AgroConecta.</p>
+            
+            <form id="recuperarForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo*</label>
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email"
+                           placeholder="example@hotmail.com" 
+                           required>
+                    <div class="invalid-feedback">
+                        Por favor ingresa un correo electrónico válido.
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-buscar" id="buscarBtn">
+                    <i class="fas fa-search me-2"></i>Buscar cuenta
+                </button>
+            </form>
+            
+            <div class="text-center mt-3">
+                <button type="button" class="btn-iniciar" onclick="irAlLogin()">
+                    <i class="fas fa-arrow-left me-2"></i>Inicia sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- AÑADIR ESTA LÍNEA -->
+    <script src="../javascript/recuperarContrasena.js"></script>
+</body>
+</html>

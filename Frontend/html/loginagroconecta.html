@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitahaya Perú - Iniciar Sesión</title>
+    <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+    <link rel="shortcut icon" href="/icono/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="MyAgroiOS" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url(../imagenes_pitahaya/fondo_login_2.png);
+            background-size: cover;
+            background-position: center;
+            filter: blur(2px) brightness(0.9);
+            z-index: -1;
+        }
+        .login-card {
+            background: rgba(255,255,255,0.90);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 370px;
+        }
+        .login-title {
+            color: #E91E63;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .btn-primary {
+            background-color: #E91E63;
+            border-color: #E91E63;
+        }
+        .btn-primary:hover {
+            background-color: #C2185B;
+            border-color: #C2185B;
+        }
+        .form-label {
+            color: #2E7D32;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="text-center mb-3">
+            <img src="../imagenes_pitahaya/pitahaya.png" alt="Logo Pitahaya Perú" class="img-fluid" style="width:110px; height:110px; border-radius:50%; object-fit:cover; box-shadow:0 2px 12px rgba(0,0,0,0.10); border:4px solid #fff;">
+        </div>
+        <h2 class="login-title"><i class="fas fa-leaf me-2"></i>Pitahaya Perú</h2>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="example@hotmail.com" autocomplete="email">
+            </div>
+            <div class="mb-3 position-relative">
+                <label for="contrasena" class="form-label">Contraseña</label>
+                <input type="password" class="form-control pe-5" id="contrasena" name="contrasena" required autocomplete="current-password">
+                <span onclick="togglePassword()" style="position:absolute; top:72.5%; right:18px; transform:translateY(-50%); cursor:pointer; color:#666; font-size: 1.3em;">
+                    <i class="fa-solid fa-eye-slash" id="iconoPassword"></i>
+                </span>
+            </div>
+            <div id="loginError" class="text-danger small mb-2"></div>
+            <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
+            <div class="text-center mt-3">
+                <a href="/recuperar-contrasena" class="text-decoration-none" style="color: #E91E63;">¿Olvidaste tu contraseña?</a>
+            </div>
+        </form>
+        <div class="text-center mt-3">
+            <span class="text-muted">¿No tienes cuenta?</span>
+            <a href="/registro" class="text-decoration-none" style="color: #E91E63;">Regístrate</a>
+        </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../javascript/loginCliente.js"></script>
+</body>
+</html>

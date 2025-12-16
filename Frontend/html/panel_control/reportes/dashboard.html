@@ -1,0 +1,292 @@
+<!-- ✅ SECCIÓN: DASHBOARD DE REPORTES -->
+<div class="dashboard-card">
+    <!-- KPIs -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <h3 id="kpiTotalPedidos">-</h3>
+                    <p class="mb-0">Total Pedidos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-dollar-sign fa-2x mb-2"></i>
+                    <h3 id="kpiIngresos">-</h3>
+                    <p class="mb-0">Ingresos Totales</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-users fa-2x mb-2"></i>
+                    <h3 id="kpiClientes">-</h3>
+                    <p class="mb-0">Clientes Activos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-dark h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-2x mb-2"></i>
+                    <h3 id="kpiPendientes">-</h3>
+                    <p class="mb-0">Pedidos Pendientes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos y tablas -->
+    <div class="row">
+        <!-- Ventas por Mes -->
+        <div class="col-md-8 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar text-primary me-2"></i>Ventas por Mes</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartVentasMes" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pedidos por Estado -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie text-info me-2"></i>Pedidos por Estado</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartPedidosEstado" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top 5 Productos -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-trophy text-warning me-2"></i>Top 5 Productos Más Vendidos</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Cant.</th>
+                                <th>Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaTopProductos">
+                            <tr>
+                                <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
+                                    Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 5 Clientes -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-star text-success me-2"></i>Top 5 Clientes</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente</th>
+                                <th>Tipo</th>
+                                <th>Pedidos</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaTopClientes">
+                            <tr>
+                                <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
+                                    Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ventas por Categoría -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tags text-danger me-2"></i>Ventas por Categoría</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="chartCategorias" height="100"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+    (async function () {
+        const API_URL = '/api/panel/reportes';
+        let chartVentas, chartEstado, chartCategorias;
+
+        function getToken() {
+            return localStorage.getItem('panelToken') || localStorage.getItem('token');
+        }
+
+        async function cargarDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/dashboard`, {
+                    headers: { 'Authorization': `Bearer ${getToken()}` }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    renderizarKPIs(data.resumen);
+                    renderizarChartVentas(data.ventasMes);
+                    renderizarChartEstado(data.pedidosEstado);
+                    renderizarTopProductos(data.topProductos);
+                    renderizarTopClientes(data.topClientes);
+                    renderizarChartCategorias(data.ventasCategoria);
+                }
+            } catch (error) {
+                console.error('Error al cargar dashboard:', error);
+            }
+        }
+
+        function renderizarKPIs(resumen) {
+            document.getElementById('kpiTotalPedidos').textContent = resumen.total_pedidos || 0;
+            document.getElementById('kpiIngresos').textContent = `S/ ${parseFloat(resumen.ingresos_totales || 0).toFixed(2)}`;
+            document.getElementById('kpiClientes').textContent = resumen.total_clientes || 0;
+            document.getElementById('kpiPendientes').textContent = resumen.pedidos_pendientes || 0;
+        }
+
+        function renderizarChartVentas(ventas) {
+            const ctx = document.getElementById('chartVentasMes').getContext('2d');
+
+            if (chartVentas) chartVentas.destroy();
+
+            chartVentas = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ventas.map(v => v.mes_nombre),
+                    datasets: [{
+                        label: 'Ventas (S/)',
+                        data: ventas.map(v => parseFloat(v.total_ventas)),
+                        backgroundColor: 'rgba(233, 30, 99, 0.7)',
+                        borderColor: '#E91E63',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderizarChartEstado(estados) {
+            const ctx = document.getElementById('chartPedidosEstado').getContext('2d');
+            const colores = {
+                'Pendiente': '#ffc107',
+                'Entregado': '#28a745',
+                'Cancelado': '#dc3545'
+            };
+
+            if (chartEstado) chartEstado.destroy();
+
+            chartEstado = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: estados.map(e => e.estado),
+                    datasets: [{
+                        data: estados.map(e => parseInt(e.cantidad)),
+                        backgroundColor: estados.map(e => colores[e.estado] || '#6c757d')
+                    }]
+                },
+                options: { responsive: true }
+            });
+        }
+
+        function renderizarTopProductos(productos) {
+            const tbody = document.getElementById('tablaTopProductos');
+            if (!productos.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Sin datos</td></tr>';
+                return;
+            }
+            tbody.innerHTML = productos.map((p, i) => `
+            <tr>
+                <td><span class="badge bg-${i < 3 ? 'warning' : 'secondary'}">${i + 1}</span></td>
+                <td><strong>${p.nombre}</strong></td>
+                <td><small>${p.categoria || '-'}</small></td>
+                <td>${p.total_vendido}</td>
+                <td class="text-success"><strong>S/ ${parseFloat(p.ingresos).toFixed(2)}</strong></td>
+            </tr>
+        `).join('');
+        }
+
+        function renderizarTopClientes(clientes) {
+            const tbody = document.getElementById('tablaTopClientes');
+            if (!clientes.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Sin datos</td></tr>';
+                return;
+            }
+            tbody.innerHTML = clientes.map((c, i) => `
+            <tr>
+                <td><span class="badge bg-${i < 3 ? 'success' : 'secondary'}">${i + 1}</span></td>
+                <td><strong>${c.nombre}</strong></td>
+                <td><span class="badge bg-${c.tipo_cliente === 'Jurídica' ? 'info' : 'light text-dark'}">${c.tipo_cliente}</span></td>
+                <td>${c.total_pedidos}</td>
+                <td class="text-success"><strong>S/ ${parseFloat(c.total_compras).toFixed(2)}</strong></td>
+            </tr>
+        `).join('');
+        }
+
+        function renderizarChartCategorias(categorias) {
+            const ctx = document.getElementById('chartCategorias').getContext('2d');
+
+            if (chartCategorias) chartCategorias.destroy();
+
+            chartCategorias = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categorias.map(c => c.categoria || 'Sin categoría'),
+                    datasets: [{
+                        label: 'Ingresos (S/)',
+                        data: categorias.map(c => parseFloat(c.ingresos)),
+                        backgroundColor: [
+                            '#4CAF50', '#2196F3', '#FF9800', '#E91E63', '#9C27B0', '#00BCD4'
+                        ]
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // Cargar al iniciar
+        cargarDashboard();
+    })();
+</script>

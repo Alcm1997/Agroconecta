@@ -1,0 +1,70 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0" style="color: #2E7D32; font-weight: 600;">
+        <i class="fas fa-ruler me-2"></i>Gestión de Unidades de Medida
+    </h2>
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" onclick="panelControl.loadSection('configuracion')" title="Volver a Configuración">
+            <i class="fas fa-arrow-left me-1"></i>Configuración
+        </button>
+        <button class="btn btn-primary" onclick="mostrarModalNuevaUnidad()">
+            <i class="fas fa-plus me-2"></i>Nueva Unidad
+        </button>
+    </div>
+</div>
+
+<div class="dashboard-card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="tablaUnidades">
+            <thead class="table-dark">
+                <tr>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">ID</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Descripción</th>
+                    <th class="text-center" style="background: #1E40AF; border-color: #1E3A8A;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Nueva/Editar Unidad -->
+<div class="modal fade" id="modalUnidad" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloModal">Nueva Unidad de Medida</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formUnidad">
+                    <input type="hidden" id="unidadId">
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción *</label>
+                        <input type="text" class="form-control" id="descripcion" required maxlength="50" placeholder="Ej: Litro, Kilogramo, Unidad">
+                        <div class="form-text">Ingrese la descripción de la unidad de medida (máximo 50 caracteres)</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarUnidad()">
+                    <i class="fas fa-save me-1"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-card { 
+    background:#fff; 
+    border-radius:12px; 
+    padding:1.5rem; 
+    box-shadow:0 2px 8px rgba(0,0,0,.06); 
+    border:1px solid #e9ecef; 
+}
+.table th { border-top:none; }
+.btn-sm { padding:.4rem .6rem; }
+.swal2-actions.swal2-actions-spaced { gap:12px!important; }
+.form-text { font-size: 0.875rem; color: #6c757d; }
+</style>

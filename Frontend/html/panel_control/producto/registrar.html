@@ -1,0 +1,396 @@
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+  <div class="loading-content">
+    <i class="fas fa-spinner loading-spinner"></i>
+    <p class="mt-2 mb-0">Preparando formulario...</p>
+  </div>
+</div>
+
+<div class="page-header">
+  <h2 id="pageTitle"><i class="fas fa-boxes me-2"></i>Registrar Producto</h2>
+  <p>Crea un nuevo producto en el sistema</p>
+</div>
+
+<div class="form-card">
+  <form id="formRegistrarProducto" autocomplete="off">
+    <!-- Datos básicos -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">
+            <i class="fas fa-box me-1"></i>Nombre del Producto *
+          </label>
+          <input type="text" class="form-control" id="nombre" required placeholder="Ej: INKAFISH" maxlength="50" />
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="id_categoria" class="form-label">
+            <i class="fas fa-tags me-1"></i>Categoría *
+          </label>
+          <select class="form-select" id="id_categoria" required>
+            <option value="">Cargando categorías...</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="id_unidad" class="form-label">
+            <i class="fas fa-weight me-1"></i>Unidad de Medida *
+          </label>
+          <select class="form-select" id="id_unidad" required>
+            <option value="">Cargando unidades...</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">
+            <i class="fas fa-align-left me-1"></i>Descripción
+          </label>
+          <textarea class="form-control" id="descripcion" rows="3" placeholder="Ej: Estimula el crecimiento de raíces y mejora la absorción de nutrientes"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="precio_unitario" class="form-label">
+            <i class="fas fa-dollar-sign me-1"></i>Precio Base (S/) *
+          </label>
+          <input type="number" class="form-control" id="precio_unitario" placeholder="0.00" step="0.01" min="0" required />
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="stock" class="form-label">
+            <i class="fas fa-cubes me-1"></i>Stock Inicial
+          </label>
+          <input type="number" class="form-control" id="stock" placeholder="0" min="0" value="0" />
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="es_pack" class="form-label">
+            <i class="fas fa-layer-group me-1"></i>Tipo de Producto
+          </label>
+          <select class="form-select" id="es_pack">
+            <option value="false">Producto Simple</option>
+            <option value="true">Pack de Productos</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-3">
+          <label for="imagen_url" class="form-label">
+            <i class="fas fa-image me-1"></i>URL de Imagen
+          </label>
+          <input type="url" class="form-control" id="imagen_url" placeholder="https://ejemplo.com/imagen.jpg" maxlength="500" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Descuentos por volumen -->
+    <div class="section-header">
+      <h5><i class="fas fa-percentage me-2"></i>Descuentos por Volumen</h5>
+      <small class="text-muted">Define niveles de precio por cantidad (opcional)</small>
+    </div>
+    <div id="descuentosContainer"></div>
+    <button type="button" class="btn btn-outline-success btn-sm mb-4" id="btnAddDescuento">
+      <i class="fas fa-plus me-1"></i>Agregar nivel
+    </button>
+
+    <!-- Opciones adicionales -->
+    <div class="section-header">
+      <h5><i class="fas fa-plus-circle me-2"></i>Opciones Adicionales</h5>
+      <small class="text-muted">Ej.: NDS. Marca las que aplican (opcional)</small>
+    </div>
+    <div id="opcionesContainer" class="row"></div>
+
+    <!-- Componentes del pack -->
+    <div id="packSection" style="display: none;">
+      <div class="section-header">
+        <h5><i class="fas fa-cubes me-2"></i>Componentes del Pack</h5>
+        <small class="text-muted">Agrega los productos que componen este pack</small>
+      </div>
+      <div id="componentesContainer"></div>
+      <button type="button" class="btn btn-outline-primary btn-sm mb-4" id="btnAddComponente">
+        <i class="fas fa-plus me-1"></i>Agregar componente
+      </button>
+    </div>
+
+    <!-- Botones -->
+    <div class="d-flex btn-group">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save me-2"></i>Registrar Producto
+      </button>
+      <button type="button" class="btn btn-secondary" id="btnVolverProductos">
+        <i class="fas fa-arrow-left me-2"></i>Volver a Productos
+      </button>
+    </div>
+  </form>
+</div>
+
+<style>
+  .page-header {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e9ecef;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .page-header h2 {
+    color: #2E7D32;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1.75rem;
+  }
+
+  .page-header p {
+    color: #6c757d;
+    margin: 0.5rem 0 0 0;
+    font-size: 1rem;
+  }
+
+  .form-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+    animation: slideInUp 0.5s ease-out;
+  }
+
+  .section-header {
+    border-bottom: 2px solid #e9ecef;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+  }
+
+  .section-header h5 {
+    color: #2E7D32;
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: #2E7D32;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 10px;
+    border: 1px solid #dfe3e8;
+    padding: 0.65rem 0.9rem;
+    transition: all 0.2s;
+    background: #f8fafc;
+    font-size: 0.95rem;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #2E7D32;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+    background: #fff;
+    outline: none;
+  }
+
+  .form-control::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+    font-size: 0.875rem;
+  }
+
+  .descuento-item,
+  .opcion-disponible,
+  .componente-item {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .descuento-item:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+  }
+
+  .opcion-disponible:hover {
+    background: #f3e5f5;
+    border-color: #9c27b0;
+  }
+
+  .componente-item:hover {
+    background: #fff3e0;
+    border-color: #ff9800;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+  }
+
+  .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-primary {
+    background: #2E7D32;
+    border: none;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #256428;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+  }
+
+  .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+    color: #fff !important;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5c636a !important;
+    border-color: #565e64 !important;
+    color: #fff !important;
+    transform: translateY(-1px);
+  }
+
+  .btn-outline-success:hover,
+  .btn-outline-primary:hover {
+    transform: translateY(-1px);
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
+
+  .loading-content {
+    text-align: center;
+    color: #2E7D32;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  .loading-spinner {
+    font-size: 2.2rem;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-control:hover:not(:focus),
+  .form-select:hover:not(:focus) {
+    border-color: #2E7D32;
+    background-color: #fff;
+  }
+
+  .btn:focus {
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.25);
+  }
+
+  @media (max-width: 768px) {
+    .form-card {
+      padding: 1.25rem;
+      margin: 0 0.5rem 2rem 0.5rem;
+    }
+
+    .page-header {
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .page-header h2 {
+      font-size: 1.5rem;
+    }
+
+    .btn-group {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .form-card {
+      padding: 1rem;
+      margin: 0 0.25rem 1.5rem 0.25rem;
+      border-radius: 8px;
+    }
+
+    .page-header {
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+    }
+
+    .form-control,
+    .form-select {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.9rem;
+    }
+  }

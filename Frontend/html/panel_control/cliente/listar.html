@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0" style="color: #2E7D32; font-weight: 600;">
+        <i class="fas fa-user-friends me-2"></i>Clientes del Sistema
+    </h2>
+</div>
+
+<!-- Clientes Naturales -->
+<div class="dashboard-card mb-4">
+    <h5 class="mb-3"><i class="fas fa-user me-2 text-success"></i>Clientes Naturales</h5>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="tablaClientesNaturales">
+            <thead class="table-dark">
+                <tr>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Nombres</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Apellidos</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">DNI</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Email</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Teléfono</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Estado</th>
+                    <th class="text-center" style="background: #1E40AF; border-color: #1E3A8A;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Clientes Jurídicos -->
+<div class="dashboard-card">
+    <h5 class="mb-3"><i class="fas fa-building me-2 text-primary"></i>Clientes Jurídicos</h5>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0" id="tablaClientesJuridicos">
+            <thead class="table-dark">
+                <tr>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Razón Social</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">RUC</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Email</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Teléfono</th>
+                    <th style="background: #1E40AF; border-color: #1E3A8A;">Estado</th>
+                    <th class="text-center" style="background: #1E40AF; border-color: #1E3A8A;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.dashboard-card { background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.06); border:1px solid #e9ecef; }
+.table th { border-top:none; }
+.badge { font-size:0.85rem; }
+.btn-sm { padding:0.4rem 0.6rem; }
+.swal2-actions.swal2-actions-spaced { gap: 12px !important; }
+</style>

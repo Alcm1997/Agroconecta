@@ -1,0 +1,577 @@
+const categoriaModel = require('../Models/categoriaModel');
+const unidadMedidaModel = require('../Models/unidadMedidaModel');
+const productoModel = require('../Models/productoModel');
+
+// Obtener todos los productos
+exports.getAllProductos = async (req, res) => {
+  try {
+    const productos = await productoModel.getAllProductos();
+    res.json(productos);
+  } catch (error) {
+    console.error('Error al obtener productos:', error);
+    res.status(500).json({
+      message: 'Error al obtener productos',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Obtener producto por ID
+exports.getProductoById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'ID de producto inválido' });
+    }
+
+    const producto = await productoModel.getProductoById(parseInt(id));
+
+    if (!producto) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    console.error('Error al obtener producto:', error);
+    res.status(500).json({
+      message: 'Error al obtener producto',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Crear producto
+exports.createProducto = async (req, res) => {
+  try {
+    const {
+      nombre,
+      descripcion,
+      id_categoria,
+      id_unidad,
+      imagen_url,
+      stock,
+      precio_unitario,
+      es_pack
+    } = req.body;
+
+    // ========== VALIDACIONES BÁSICAS ==========
+    if (!nombre || nombre.trim() === '') {
+      return res.status(400).json({ message: 'El nombre del producto es requerido' });
+    }
+
+    if (nombre.trim().length > 50) {
+      return res.status(400).json({ message: 'El nombre no puede exceder 50 caracteres' });
+    }
+
+    if (!id_categoria || !id_unidad) {
+      return res.status(400).json({ message: 'La categoría y unidad de medida son requeridas' });
+    }
+
+    if (descripcion && descripcion.length > 500) {
+      return res.status(400).json({ message: 'La descripción no puede exceder 500 caracteres' });
+    }
+
+    if (stock && (isNaN(stock) || parseInt(stock) < 0)) {
+      return res.status(400).json({ message: 'El stock debe ser un número entero positivo' });
+    }
+
+    if (precio_unitario && (isNaN(precio_unitario) || parseFloat(precio_unitario) < 0)) {
+      return res.status(400).json({ message: 'El precio unitario debe ser un número positivo' });
+    }
+
+    // ========== PREPARAR DATOS PARA EL MODELO ==========
+    const productoData = {
+      nombre: nombre.trim(),
+      descripcion: descripcion ? descripcion.trim() : null,
+      id_categoria: parseInt(id_categoria),
+      id_unidad: parseInt(id_unidad),
+      imagen_url: imagen_url ? imagen_url.trim() : null,
+      stock: stock ? parseInt(stock) : 0,
+      precio_unitario: precio_unitario ? parseFloat(precio_unitario) : 0,
+      es_pack: es_pack === true || es_pack === 'true' || es_pack === 1 || es_pack === '1'
+    };
+
+    const producto = await productoModel.createProducto(productoData);
+
+    res.status(201).json({
+      message: 'Producto creado exitosamente',
+      producto
+    });
+
+  } catch (error) {
+    console.error('Error al crear producto:', error);
+
+    if (error.code === '23505') {
+      return res.status(400).json({ message: 'Ya existe un producto con ese nombre' });
+    }
+
+    if (error.code === '23503') {
+      return res.status(400).json({ message: 'Categoría o unidad de medida inválida' });
+    }
+
+    res.status(500).json({
+      message: error.message || 'Error al crear producto',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Actualizar producto
+exports.updateProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'ID de producto inválido' });
+    }
+
+    const {
+      nombre,
+      descripcion,
+      id_categoria,
+      id_unidad,
+      imagen_url,
+      stock,
+      precio_unitario,
+      es_pack
+    } = req.body;
+
+    // ========== MISMAS VALIDACIONES QUE EN CREAR ==========
+    if (!nombre || nombre.trim() === '') {
+      return res.status(400).json({ message: 'El nombre del producto es requerido' });
+    }
+
+    if (nombre.trim().length > 50) {
+      return res.status(400).json({ message: 'El nombre no puede exceder 50 caracteres' });
+    }
+
+    if (!id_categoria || !id_unidad) {
+      return res.status(400).json({ message: 'La categoría y unidad de medida son requeridas' });
+    }
+
+    if (descripcion && descripcion.length > 500) {
+      return res.status(400).json({ message: 'La descripción no puede exceder 500 caracteres' });
+    }
+
+    if (stock && (isNaN(stock) || parseInt(stock) < 0)) {
+      return res.status(400).json({ message: 'El stock debe ser un número entero positivo' });
+    }
+
+    if (precio_unitario && (isNaN(precio_unitario) || parseFloat(precio_unitario) < 0)) {
+      return res.status(400).json({ message: 'El precio unitario debe ser un número positivo' });
+    }
+
+    // ========== PREPARAR DATOS Y ACTUALIZAR ==========
+    const productoData = {
+      nombre: nombre.trim(),
+      descripcion: descripcion ? descripcion.trim() : null,
+      id_categoria: parseInt(id_categoria),
+      id_unidad: parseInt(id_unidad),
+      imagen_url: imagen_url ? imagen_url.trim() : null,
+      stock: stock ? parseInt(stock) : 0,
+      precio_unitario: precio_unitario ? parseFloat(precio_unitario) : 0,
+      es_pack: es_pack === true || es_pack === 'true' || es_pack === 1 || es_pack === '1'
+    };
+
+    const producto = await productoModel.updateProducto(parseInt(id), productoData);
+
+    if (!producto) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    res.json({
+      message: 'Producto actualizado exitosamente',
+      producto
+    });
+
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+
+    if (error.code === '23505') {
+      return res.status(400).json({ message: 'Ya existe un producto con ese nombre' });
+    }
+
+    if (error.code === '23503') {
+      return res.status(400).json({ message: 'Categoría o unidad de medida inválida' });
+    }
+
+    res.status(500).json({
+      message: error.message || 'Error al actualizar producto',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Eliminar producto
+exports.deleteProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'ID de producto inválido' });
+    }
+
+    const producto = await productoModel.deleteProducto(parseInt(id));
+
+    res.json({
+      message: 'Producto eliminado exitosamente',
+      producto_eliminado: producto.nombre
+    });
+
+  } catch (error) {
+    console.error('Error al eliminar producto:', error);
+
+    if (error.message === 'Producto no encontrado') {
+      return res.status(404).json({ message: error.message });
+    }
+
+    if (error.message.includes('está en comprobantes')) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    res.status(500).json({
+      message: 'Error al eliminar producto',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Obtener datos auxiliares para formularios
+exports.getDatosAuxiliares = async (req, res) => {
+  try {
+    const [categorias, unidades, productos] = await Promise.all([
+      categoriaModel.getAllCategorias(),
+      unidadMedidaModel.getAllUnidades(),
+      productoModel.getAllProductos()
+    ]);
+
+    const productosBasicos = (productos || []).map(p => ({
+      id_producto: p.id_producto,
+      nombre: p.nombre
+    }));
+
+    return res.json({
+      categorias: categorias || [],
+      unidadesMedida: unidades || [],
+      productos: productosBasicos
+    });
+  } catch (error) {
+    console.error('Error getDatosAuxiliares:', error);
+    return res.status(500).json({ message: 'Error al obtener datos auxiliares' });
+  }
+};
+
+// Obtener precio según cantidad
+exports.getPrecioSegunCantidad = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cantidad } = req.query;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'ID de producto inválido' });
+    }
+
+    if (!cantidad || isNaN(parseInt(cantidad)) || parseInt(cantidad) <= 0) {
+      return res.status(400).json({ message: 'Cantidad inválida' });
+    }
+
+    const precio = await productoModel.getPrecioSegunCantidad(parseInt(id), parseInt(cantidad));
+
+    res.json({
+      id_producto: parseInt(id),
+      cantidad: parseInt(cantidad),
+      precio_unitario: precio,
+      precio_total: precio * parseInt(cantidad)
+    });
+
+  } catch (error) {
+    console.error('Error al obtener precio:', error);
+    res.status(500).json({
+      message: 'Error al calcular precio',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// Actualizar stock de producto
+exports.updateStock = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { stock, operacion } = req.body;
+
+    if (!id || isNaN(parseInt(id))) {
+      return res.status(400).json({ message: 'ID de producto inválido' });
+    }
+
+    if (stock === undefined || isNaN(parseInt(stock))) {
+      return res.status(400).json({ message: 'Stock inválido' });
+    }
+
+    const operacionesValidas = ['set', 'add', 'subtract'];
+    if (!operacionesValidas.includes(operacion)) {
+      return res.status(400).json({ message: 'Operación inválida. Use: set, add, subtract' });
+    }
+
+    const pool = require('../db');
+
+    let query, params;
+
+    if (operacion === 'set') {
+      query = 'UPDATE producto SET stock = $1 WHERE id_producto = $2 RETURNING *';
+      params = [parseInt(stock), parseInt(id)];
+    } else if (operacion === 'add') {
+      query = 'UPDATE producto SET stock = stock + $1 WHERE id_producto = $2 RETURNING *';
+      params = [parseInt(stock), parseInt(id)];
+    } else {
+      query = 'UPDATE producto SET stock = GREATEST(0, stock - $1) WHERE id_producto = $2 RETURNING *';
+      params = [parseInt(stock), parseInt(id)];
+    }
+
+    const { rows } = await pool.query(query, params);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    res.json({
+      message: `Stock ${operacion === 'set' ? 'actualizado' : operacion === 'add' ? 'incrementado' : 'decrementado'} exitosamente`,
+      producto: rows[0]
+    });
+
+  } catch (error) {
+    console.error('❌ Error al actualizar stock:', error);
+    res.status(500).json({
+      message: 'Error al actualizar stock',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
+};
+
+// GET: descuentos por volumen del producto
+exports.getDescuentosVolumen = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const descuentos = await productoModel.getDescuentosByProducto(id);
+    return res.json(descuentos);
+  } catch (error) {
+    console.error('getDescuentosVolumen:', error);
+    return res.status(500).json({ message: 'Error al obtener descuentos' });
+  }
+};
+
+// POST: reemplazar descuentos por volumen del producto
+exports.setDescuentosVolumen = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const descuentos = req.body;
+    if (!Array.isArray(descuentos)) {
+      return res.status(400).json({ message: 'Se esperaba un arreglo de descuentos' });
+    }
+
+    // Validaciones de negocio
+    for (const [idx, d] of descuentos.entries()) {
+      if (!d || d.cantidad_minima == null || d.precio_descuento == null) {
+        return res.status(400).json({ message: `Descuento #${idx + 1} incompleto` });
+      }
+      const min = parseInt(d.cantidad_minima, 10);
+      const max = d.cantidad_maxima == null ? null : parseInt(d.cantidad_maxima, 10);
+      const precio = parseFloat(d.precio_descuento);
+
+      if (isNaN(min) || min < 1) {
+        return res.status(400).json({ message: `Cantidad mínima inválida en descuento #${idx + 1}` });
+      }
+      if (max !== null && (isNaN(max) || max <= min)) {
+        return res.status(400).json({ message: `Cantidad máxima debe ser > mínima en descuento #${idx + 1}` });
+      }
+      if (isNaN(precio) || precio < 0) {
+        return res.status(400).json({ message: `Precio de descuento inválido en descuento #${idx + 1}` });
+      }
+    }
+
+    // Validar solapamientos y orden
+    const ordenados = [...descuentos].sort((a, b) => a.cantidad_minima - b.cantidad_minima);
+    for (let i = 1; i < ordenados.length; i++) {
+      const prev = ordenados[i - 1];
+      const cur = ordenados[i];
+      const prevMax = prev.cantidad_maxima == null ? Infinity : parseInt(prev.cantidad_maxima, 10);
+      if (parseInt(cur.cantidad_minima, 10) <= prevMax) {
+        return res.status(400).json({ message: `Rangos solapados entre niveles ${i} y ${i + 1}` });
+      }
+    }
+
+    const inserted = await productoModel.replaceDescuentosVolumen(id, ordenados);
+    return res.json({ message: 'Descuentos actualizados', descuentos: inserted });
+  } catch (error) {
+    console.error('setDescuentosVolumen:', error);
+    return res.status(500).json({ message: 'Error al guardar descuentos' });
+  }
+};
+
+// Listar opciones disponibles
+exports.getOpcionesDisponibles = async (req, res) => {
+  try {
+    const opciones = await productoModel.getOpcionesDisponibles();
+    return res.json(opciones || []);
+  } catch (error) {
+    console.error('getOpcionesDisponibles:', error);
+    return res.status(500).json({ message: 'Error al obtener opciones' });
+  }
+};
+
+// Obtener opciones asignadas a un producto
+exports.getOpcionesProducto = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const ids = await productoModel.getOpcionesByProducto(id);
+    return res.json(ids);
+  } catch (error) {
+    console.error('getOpcionesProducto:', error);
+    return res.status(500).json({ message: 'Error al obtener opciones del producto' });
+  }
+};
+
+// Reemplazar opciones de un producto
+exports.setOpcionesProducto = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const { ids_opcion } = req.body || {};
+    if (!Array.isArray(ids_opcion)) {
+      return res.status(400).json({ message: 'Se esperaba { ids_opcion: number[] }' });
+    }
+
+    const ids = ids_opcion.map(n => parseInt(n, 10)).filter(n => !isNaN(n));
+    if (ids.length !== ids_opcion.length) {
+      return res.status(400).json({ message: 'ids_opcion debe contener solo números' });
+    }
+
+    const result = await productoModel.replaceOpcionesProducto(id, ids);
+    return res.json({ message: 'Opciones actualizadas', opciones: result });
+  } catch (error) {
+    console.error('setOpcionesProducto:', error);
+    if (error.code === '23503') {
+      return res.status(400).json({ message: 'Alguna opción no existe' });
+    }
+    return res.status(500).json({ message: 'Error al guardar opciones' });
+  }
+};
+
+// Obtener componentes del pack
+exports.getComponentesPack = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const comp = await productoModel.getComponentesPack(id);
+    return res.json(comp || []);
+  } catch (error) {
+    console.error('getComponentesPack:', error);
+    return res.status(500).json({ message: 'Error al obtener componentes del pack' });
+  }
+};
+
+// Reemplazar componentes del pack
+exports.setComponentesPack = async (req, res) => {
+  try {
+    const id_pack = parseInt(req.params.id, 10);
+    if (isNaN(id_pack)) return res.status(400).json({ message: 'ID inválido' });
+
+    const prod = await productoModel.getProductoById(id_pack);
+    if (!prod) return res.status(404).json({ message: 'Producto no encontrado' });
+
+    const componentes = req.body;
+    if (!Array.isArray(componentes)) {
+      return res.status(400).json({ message: 'Se esperaba un arreglo de componentes' });
+    }
+
+    const normalizados = [];
+    const idsSet = new Set();
+
+    for (const [i, c] of componentes.entries()) {
+      if (!c) return res.status(400).json({ message: `Componente #${i + 1} inválido` });
+      const id_producto = parseInt(c.id_producto, 10);
+      const cantidad = parseInt(c.cantidad, 10);
+
+      if (isNaN(id_producto)) {
+        return res.status(400).json({ message: `id_producto inválido en componente #${i + 1}` });
+      }
+      if (id_producto === id_pack) {
+        return res.status(400).json({ message: 'El pack no puede contenerse a sí mismo' });
+      }
+      if (isNaN(cantidad) || cantidad < 1) {
+        return res.status(400).json({ message: `cantidad debe ser >= 1 en componente #${i + 1}` });
+      }
+      if (idsSet.has(id_producto)) {
+        return res.status(400).json({ message: 'No se permiten productos duplicados en el pack' });
+      }
+      idsSet.add(id_producto);
+      normalizados.push({ id_producto, cantidad });
+    }
+
+    // Verificar existencia de productos
+    if (normalizados.length > 0) {
+      const ids = normalizados.map(c => c.id_producto);
+      const { rows: exist } = await require('../db').query(
+        `SELECT id_producto, es_pack FROM producto WHERE id_producto = ANY($1::int[])`,
+        [ids]
+      );
+      const mapa = new Map(exist.map(r => [r.id_producto, r]));
+      const faltantes = ids.filter(x => !mapa.has(x));
+      if (faltantes.length) {
+        return res.status(400).json({ message: `Productos no encontrados: ${faltantes.join(', ')}` });
+      }
+      const packsDentro = exist.filter(r => r.es_pack);
+      if (packsDentro.length) {
+        return res.status(400).json({ message: 'No se permiten packs dentro de packs' });
+      }
+    }
+
+    // Asegurar flag es_pack en el producto pack
+    if (!prod.es_pack) {
+      await require('../db').query(`UPDATE producto SET es_pack = TRUE WHERE id_producto = $1`, [id_pack]);
+    }
+
+    const inserted = await productoModel.replaceComponentesPack(id_pack, normalizados);
+    return res.json({ message: 'Componentes actualizados', componentes: inserted });
+  } catch (error) {
+    console.error('setComponentesPack:', error);
+    if (error.code === '23503') {
+      return res.status(400).json({ message: 'Algún producto no existe o viola FK' });
+    }
+    return res.status(500).json({ message: 'Error al guardar componentes' });
+  }
+};
+
+// Listar productos para tienda
+exports.listarTienda = async (req, res) => {
+  try {
+    const data = await productoModel.getProductosTienda();
+    res.json(data);
+  } catch (e) {
+    console.error('listarTienda', e);
+    res.status(500).json({ message: 'Error al listar productos para tienda' });
+  }
+};

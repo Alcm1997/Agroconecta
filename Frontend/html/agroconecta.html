@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pitahaya Perú</title>
+
+  <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+  <link rel="shortcut icon" href="/icono/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="MyAgroiOS" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #E91E63;
+      --secondary-color: #FFC107;
+      --dark-green: #2E7D32;
+      --light-green: #8BC34A;
+      --white-color: #F5F5F5;
+      --dark-color: #333
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: var(--dark-color)
+    }
+
+    .navbar {
+      background: var(--dark-green)
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--white-color) !important
+    }
+
+    .nav-link {
+      color: var(--white-color) !important
+    }
+
+    .login-btn {
+      background: var(--secondary-color);
+      color: var(--dark-color);
+      border: none;
+      font-weight: 500
+    }
+
+    .login-btn:hover {
+      background: #FFA000
+    }
+
+    .hero-section {
+      background: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .6)), url('/imagenes_pitahaya/hero_section.jpg') no-repeat center right/cover;
+      color: #fff;
+      padding: 100px 0;
+      margin-bottom: 30px
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      position: relative;
+      padding-bottom: 10px;
+      margin-bottom: 30px
+    }
+
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: var(--secondary-color)
+    }
+
+    .product-card {
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      transition: transform .2s
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .08)
+    }
+
+    .product-img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .price-tag {
+      color: var(--dark-color);
+      background: var(--secondary-color);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-weight: 700
+    }
+
+    footer {
+      background: var(--dark-green);
+      color: #fff;
+      padding: 30px 0
+    }
+
+    .skeleton {
+      height: 220px;
+      background: linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.4s ease infinite
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 100% 0
+      }
+
+      100% {
+        background-position: 0 0
+      }
+    }
+
+    .btn-primary {
+      background-color: #E91E63 !important;
+      border-color: #E91E63 !important;
+      color: #fff !important;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+      background-color: #C2185B !important;
+      border-color: #C2185B !important;
+    }
+
+    .btn-primary:active {
+      background-color: #AD1457 !important;
+      border-color: #AD1457 !important;
+    }
+
+    .btn-primary:focus-visible,
+    .btn-outline-primary:focus-visible {
+      box-shadow: 0 0 0 .25rem rgba(233, 30, 99, .25) !important;
+    }
+
+    .btn-outline-primary {
+      color: #E91E63 !important;
+      border-color: #E91E63 !important;
+      background-color: transparent !important;
+    }
+
+    .btn-outline-primary:hover,
+    .btn-outline-primary:focus {
+      color: #fff !important;
+      background-color: #E91E63 !important;
+      border-color: #E91E63 !important;
+    }
+
+    .login-btn,
+    .login-btn:focus,
+    .login-btn:active,
+    .login-btn.show,
+    .dropdown.show>.login-btn {
+      background: linear-gradient(135deg, #FFC107, #FF8F00) !important;
+      color: #111 !important;
+      border: none !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      box-shadow: 0 6px 18px rgba(255, 160, 0, .25) !important;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(135deg, #FFB300, #FF6F00) !important;
+      color: #111 !important;
+    }
+
+    .login-btn.dropdown-toggle::after {
+      color: #111 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/html/agroconecta.html">
+        <i class="fas fa-seedling me-2"></i>PITAHAYA PERÚ
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link active" href="#fertilizantes">Fertilizantes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#packs">Packs</a></li>
+          <li class="nav-item"><a class="nav-link" href="#esquejes">Esquejes</a></li>
+          <li class="nav-item"><a class="nav-link" href="#frutas">Frutas</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        </ul>
+        <div class="d-flex">
+          <button id="loginButton" class="btn login-btn me-2">
+            <i class="fas fa-user me-1"></i> Iniciar Sesión
+          </button>
+          <button id="cartButton" class="btn btn-outline-light">
+            <i class="fas fa-shopping-cart me-1"></i> Carrito de Compras
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero-section text-center">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-3">Todo para el cultivo de Pitahaya</h1>
+      <p class="lead mb-4">Productos especializados, esquejes de calidad y asesoría profesional</p>
+      <a href="#fertilizantes" class="btn btn-primary btn-lg px-4 me-2">
+        <i class="fas fa-leaf me-1"></i> Ver Productos
+      </a>
+      <a href="#contacto" class="btn btn-outline-light btn-lg px-4">
+        <i class="fas fa-phone-alt me-1"></i> Contactar
+      </a>
+    </div>
+  </section>
+
+  <!-- Fertilizantes -->
+  <section id="fertilizantes" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Productos Fertilizantes Agrícolas</h2>
+      <div id="gridFertilizantes" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Packs -->
+  <section id="packs" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Promociones de Packs Fertilizantes Agrícolas</h2>
+      <div id="gridPacks" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Esquejes -->
+  <section id="esquejes" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="section-title">Esquejes de Pitahaya</h2>
+      <div id="gridEsquejes" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Frutas -->
+  <section id="frutas" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Frutas Frescas de Pitahaya</h2>
+      <div id="gridFrutas" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="section-title">Contacto</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fas fa-info-circle me-2"></i>Información</h3>
+              <ul class="list-unstyled">
+                <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Dirección: Asc. Popular Lomas De Ancón Mz.
+                  44 Lote. 24 Ancón - Lima - Lima</li>
+                <li class="mb-2"><i class="fas fa-phone me-2"></i> Teléfono: +51 993 346 052</li>
+                <li class="mb-2"><i class="fas fa-envelope me-2"></i> Email: elvis02c@gmail.com</li>
+                <li class="mb-2"><i class="fas fa-clock me-2"></i> Horario: Lunes a Viernes 8:00 am - 6:00 pm</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fas fa-comments me-2"></i>Asesoría Gratuita</h3>
+              <p>Ofrecemos asesorías virtuales gratuitas para el cultivo de pitahaya.</p>
+              <form id="formAsesoria" onsubmit="enviarConsultaAsesoria(event)">
+                <div class="mb-3">
+                  <input type="text" class="form-control" id="asesoriaName" placeholder="Nombre" required
+                    minlength="2" />
+                </div>
+                <div class="mb-3">
+                  <input type="email" class="form-control" id="asesoriaEmail" placeholder="Email" required />
+                </div>
+                <div class="mb-3">
+                  <textarea class="form-control" id="asesoriaMensaje" rows="3" placeholder="Mensaje" required
+                    minlength="10"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnEnviarAsesoria">
+                  <span id="btnAsesoriaText">Enviar Mensaje</span>
+                  <span id="btnAsesoriaSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Script para formulario de asesoría -->
+  <script>
+    // Toast container
+    if (!document.getElementById('toastContainer')) {
+      const container = document.createElement('div');
+      container.id = 'toastContainer';
+      container.className = 'toast-container position-fixed top-0 end-0 p-3';
+      container.style.zIndex = '9999';
+      document.body.appendChild(container);
+    }
+
+    function mostrarToast(mensaje, tipo = 'success') {
+      const container = document.getElementById('toastContainer');
+      const iconos = {
+        success: '<i class="fas fa-check-circle text-success me-2"></i>',
+        error: '<i class="fas fa-times-circle text-danger me-2"></i>',
+        warning: '<i class="fas fa-exclamation-triangle text-warning me-2"></i>'
+      };
+      const colores = {
+        success: 'border-success',
+        error: 'border-danger',
+        warning: 'border-warning'
+      };
+
+      const toastId = 'toast-' + Date.now();
+      const toastHtml = `
+        <div id="${toastId}" class="toast align-items-center bg-white border-start border-4 ${colores[tipo]}" role="alert">
+          <div class="d-flex">
+            <div class="toast-body d-flex align-items-center">
+              ${iconos[tipo]}
+              <span>${mensaje}</span>
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', toastHtml);
+
+      const toastEl = document.getElementById(toastId);
+      const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
+      toast.show();
+
+      toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+    }
+
+    async function enviarConsultaAsesoria(event) {
+      event.preventDefault();
+
+      const btn = document.getElementById('btnEnviarAsesoria');
+      const btnText = document.getElementById('btnAsesoriaText');
+      const btnSpinner = document.getElementById('btnAsesoriaSpinner');
+
+      const nombre = document.getElementById('asesoriaName').value.trim();
+      const email = document.getElementById('asesoriaEmail').value.trim();
+      const mensaje = document.getElementById('asesoriaMensaje').value.trim();
+
+      // Validaciones
+      if (!nombre || nombre.length < 2) {
+        mostrarToast('Por favor ingresa tu nombre', 'warning');
+        return;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        mostrarToast('Por favor ingresa un email válido', 'warning');
+        return;
+      }
+      if (!mensaje || mensaje.length < 10) {
+        mostrarToast('El mensaje debe tener al menos 10 caracteres', 'warning');
+        return;
+      }
+
+      // Deshabilitar botón
+      btn.disabled = true;
+      btnText.textContent = 'Enviando...';
+      btnSpinner.classList.remove('d-none');
+
+      try {
+        const response = await fetch('/api/contacto/asesoria', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nombre, email, mensaje })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          mostrarToast('¡Mensaje enviado exitosamente! Te responderemos pronto.', 'success');
+          document.getElementById('formAsesoria').reset();
+        } else {
+          throw new Error(data.message || 'Error al enviar');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        mostrarToast('Error al enviar: ' + error.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Enviar Mensaje';
+        btnSpinner.classList.add('d-none');
+      }
+    }
+  </script>
+
+  <!-- Footer -->
+  <footer class="py-4">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5><i class="fas fa-seedling me-2"></i>Pitahaya Perú</h5>
+          <p>Tu marketplace especializado en productos para el cultivo de pitahaya y otros frutos tropicales.</p>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5>Enlaces Rápidos</h5>
+          <ul class="list-unstyled">
+            <li><a href="#fertilizantes" class="text-white">Fertilizantes</a></li>
+            <li><a href="#packs" class="text-white">Packs</a></li>
+            <li><a href="#esquejes" class="text-white">Esquejes</a></li>
+            <li><a href="#contacto" class="text-white">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Redes Sociales</h5>
+          <div class="d-flex align-items-center">
+            <a href="https://web.facebook.com/pitahayavivero" class="text-white me-3" target="_blank" rel="noopener"><i
+                class="fab fa-facebook-f fa-lg"></i></a>
+            <a href="https://wa.me/51993346052" class="text-white me-3" target="_blank" rel="noopener"><i
+                class="fab fa-whatsapp fa-lg"></i></a>
+            <a href="https://www.youtube.com/@ElvisCarreraPitahayaPeru" class="text-white" target="_blank"
+              rel="noopener"><i class="fab fa-youtube fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="my-4 bg-light" />
+      <div class="text-center">
+        <p class="mb-0">&copy; 2025 Pitahaya Perú S.A.C. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/javascript/tienda/agroconecta.js" defer></script>
+  <script src="/javascript/tienda/cart-sync.js" defer></script>
+  <script src="/javascript/authStatus.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control</title>
+    <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+    <link rel="shortcut icon" href="/icono/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="MyAgroiOS" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <!-- Chart.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
+
+    <style>
+        :root {
+            --sidebar-width: 280px;
+            --primary-color: #2E7D32;
+            --secondary-color: #E91E63;
+            --sidebar-bg: #1E3A8A;
+            --sidebar-hover: #3B82F6;
+            --text-muted: #6c757d;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        /* ✅ SIDEBAR STYLES */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--sidebar-bg) 0%, #1E40AF 100%);
+            color: white;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar-header h4 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-header .company-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 0.5rem;
+            object-fit: cover;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            background: var(--sidebar-hover);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: var(--sidebar-hover);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        /* ✅ MAIN CONTENT STYLES */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ✅ TOPBAR MEJORADO */
+        .topbar {
+            background: white;
+            padding: 1rem 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 70px;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .topbar-left h1 {
+            color: #2E7D32;
+            font-weight: 600;
+            margin: 0;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .topbar-left small {
+            color: #6c757d;
+            font-size: 0.875rem;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .user-info:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2E7D32;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .user-role {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* ✅ CARDS STYLES */
+        .dashboard-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* ✅ RESPONSIVE STYLES */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .topbar {
+                padding: 0.75rem 1rem;
+                min-height: 60px;
+            }
+
+            .topbar-left h1 {
+                font-size: 1.25rem;
+            }
+
+            .user-info {
+                padding: 0.375rem 0.75rem;
+                gap: 0.5rem;
+            }
+
+            .user-avatar {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .user-name {
+                font-size: 0.85rem;
+            }
+
+            .user-role {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .topbar-left h1 {
+                font-size: 1.1rem;
+            }
+
+            .topbar-left small {
+                display: none;
+            }
+
+            .user-details {
+                display: none;
+            }
+
+            .user-info {
+                padding: 0.5rem;
+                border-radius: 50%;
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* ✅ LOADING STYLES */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .swal2-actions.swal2-actions-spaced {
+            gap: 12px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ✅ SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="../../imagenes_pitahaya/pitahaya.png" alt="Logo" class="company-logo">
+            <h4>Pitahaya Perú</h4>
+            <small style="color: rgba(255,255,255,0.7);">Panel de Control</small>
+        </div>
+
+        <nav class="sidebar-nav">
+            <!-- ✅ MENÚ PRINCIPAL -->
+            <div class="nav-item">
+                <a href="#" class="nav-link active" data-section="menu">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Menú
+                </a>
+            </div>
+
+            <!-- ✅ PRODUCTOS -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="productos">
+                    <i class="fas fa-box"></i>
+                    Productos
+                </a>
+            </div>
+
+            <!-- ✅ CLIENTES -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="clientes">
+                    <i class="fas fa-users"></i>
+                    Clientes
+                </a>
+            </div>
+
+            <!-- ✅ PEDIDOS -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="pedidos">
+                    <i class="fas fa-shopping-cart"></i>
+                    Pedidos
+                </a>
+            </div>
+
+            <!-- ✅ REPORTES -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="reportes">
+                    <i class="fas fa-chart-line"></i>
+                    Reportes
+                </a>
+            </div>
+
+            <!-- ✅ USUARIOS -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="usuarios">
+                    <i class="fas fa-user-shield"></i>
+                    Usuarios
+                </a>
+            </div>
+
+            <!-- ✅ CONFIGURACIÓN (AHORA INCLUYE CATEGORÍAS Y UNIDADES) -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="configuracion">
+                    <i class="fas fa-cog"></i>
+                    Configuración
+                </a>
+            </div>
+
+            <!-- ✅ ASESORÍAS -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="asesorias">
+                    <i class="fas fa-comments"></i>
+                    Asesorías
+                </a>
+            </div>
+
+            <!-- ✅ TRANSPORTE -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" data-section="transporte">
+                    <i class="fas fa-truck"></i>
+                    Transporte
+                </a>
+            </div>
+
+            <!-- ✅ SEPARADOR -->
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 1rem;">
+
+            <!-- ✅ IR A LA TIENDA -->
+            <div class="nav-item">
+                <a href="/" class="nav-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fas fa-home"></i>
+                    Ir a la Tienda
+                </a>
+            </div>
+
+            <!-- ✅ CERRAR SESIÓN -->
+            <div class="nav-item">
+                <a href="#" class="nav-link" onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- ✅ MAIN CONTENT -->
+    <div class="main-content">
+        <!-- ✅ TOPBAR MEJORADO -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <!-- ✅ BOTÓN HAMBURGUESA PARA MÓVILES -->
+                <button class="btn btn-link d-md-none me-3" id="sidebarToggle" style="padding: 0.5rem;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <!-- ✅ TÍTULO DINÁMICO -->
+                    <h1 id="pageTitle">Panel de Control - Bienvenido</h1>
+                    <small>Administrador Sistema</small>
+                </div>
+            </div>
+
+            <!-- ✅ INFORMACIÓN DEL USUARIO -->
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <div class="user-details">
+                    <div class="user-name" id="adminName">Administrador Sistema</div>
+                    <div class="user-role">Panel de Control</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ ÁREA DE CONTENIDO -->
+        <div class="content-area">
+            <!-- ✅ LOADING -->
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Cargando...</p>
+            </div>
+
+            <!-- ✅ CONTENIDO DINÁMICO -->
+            <div id="dynamicContent">
+                <!-- El contenido se cargará aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ SCRIPTS -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Panel Control JS -->
+    <script src="../../javascript/panel_control/menu.js"></script>
+    <script src="/javascript/panel_control/usuario/listar.js"></script>
+    <script src="/javascript/panel_control/usuario/actualizar.js"></script>
+    <script src="/javascript/panel_control/usuario/registrar.js"></script>
+    <script src="/javascript/panel_control/cliente/listar.js"></script>
+    <script src="/javascript/panel_control/categoria/listar.js"></script>
+    <script src="/javascript/panel_control/producto/listar.js"></script>
+    <script src="/javascript/panel_control/producto/registrar.js"></script>
+    <script src="/javascript/panel_control/producto/actualizar.js"></script>
+
+</body>
+
+</html>

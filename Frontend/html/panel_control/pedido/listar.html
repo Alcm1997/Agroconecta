@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Pedidos - AgroConecta</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-shopping-cart"></i> Gestión de Pedidos
+                        </h4>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Filtros -->
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <label for="filtroEstado" class="form-label">Estado</label>
+                                <select id="filtroEstado" class="form-select">
+                                    <option value="">Todos</option>
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                                <input type="date" id="fechaInicio" class="form-control">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                                <input type="date" id="fechaFin" class="form-control">
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button id="btnFiltrar" class="btn btn-primary me-2">
+                                    <i class="fas fa-filter"></i> Filtrar
+                                </button>
+                                <button id="btnLimpiar" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Limpiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tabla de pedidos -->
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fecha</th>
+                                        <th>Cliente</th>
+                                        <th>Email</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Comprobante</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablaPedidos">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="spinner-border" role="status">
+                                                <span class="visually-hidden">Cargando...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Paginación -->
+                        <nav aria-label="Paginación de pedidos">
+                            <ul class="pagination justify-content-center" id="paginacion">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cambiar estado -->
+    <div class="modal fade" id="modalCambiarEstado" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cambiar Estado del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Pedido ID: <strong id="modalPedidoId"></strong></p>
+                    <div class="mb-3">
+                        <label for="nuevoEstado" class="form-label">Nuevo Estado</label>
+                        <select id="nuevoEstado" class="form-select">
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Nota:</strong> Si cancela un pedido, el stock de los productos se restaurará automáticamente.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnConfirmarCambio">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../javascript/panel_control/pedido/listar.js"></script>
+</body>
+</html>

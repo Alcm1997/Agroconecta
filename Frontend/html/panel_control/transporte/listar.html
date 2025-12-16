@@ -1,0 +1,488 @@
+<!-- ✅ SECCIÓN: TRANSPORTE -->
+<style>
+    #transporteTabs .nav-link {
+        color: #495057;
+        border: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        margin-right: 5px;
+    }
+
+    #transporteTabs .nav-link.active {
+        color: #fff;
+        background-color: #E91E63;
+        border-color: #E91E63;
+    }
+
+    #transporteTabs .nav-link:hover:not(.active) {
+        background-color: #e9ecef;
+    }
+</style>
+<div class="dashboard-card">
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="transporteTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="transportistas-tab" data-bs-toggle="tab"
+                data-bs-target="#transportistas" type="button" role="tab">
+                <i class="fas fa-building me-2"></i>Transportistas
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="vehiculos-tab" data-bs-toggle="tab" data-bs-target="#vehiculos" type="button"
+                role="tab">
+                <i class="fas fa-truck me-2"></i>Vehículos
+            </button>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="transporteTabContent">
+        <!-- Tab Transportistas -->
+        <div class="tab-pane fade show active" id="transportistas" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0"><i class="fas fa-building text-primary me-2"></i>Gestión de Transportistas</h5>
+                <button class="btn btn-success" onclick="mostrarModalTransportista()">
+                    <i class="fas fa-plus me-1"></i>Nuevo Transportista
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaTransportistas">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Razón Social</th>
+                            <th>RUC</th>
+                            <th>Vehículos</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaTransportistas">
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Cargando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tab Vehículos -->
+        <div class="tab-pane fade" id="vehiculos" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0"><i class="fas fa-truck text-info me-2"></i>Gestión de Vehículos</h5>
+                <button class="btn btn-success" onclick="mostrarModalVehiculo()">
+                    <i class="fas fa-plus me-1"></i>Nuevo Vehículo
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover" id="tablaVehiculos">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Placa</th>
+                            <th>Transportista</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listaVehiculos">
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Cargando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Transportista -->
+<div class="modal fade" id="modalTransportista" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalTransportistaTitle">
+                    <i class="fas fa-building me-2"></i>Nuevo Transportista
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formTransportista">
+                    <input type="hidden" id="transportistaId">
+                    <div class="mb-3">
+                        <label class="form-label">Razón Social <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="razonSocial" required minlength="3">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">RUC <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="ruc" required pattern="\d{11}" maxlength="11"
+                            placeholder="11 dígitos">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarTransportista()">
+                    <i class="fas fa-save me-1"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Vehículo -->
+<div class="modal fade" id="modalVehiculo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="modalVehiculoTitle">
+                    <i class="fas fa-truck me-2"></i>Nuevo Vehículo
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formVehiculo">
+                    <input type="hidden" id="vehiculoId">
+                    <div class="mb-3">
+                        <label class="form-label">Transportista <span class="text-danger">*</span></label>
+                        <select class="form-select" id="vehiculoTransportista" required>
+                            <option value="">Seleccione...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Placa <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="placa" required minlength="5" maxlength="10"
+                            placeholder="Ej: ABC-123" style="text-transform: uppercase;">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-info text-white" onclick="guardarVehiculo()">
+                    <i class="fas fa-save me-1"></i>Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== GESTIÓN DE TRANSPORTE ==========
+    const API_BASE = '/api/panel/transporte';
+    let transportistasData = [];
+    let vehiculosData = [];
+
+    // Token
+    function getToken() {
+        return localStorage.getItem('panelToken') || localStorage.getItem('token');
+    }
+
+    // ========== TRANSPORTISTAS ==========
+    async function cargarTransportistas() {
+        const tbody = document.getElementById('listaTransportistas');
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>Cargando...</td></tr>';
+
+        try {
+            const response = await fetch(`${API_BASE}/transportistas`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            const data = await response.json();
+            transportistasData = data.transportistas || [];
+
+            if (transportistasData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No hay transportistas registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transportistasData.map(t => `
+            <tr>
+                <td><strong>${t.id_transportista}</strong></td>
+                <td>${escapeHtml(t.razon_social)}</td>
+                <td><code>${t.ruc}</code></td>
+                <td><span class="badge bg-info">${t.cantidad_vehiculos || 0}</span></td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editarTransportista(${t.id_transportista})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="eliminarTransportista(${t.id_transportista})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        } catch (error) {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Error al cargar</td></tr>';
+        }
+    }
+
+    function mostrarModalTransportista(id = null) {
+        document.getElementById('transportistaId').value = '';
+        document.getElementById('razonSocial').value = '';
+        document.getElementById('ruc').value = '';
+        document.getElementById('modalTransportistaTitle').innerHTML = '<i class="fas fa-building me-2"></i>Nuevo Transportista';
+
+        if (id) {
+            const t = transportistasData.find(x => x.id_transportista === id);
+            if (t) {
+                document.getElementById('transportistaId').value = t.id_transportista;
+                document.getElementById('razonSocial').value = t.razon_social;
+                document.getElementById('ruc').value = t.ruc;
+                document.getElementById('modalTransportistaTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Transportista';
+            }
+        }
+
+        new bootstrap.Modal(document.getElementById('modalTransportista')).show();
+    }
+
+    function editarTransportista(id) {
+        mostrarModalTransportista(id);
+    }
+
+    async function guardarTransportista() {
+        const id = document.getElementById('transportistaId').value;
+        const razon_social = document.getElementById('razonSocial').value.trim();
+        const ruc = document.getElementById('ruc').value.trim();
+
+        if (!razon_social || razon_social.length < 3) {
+            Swal.fire('Error', 'La razón social debe tener al menos 3 caracteres', 'error');
+            return;
+        }
+
+        if (!/^\d{11}$/.test(ruc)) {
+            Swal.fire('Error', 'El RUC debe tener 11 dígitos', 'error');
+            return;
+        }
+
+        try {
+            const url = id ? `${API_BASE}/transportistas/${id}` : `${API_BASE}/transportistas`;
+            const method = id ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ razon_social, ruc })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al guardar');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('modalTransportista')).hide();
+            Swal.fire('¡Éxito!', data.message, 'success');
+            cargarTransportistas();
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
+
+    async function eliminarTransportista(id) {
+        const result = await Swal.fire({
+            title: '¿Eliminar transportista?',
+            text: 'Esta acción no se puede deshacer',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/transportistas/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al eliminar');
+            }
+
+            Swal.fire('Eliminado', 'Transportista eliminado correctamente', 'success');
+            cargarTransportistas();
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
+
+    // ========== VEHÍCULOS ==========
+    async function cargarVehiculos() {
+        const tbody = document.getElementById('listaVehiculos');
+        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>Cargando...</td></tr>';
+
+        try {
+            const response = await fetch(`${API_BASE}/vehiculos`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            const data = await response.json();
+            vehiculosData = data.vehiculos || [];
+
+            if (vehiculosData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-muted">No hay vehículos registrados</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = vehiculosData.map(v => `
+            <tr>
+                <td><strong>${v.id_vehiculo}</strong></td>
+                <td><code style="font-size: 1.1em;">${escapeHtml(v.placa)}</code></td>
+                <td>${escapeHtml(v.transportista_nombre)}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="editarVehiculo(${v.id_vehiculo})" title="Editar">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="eliminarVehiculo(${v.id_vehiculo})" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+        } catch (error) {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger">Error al cargar</td></tr>';
+        }
+    }
+
+    async function cargarSelectTransportistas() {
+        const select = document.getElementById('vehiculoTransportista');
+        select.innerHTML = '<option value="">Cargando...</option>';
+
+        try {
+            const response = await fetch(`${API_BASE}/transportistas`, {
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            const data = await response.json();
+            const transportistas = data.transportistas || [];
+
+            select.innerHTML = '<option value="">Seleccione transportista...</option>' +
+                transportistas.map(t => `<option value="${t.id_transportista}">${escapeHtml(t.razon_social)} (${t.ruc})</option>`).join('');
+        } catch (error) {
+            select.innerHTML = '<option value="">Error al cargar</option>';
+        }
+    }
+
+    function mostrarModalVehiculo(id = null) {
+        document.getElementById('vehiculoId').value = '';
+        document.getElementById('placa').value = '';
+        document.getElementById('modalVehiculoTitle').innerHTML = '<i class="fas fa-truck me-2"></i>Nuevo Vehículo';
+
+        cargarSelectTransportistas().then(() => {
+            if (id) {
+                const v = vehiculosData.find(x => x.id_vehiculo === id);
+                if (v) {
+                    document.getElementById('vehiculoId').value = v.id_vehiculo;
+                    document.getElementById('vehiculoTransportista').value = v.id_transportista;
+                    document.getElementById('placa').value = v.placa;
+                    document.getElementById('modalVehiculoTitle').innerHTML = '<i class="fas fa-edit me-2"></i>Editar Vehículo';
+                }
+            }
+        });
+
+        new bootstrap.Modal(document.getElementById('modalVehiculo')).show();
+    }
+
+    function editarVehiculo(id) {
+        mostrarModalVehiculo(id);
+    }
+
+    async function guardarVehiculo() {
+        const id = document.getElementById('vehiculoId').value;
+        const id_transportista = document.getElementById('vehiculoTransportista').value;
+        const placa = document.getElementById('placa').value.trim().toUpperCase();
+
+        if (!id_transportista) {
+            Swal.fire('Error', 'Seleccione un transportista', 'error');
+            return;
+        }
+
+        if (!placa || placa.length < 5) {
+            Swal.fire('Error', 'La placa debe tener al menos 5 caracteres', 'error');
+            return;
+        }
+
+        try {
+            const url = id ? `${API_BASE}/vehiculos/${id}` : `${API_BASE}/vehiculos`;
+            const method = id ? 'PUT' : 'POST';
+
+            const response = await fetch(url, {
+                method,
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_transportista, placa })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al guardar');
+            }
+
+            bootstrap.Modal.getInstance(document.getElementById('modalVehiculo')).hide();
+            Swal.fire('¡Éxito!', data.message, 'success');
+            cargarVehiculos();
+            cargarTransportistas(); // Actualizar count de vehículos
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
+
+    async function eliminarVehiculo(id) {
+        const result = await Swal.fire({
+            title: '¿Eliminar vehículo?',
+            text: 'Esta acción no se puede deshacer',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/vehiculos/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error al eliminar');
+            }
+
+            Swal.fire('Eliminado', 'Vehículo eliminado correctamente', 'success');
+            cargarVehiculos();
+            cargarTransportistas();
+        } catch (error) {
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    // Cargar al cambiar de tab
+    document.getElementById('vehiculos-tab').addEventListener('shown.bs.tab', cargarVehiculos);
+
+    // Cargar transportistas al iniciar
+    cargarTransportistas();
+</script>
