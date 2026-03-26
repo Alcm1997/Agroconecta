@@ -483,6 +483,9 @@
     // Cargar al cambiar de tab
     document.getElementById('vehiculos-tab').addEventListener('shown.bs.tab', cargarVehiculos);
 
+    // Exponer globalmente para que menu.js pueda llamarla al recargar la sección
+    window.cargarTransportistas = cargarTransportistas;
+
     // Cargar transportistas al iniciar
     cargarTransportistas();
 </script>

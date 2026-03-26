@@ -81,8 +81,33 @@
 
   function ensureAuth() {
     if (!getToken()) {
-      alert('Inicia sesión para continuar con el checkout.');
-      window.location.href = '/html/loginagroconecta.html';
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'warning',
+          title: '¡Inicia sesión!',
+          html: `
+            <p style="color:#444;font-size:15px;">Necesitas una cuenta para continuar con tu pedido.</p>
+            <p style="color:#888;font-size:13px;">Es rápido y gratuito. 🌱</p>
+          `,
+          confirmButtonText: '🔑 Iniciar Sesión',
+          confirmButtonColor: '#2E7D32',
+          showCancelButton: true,
+          cancelButtonText: '← Volver a la Tienda',
+          cancelButtonColor: '#6c757d',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          reverseButtons: true
+        }).then(result => {
+          if (result.isConfirmed) {
+            window.location.replace('/html/loginagroconecta.html');
+          } else {
+            window.location.replace('/html/agroconecta.html');
+          }
+        });
+      } else {
+        alert('Inicia sesión para continuar con el checkout.');
+        window.location.replace('/html/loginagroconecta.html');
+      }
       return false;
     }
     return true;

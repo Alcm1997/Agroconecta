@@ -275,8 +275,9 @@
                     if (response.ok) {
                         console.log('✅ Login exitoso');
                         
-                        // Guardar token
+                        // Guardar token y timestamp del último acceso
                         localStorage.setItem('token', result.token);
+                        localStorage.setItem('ultimo_acceso_panel', new Date().toISOString());
                         
                         // Mostrar mensaje de éxito
                         Swal.fire({

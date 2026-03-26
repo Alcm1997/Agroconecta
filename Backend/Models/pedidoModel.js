@@ -384,6 +384,15 @@ async function actualizarEstadoPedidoAdmin(id_pedido, nuevo_estado) {
   }
 }
 
+// Obtener solo el estado actual de un pedido (para validar transiciones)
+async function obtenerEstadoPedido(id_pedido) {
+  const result = await pool.query(
+    'SELECT id_pedido, estado FROM pedido WHERE id_pedido = $1',
+    [id_pedido]
+  );
+  return result.rowCount > 0 ? result.rows[0] : null;
+}
+
 // Obtener estadísticas para el dashboard
 async function obtenerEstadisticasGenerales() {
   const queries = {
@@ -635,6 +644,12 @@ module.exports = {
   obtenerDetallePedidoAdmin,
   actualizarEstadoPedidoAdmin,
   obtenerEstadisticasGenerales,
+  obtenerEstadoPedido,
+  // Alias usados por pedidoController.js
+  actualizarEstadoPedido: actualizarEstadoPedidoAdmin,
+  obtenerTodosPedidos: obtenerTodosPedidosAdmin,
+  obtenerDetallePedidoPanel: obtenerDetallePedidoAdmin,
+  obtenerEstadisticasPedidos: obtenerEstadisticasGenerales,
   // Funciones para clientes
   obtenerPedidosPorCliente,
   obtenerDetallePedido,

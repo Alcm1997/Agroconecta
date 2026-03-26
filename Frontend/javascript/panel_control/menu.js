@@ -292,7 +292,7 @@ class PanelControl {
                                     <i class="fas fa-clock text-primary"></i>
                                     <div>
                                         <strong>Último acceso:</strong><br>
-                                        <span id="currentDateTime"></span>
+                                        <span id="currentDateTime">${(() => { const ts = localStorage.getItem('ultimo_acceso_panel'); if (!ts) return 'sesión actual'; return new Date(ts).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); })()}</span>
                                     </div>
                                 </div>
                             </div>
@@ -333,11 +333,6 @@ class PanelControl {
                     .feature-card{margin-bottom:1rem;}
                 }
             </style>
-            <script>
-                const now=new Date();
-                const options={year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'};
-                document.getElementById('currentDateTime').textContent=now.toLocaleDateString('es-ES',options);
-            </script>
         `;
     }
 
@@ -614,6 +609,12 @@ class PanelControl {
         const html = await fetch('/html/panel_control/asesoria/listar.html').then(r => r.text());
         this.renderContent(html);
         this.currentSection = 'asesorias';
+        // Esperar a que el DOM esté disponible antes de cargar los datos
+        setTimeout(() => {
+            if (typeof window.cargarAsesorias === 'function') {
+                window.cargarAsesorias();
+            }
+        }, 100);
     }
 
     // ✅ CARGAR TRANSPORTE
@@ -622,6 +623,12 @@ class PanelControl {
         const html = await fetch('/html/panel_control/transporte/listar.html').then(r => r.text());
         this.renderContent(html);
         this.currentSection = 'transporte';
+        // Esperar a que el DOM esté disponible antes de cargar los datos
+        setTimeout(() => {
+            if (typeof window.cargarTransportistas === 'function') {
+                window.cargarTransportistas();
+            }
+        }, 100);
     }
 }
 
@@ -652,10 +659,91 @@ function cerrarSesion() {
     }
 }
 
+// ============================================================
+// 🔒 CONTROL DE EXPIRACIÓN DE SESIÓN (ADMIN)
+// ============================================================
+
+function decodificarTokenAdmin(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const payload = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+        return JSON.parse(payload);
+    } catch { return null; }
+}
+
+let _adminSessionTimers = [];
+
+function limpiarTimersAdmin() {
+    _adminSessionTimers.forEach(id => clearTimeout(id));
+    _adminSessionTimers = [];
+}
+
+function forzarLogoutAdmin() {
+    localStorage.removeItem('token');
+    window.location.href = '/html/panel_control/login-panel.html';
+}
+
+function iniciarVigilanteSesionAdmin() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    limpiarTimersAdmin();
+    const payload = decodificarTokenAdmin(token);
+    if (!payload || !payload.exp) return;
+
+    const expiresAt = payload.exp * 1000;
+    const msLeft = expiresAt - Date.now();
+    const WARNING_MS = 30 * 1000;
+
+    if (msLeft <= 0) { forzarLogoutAdmin(); return; }
+
+    if (msLeft > WARNING_MS) {
+        _adminSessionTimers.push(setTimeout(() => mostrarAvisoExpiracionAdmin(30), msLeft - WARNING_MS));
+    } else {
+        mostrarAvisoExpiracionAdmin(Math.floor(msLeft / 1000));
+    }
+
+    _adminSessionTimers.push(setTimeout(() => forzarLogoutAdmin(), msLeft));
+}
+
+function mostrarAvisoExpiracionAdmin(segundosRestantes) {
+    if (typeof Swal !== 'undefined') {
+        let segs = segundosRestantes;
+        let iv;
+        Swal.fire({
+            title: '⏰ Sesión por vencer',
+            html: `Tu sesión cerrará en <strong id="swal-countdown-admin">${segs}</strong> segundos.<br><small class="text-muted">Serás redirigido al inicio de sesión.</small>`,
+            icon: 'warning',
+            showConfirmButton: true,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#2E7D32',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            timer: segundosRestantes * 1000,
+            timerProgressBar: true,
+            didOpen: () => {
+                iv = setInterval(() => {
+                    segs--;
+                    const el = document.getElementById('swal-countdown-admin');
+                    if (el) el.textContent = Math.max(segs, 0);
+                    if (segs <= 0) clearInterval(iv);
+                }, 1000);
+            },
+            willClose: () => clearInterval(iv)
+        });
+    } else {
+        alert(`Tu sesión expirará en ${segundosRestantes} segundos. Por favor guarda tu trabajo.`);
+    }
+}
+
 // Inicializar
 let panelControl;
 document.addEventListener('DOMContentLoaded', () => {
     panelControl = new PanelControl();
     window.panelControl = panelControl;
     panelControl.init();
+
+    // Iniciar el vigilante de sesión admin
+    iniciarVigilanteSesionAdmin();
 });

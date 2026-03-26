@@ -340,6 +340,9 @@
     // Event listener para filtro
     document.getElementById('filtroEstado').addEventListener('change', cargarAsesorias);
 
+    // Exponer globalmente para que menu.js pueda llamarla al recargar la sección
+    window.cargarAsesorias = cargarAsesorias;
+
     // Cargar al iniciar
     cargarAsesorias();
 </script>

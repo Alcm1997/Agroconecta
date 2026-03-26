@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPMN AgroConecta - Proceso de Venta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #E91E63;
+        }
+
+        h2 {
+            color: #FFC107;
+            border-bottom: 2px solid #FFC107;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #4CAF50;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: #263238;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .narrative {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%);
+            border-left: 5px solid #E91E63;
+        }
+
+        .narrative p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        .narrative strong {
+            color: #FFC107;
+        }
+
+        .narrative em {
+            color: #4CAF50;
+            font-style: normal;
+        }
+
+        .stage {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #E91E63;
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .stage-number {
+            background: #E91E63;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .stage-title {
+            color: #FFC107;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .stage-desc {
+            color: #ccc;
+            margin-left: 55px;
+        }
+
+        .diagram-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 25px;
+            overflow-x: auto;
+            color: #333;
+        }
+
+        .pool {
+            border: 3px solid #2E7D32;
+            border-radius: 8px;
+            min-width: 1100px;
+        }
+
+        .pool-header {
+            background: #2E7D32;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        .lane {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            min-height: 100px;
+        }
+
+        .lane:last-child {
+            border-bottom: none;
+        }
+
+        .lane-header {
+            width: 130px;
+            min-width: 130px;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+            border-right: 2px solid #ccc;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9em;
+        }
+
+        .lane-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .event {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .event.start {
+            border: 3px solid #4CAF50;
+            background: #E8F5E9;
+        }
+
+        .event.end {
+            border: 4px solid #f44336;
+            background: #FFEBEE;
+        }
+
+        .event.end.success {
+            border-color: #4CAF50;
+            background: #E8F5E9;
+        }
+
+        .event.message {
+            border: 2px dashed #2196F3;
+            background: #E3F2FD;
+        }
+
+        .task {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            text-align: center;
+            max-width: 130px;
+            min-width: 100px;
+        }
+
+        .task.user {
+            border: 2px solid #2196F3;
+            background: #E3F2FD;
+        }
+
+        .task.service {
+            border: 2px solid #9C27B0;
+            background: #F3E5F5;
+        }
+
+        .task.manual {
+            border: 2px solid #FF9800;
+            background: #FFF3E0;
+        }
+
+        .gateway {
+            width: 30px;
+            height: 30px;
+            background: #FFF9C4;
+            border: 2px solid #FFC107;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .gateway span {
+            transform: rotate(-45deg);
+            color: #F57F17;
+        }
+
+        .data {
+            font-size: 20px;
+            margin: 0 3px;
+        }
+
+        .arrow {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .label {
+            font-size: 0.7em;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .label.yes {
+            color: #4CAF50;
+        }
+
+        .label.no {
+            color: #f44336;
+        }
+
+        .connector {
+            color: #999;
+            font-size: 0.75em;
+            font-style: italic;
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #444;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #E91E63;
+            color: white;
+            width: 200px;
+        }
+
+        td {
+            background: #1e3a5f;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, #1e3a5f, #2d5a87);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border-left: 4px solid #FFC107;
+        }
+
+        .kpi-value {
+            font-size: 2em;
+            color: #FFC107;
+            font-weight: bold;
+        }
+
+        .kpi-name {
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .kpi-formula {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 8px;
+        }
+
+        .phva-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .phva-item {
+            background: #16213e;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .phva-item h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .phva-letter {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .phva-p .phva-letter {
+            background: #2196F3;
+        }
+
+        .phva-h .phva-letter {
+            background: #4CAF50;
+        }
+
+        .phva-v .phva-letter {
+            background: #FF9800;
+        }
+
+        .phva-a .phva-letter {
+            background: #f44336;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🌿 BPMN - AgroConecta: Proceso de Venta en Línea</h1>
+        <p style="text-align: center; color: #888; margin-bottom: 30px;">
+            Ingeniería de Procesos - Desarrollo de Sistemas de Información - Ciclo V
+        </p>
+
+        <!-- NARRATIVA DEL PROCESO -->
+        <div class="section narrative">
+            <h2>📖 1. Narración del Proceso de Ingeniería</h2>
+
+            <p>
+                El proceso de <strong>Venta en Línea de AgroConecta</strong> inicia cuando un <em>Cliente</em>
+                (productor agrícola o comprador) accede a la plataforma web y navega por el catálogo de productos
+                (fertilizantes, esquejes, packs y frutas frescas).
+            </p>
+
+            <p>
+                Para realizar una compra, el cliente <strong>debe estar registrado e iniciar sesión</strong>.
+                Si no tiene cuenta, el sistema lo redirige al formulario de registro. Una vez autenticado,
+                el cliente agrega productos al carrito y procede al <strong>checkout</strong>.
+            </p>
+
+            <p>
+                En el checkout, el cliente confirma sus datos de entrega (dirección, departamento, distrito)
+                y selecciona el <strong>método de pago</strong>: <em>Yape, Plin o Tarjeta</em>. Al confirmar,
+                el sistema genera el pedido con estado <strong>"Pendiente"</strong> y permite al cliente
+                <strong>imprimir o exportar su boleta en PDF</strong>.
+            </p>
+
+            <p>
+                El <em>Administrador</em> revisa los pedidos pendientes en el panel de control. Si aprueba el pedido,
+                <strong>genera la Guía de Remisión</strong> donde designa el <em>transportista registrado</em> y su
+                <em>vehículo</em> para realizar la entrega.
+            </p>
+
+            <p>
+                El <em>Almacén</em> prepara el despacho (picking) según la guía. El <em>Transporte</em> recoge los
+                productos y realiza la entrega al cliente. Una vez entregado, el transportista
+                <strong>notifica al Administrador</strong> para que cambie el estado del pedido de
+                <em>"Pendiente"</em> a <strong>"Entregado"</strong>.
+            </p>
+
+            <p>
+                Finalmente, el sistema actualiza el <strong>Dashboard de Reportes</strong> con las métricas de venta,
+                cerrando el ciclo del proceso.
+            </p>
+        </div>
+
+        <!-- ETAPAS DEL PROCESO -->
+        <div class="section">
+            <h2>📋 2. Etapas Obligatorias del Proceso</h2>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">IDENTIFICACIÓN - Navegación y Selección</div>
+                </div>
+                <div class="stage-desc">Cliente navega el catálogo, visualiza productos y agrega al carrito.</div>
+            </div>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">AUTENTICACIÓN - Registro/Login Obligatorio</div>
+                </div>
+                <div class="stage-desc">Cliente debe registrarse o iniciar sesión para continuar con la compra.</div>
+            </div>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">CHECKOUT - Pago y Confirmación</div>
+                </div>
+                <div class="stage-desc">Cliente confirma datos, selecciona método de pago (Yape/Plin/Tarjeta), genera
+                    boleta PDF.</div>
+            </div>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">4</div>
+                    <div class="stage-title">GESTIÓN - Revisión y Guía de Remisión</div>
+                </div>
+                <div class="stage-desc">Administrador revisa pedido, lo aprueba y genera Guía de Remisión con
+                    transportista asignado.</div>
+            </div>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">5</div>
+                    <div class="stage-title">LOGÍSTICA - Despacho y Entrega</div>
+                </div>
+                <div class="stage-desc">Almacén prepara picking, Transporte recoge y entrega al cliente.</div>
+            </div>
+
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">6</div>
+                    <div class="stage-title">CIERRE - Confirmación y Reportes</div>
+                </div>
+                <div class="stage-desc">Transporte notifica entrega, Admin cambia estado a "Entregado", Dashboard se
+                    actualiza.</div>
+            </div>
+        </div>
+
+        <!-- DIAGRAMA BPMN -->
+        <div class="section">
+            <h2>📊 3. Diagrama BPMN - Modelo AS-IS</h2>
+            <p style="color: #888; margin-bottom: 15px;">Usa esta guía visual para replicar en Bizagi Modeler</p>
+
+            <div class="diagram-container">
+                <div class="pool">
+                    <div class="pool-header">🏢 POOL: AGROCONECTA - PROCESO DE VENTA EN LÍNEA</div>
+
+                    <!-- LANE CLIENTE -->
+                    <div class="lane">
+                        <div class="lane-header">👤 CLIENTE</div>
+                        <div class="lane-content">
+                            <div class="event start" title="Inicio">▶</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Navegar catálogo</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Agregar al carrito</div>
+                            <span class="arrow">→</span>
+                            <div class="gateway"><span>X</span></div>
+                            <div style="display: flex; flex-direction: column; gap: 5px; margin: 0 5px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="label no">NO</span>
+                                    <span class="arrow">→</span>
+                                    <div class="task user">Registrarse</div>
+                                    <span class="arrow">↘</span>
+                                </div>
+                                <span class="label yes" style="margin-left: 20px;">SÍ ↓</span>
+                            </div>
+                            <div class="task user">Iniciar Sesión</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Confirmar datos entrega</div>
+                            <span class="arrow">→</span>
+                            <div class="gateway"><span>X</span></div>
+                            <div style="font-size: 0.8em; color: #666;">Yape/Plin/Tarjeta</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Realizar pago</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Imprimir/PDF Boleta</div>
+                            <span class="data">📄</span>
+                        </div>
+                    </div>
+
+                    <!-- LANE SISTEMA -->
+                    <div class="lane">
+                        <div class="lane-header">💻 SISTEMA</div>
+                        <div class="lane-content">
+                            <div class="task service">Verificar stock</div>
+                            <span class="arrow">→</span>
+                            <div class="gateway"><span>X</span></div>
+                            <div style="display: flex; flex-direction: column; gap: 5px; margin: 0 5px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="label no">NO</span>
+                                    <span class="arrow">→</span>
+                                    <div class="task service">Notificar sin stock</div>
+                                    <span class="arrow">→</span>
+                                    <div class="event end">✕</div>
+                                </div>
+                                <span class="label yes">SÍ →</span>
+                            </div>
+                            <div class="task service">Procesar pago</div>
+                            <span class="arrow">→</span>
+                            <div class="task service">Generar pedido (Pendiente)</div>
+                            <span class="data">📄</span>
+                            <span class="arrow">→</span>
+                            <span class="connector">↓ Admin</span>
+                            <span style="margin-left: 100px;"></span>
+                            <div class="task service">Actualizar Dashboard</div>
+                            <span class="arrow">→</span>
+                            <div class="event end success">✓</div>
+                        </div>
+                    </div>
+
+                    <!-- LANE ADMINISTRADOR -->
+                    <div class="lane">
+                        <div class="lane-header">👔 ADMINISTRADOR</div>
+                        <div class="lane-content">
+                            <div class="task user">Revisar pedido en panel</div>
+                            <span class="arrow">→</span>
+                            <div class="gateway"><span>X</span></div>
+                            <div style="display: flex; flex-direction: column; gap: 5px; margin: 0 5px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="label no">NO</span>
+                                    <span class="arrow">→</span>
+                                    <div class="task user">Cancelar pedido</div>
+                                    <span class="arrow">→</span>
+                                    <div class="event end">✕</div>
+                                </div>
+                                <span class="label yes">SÍ →</span>
+                            </div>
+                            <div class="task user">Generar Guía Remisión</div>
+                            <span class="data">📄</span>
+                            <span class="arrow">→</span>
+                            <div class="task user">Asignar Transportista + Vehículo</div>
+                            <span class="arrow">→</span>
+                            <span class="connector">↓ Almacén</span>
+                            <span style="margin-left: 50px;"></span>
+                            <span class="connector">← Transporte</span>
+                            <span class="arrow">→</span>
+                            <div class="task user">Cambiar estado: ENTREGADO</div>
+                            <span class="arrow">→</span>
+                            <span class="connector">↑ Sistema</span>
+                        </div>
+                    </div>
+
+                    <!-- LANE ALMACÉN -->
+                    <div class="lane">
+                        <div class="lane-header">📦 ALMACÉN</div>
+                        <div class="lane-content">
+                            <span style="margin-left: 50px;"></span>
+                            <span class="connector">← Admin</span>
+                            <span class="arrow">→</span>
+                            <div class="task manual">Preparar despacho (Picking)</div>
+                            <span class="arrow">→</span>
+                            <span class="connector">↓ Transporte</span>
+                        </div>
+                    </div>
+
+                    <!-- LANE TRANSPORTE -->
+                    <div class="lane">
+                        <div class="lane-header">🚚 TRANSPORTE</div>
+                        <div class="lane-content">
+                            <span class="connector">← Almacén</span>
+                            <span class="arrow">→</span>
+                            <div class="task manual">Recoger productos</div>
+                            <span class="arrow">→</span>
+                            <div class="task manual">Realizar entrega al cliente</div>
+                            <span class="arrow">→</span>
+                            <div class="event message" title="Mensaje">📞</div>
+                            <span class="arrow">→</span>
+                            <div class="task user">Notificar entrega a Admin</div>
+                            <span class="arrow">→</span>
+                            <span class="connector">↑ Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FICHA DE PROCESO -->
+        <div class="section">
+            <h2>📝 4. Ficha de Caracterización del Proceso</h2>
+
+            <table>
+                <tr>
+                    <th>Nombre del Proceso</th>
+                    <td>Venta de Productos Agrícolas en Línea</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Proceso</th>
+                    <td>Proceso Misional (Core Business)</td>
+                </tr>
+                <tr>
+                    <th>Objetivo</th>
+                    <td>Comercializar productos agrícolas conectando productores con compradores, eliminando
+                        intermediarios</td>
+                </tr>
+                <tr>
+                    <th>Alcance</th>
+                    <td>Desde el ingreso del cliente a la tienda hasta la entrega del producto y actualización de
+                        reportes</td>
+                </tr>
+                <tr>
+                    <th>Owner (Responsable)</th>
+                    <td>Área Comercial / Administrador del Sistema</td>
+                </tr>
+                <tr>
+                    <th>Entradas</th>
+                    <td>Solicitud de compra del cliente, Datos de pago, Dirección de entrega</td>
+                </tr>
+                <tr>
+                    <th>Salidas</th>
+                    <td>Pedido entregado, Boleta/Factura PDF, Guía de Remisión, Reporte de ventas actualizado</td>
+                </tr>
+                <tr>
+                    <th>Proveedores</th>
+                    <td>Cliente (datos), Pasarela de pago (Yape/Plin/Tarjeta), Almacén (productos)</td>
+                </tr>
+                <tr>
+                    <th>Clientes</th>
+                    <td>Productores agrícolas, Compradores mayoristas/minoristas</td>
+                </tr>
+                <tr>
+                    <th>Recursos</th>
+                    <td>Plataforma web AgroConecta, Base de datos PostgreSQL, Flota de transporte, Personal
+                        administrativo</td>
+                </tr>
+                <tr>
+                    <th>Documentos Generados</th>
+                    <td>📄 Pedido, 📄 Boleta/Factura PDF, 📄 Guía de Remisión</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- INDICADORES KPI -->
+        <div class="section">
+            <h2>📊 5. Indicadores de Gestión (KPIs)</h2>
+
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value">> 5%</div>
+                    <div class="kpi-name">Tasa de Conversión</div>
+                    <div class="kpi-formula">= (Pedidos / Visitas) × 100</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value">
+                        < 72h</div>
+                            <div class="kpi-name">Tiempo Promedio de Entrega</div>
+                            <div class="kpi-formula">= Σ(Fecha entrega - Fecha pedido) / N</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value">
+                            < 10%</div>
+                                <div class="kpi-name">Tasa de Cancelación</div>
+                                <div class="kpi-formula">= (Cancelados / Total) × 100</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">> 4.5</div>
+                            <div class="kpi-name">Satisfacción del Cliente</div>
+                            <div class="kpi-formula">= Promedio encuestas (1-5)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CICLO PHVA -->
+                <div class="section">
+                    <h2>🔄 6. Metodología PHVA Aplicada</h2>
+
+                    <div class="phva-grid">
+                        <div class="phva-item phva-p">
+                            <h4>
+                                <div class="phva-letter">P</div>PLANEAR
+                            </h4>
+                            <p style="color: #ccc;">Diseño del modelo TO-BE, definición de KPIs, planificación de
+                                recursos y capacitación del equipo.</p>
+                        </div>
+                        <div class="phva-item phva-h">
+                            <h4>
+                                <div class="phva-letter">H</div>HACER
+                            </h4>
+                            <p style="color: #ccc;">Implementación del sistema AgroConecta, ejecución del proceso de
+                                ventas en línea.</p>
+                        </div>
+                        <div class="phva-item phva-v">
+                            <h4>
+                                <div class="phva-letter">V</div>VERIFICAR
+                            </h4>
+                            <p style="color: #ccc;">Medición de indicadores en Dashboard, análisis de datos de ventas,
+                                revisión de tiempos de entrega.</p>
+                        </div>
+                        <div class="phva-item phva-a">
+                            <h4>
+                                <div class="phva-letter">A</div>ACTUAR
+                            </h4>
+                            <p style="color: #ccc;">Mejora continua, optimización de flujos, corrección de cuellos de
+                                botella, reingeniería si es necesario.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LEYENDA -->
+                <div class="section">
+                    <h2>📋 7. Leyenda de Símbolos BPMN para Bizagi</h2>
+
+                    <table>
+                        <tr>
+                            <th>Símbolo</th>
+                            <th>Nombre</th>
+                            <th>Uso en AgroConecta</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="event start" style="display: inline-flex;">▶</div>
+                            </td>
+                            <td>Start Event</td>
+                            <td>Cliente ingresa a la tienda online</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="event end" style="display: inline-flex;">✕</div>
+                            </td>
+                            <td>End Event (Error)</td>
+                            <td>Pedido cancelado o sin stock</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="event end success" style="display: inline-flex;">✓</div>
+                            </td>
+                            <td>End Event (Éxito)</td>
+                            <td>Pedido completado exitosamente</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="task user"
+                                    style="display: inline-block; min-width: auto; padding: 5px 10px;">Tarea</div>
+                            </td>
+                            <td>User Task</td>
+                            <td>Tareas realizadas por personas (cliente, admin)</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="task service"
+                                    style="display: inline-block; min-width: auto; padding: 5px 10px;">Tarea</div>
+                            </td>
+                            <td>Service Task</td>
+                            <td>Tareas automáticas del sistema (verificar stock, generar pedido)</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="task manual"
+                                    style="display: inline-block; min-width: auto; padding: 5px 10px;">Tarea</div>
+                            </td>
+                            <td>Manual Task</td>
+                            <td>Tareas físicas (picking, entrega)</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="gateway" style="display: inline-flex;"><span>X</span></div>
+                            </td>
+                            <td>Exclusive Gateway (XOR)</td>
+                            <td>Decisiones: ¿Logueado? ¿Stock? ¿Aprueba?</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <div class="event message" style="display: inline-flex;">📞</div>
+                            </td>
+                            <td>Message Event</td>
+                            <td>Transporte notifica al Admin la entrega</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">📄</td>
+                            <td>Data Object</td>
+                            <td>Documentos: Pedido, Boleta PDF, Guía de Remisión</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="footer">
+                    <p><strong>Repositorio GitHub:</strong> https://github.com/Alcm1997/Agroconecta</p>
+                    <p>© 2026 AgroConecta - Pitahaya Perú | Ingeniería de Procesos - IDAT</p>
+                </div>
+            </div>
+</body>
+
+</html>

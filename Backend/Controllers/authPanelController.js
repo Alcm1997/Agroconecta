@@ -5,25 +5,25 @@ const jwt = require('jsonwebtoken');
 // Login para usuarios internos (panel)
 exports.loginPanel = async (req, res) => {
   const { username, password } = req.body;
-  
+
   console.log('🔐 Intento de login:', { username }); // Debug
-  
+
   try {
     const user = await userModel.getUserByUsername(username);
     console.log('👤 Usuario encontrado:', user ? 'Sí' : 'No'); // Debug
-    
+
     if (!user || user.estado !== 'Activo') {
       console.log('❌ Usuario inactivo o no encontrado'); // Debug
       return res.status(401).json({ message: 'Usuario o contraseña incorrectos o usuario inactivo' });
     }
-    
+
     const validPassword = await bcrypt.compare(password, user.contraseña);
     console.log('🔑 Contraseña válida:', validPassword); // Debug
-    
+
     if (!validPassword) {
       return res.status(401).json({ message: 'Usuario o contraseña incorrectos' });
     }
-    
+
     // Generar token JWT con información completa
     const token = jwt.sign({
       id_usuario: user.id_usuario,
@@ -32,7 +32,7 @@ exports.loginPanel = async (req, res) => {
       nombres: user.nombres,
       apellidos: user.apellidos,
       email: user.email
-    }, process.env.JWT_SECRET, { expiresIn: '12h' });
+    }, process.env.JWT_SECRET, { expiresIn: '2h' });
 
     console.log('✅ Token generado exitosamente'); // Debug
 

@@ -549,8 +549,9 @@ exports.setComponentesPack = async (req, res) => {
       }
     }
 
-    // Asegurar flag es_pack en el producto pack
-    if (!prod.es_pack) {
+    // Asegurar flag es_pack en el producto pack — SOLO si hay componentes
+    // Si el array viene vacío (producto simple limpiando componentes), NO forzar es_pack=TRUE
+    if (normalizados.length > 0 && !prod.es_pack) {
       await require('../db').query(`UPDATE producto SET es_pack = TRUE WHERE id_producto = $1`, [id_pack]);
     }
 

@@ -180,14 +180,39 @@
 
     // Cambiar estado del pedido
     window.cambiarEstado = function (idPedido, estadoActual) {
+        // Estado final: no se puede cambiar
+        if (estadoActual === 'Entregado') {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Estado final',
+                    text: 'Un pedido Entregado no puede modificar su estado.',
+                    confirmButtonColor: '#2E7D32'
+                });
+            } else {
+                alert('Un pedido Entregado no puede modificar su estado.');
+            }
+            return;
+        }
+
+        // Opciones válidas según estado actual
+        const transiciones = {
+            'Pendiente': ['Entregado', 'Cancelado'],
+            'Cancelado': ['Pendiente']
+        };
+        const opciones = transiciones[estadoActual] || [];
+
+        const select = document.getElementById('nuevoEstado');
+        select.innerHTML = opciones.map(op =>
+            `<option value="${op}">${op}</option>`
+        ).join('');
+        select.value = opciones[0] || '';
+
         document.getElementById('modalPedidoId').textContent = idPedido;
-        document.getElementById('nuevoEstado').value = estadoActual;
+        document.getElementById('btnConfirmarCambio').dataset.pedidoId = idPedido;
 
         const modal = new bootstrap.Modal(document.getElementById('modalCambiarEstado'));
         modal.show();
-
-        // Guardar el ID del pedido para usarlo al confirmar
-        document.getElementById('btnConfirmarCambio').dataset.pedidoId = idPedido;
     };
 
     // Confirmar cambio de estado

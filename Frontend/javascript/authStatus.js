@@ -57,14 +57,14 @@ async function fetchPerfil(token) {
     try {
       const r = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (r.ok) return pickUser(await r.json());
-    } catch (_) {}
+    } catch (_) { }
   }
   return null;
 }
 
 // -------- Logout --------
 function ensureLogout() {
-  ['token','token_cliente','cliente_token','cliente','cliente_data','perfil_cliente','user','usuario']
+  ['token', 'token_cliente', 'cliente_token', 'cliente', 'cliente_data', 'perfil_cliente', 'user', 'usuario']
     .forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
   window.location.href = '/html/loginagroconecta.html';
 }
@@ -96,7 +96,7 @@ async function initAuthUI() {
 
   // Reusar cache o pedir al backend
   let user = parseJSON(localStorage.getItem('cliente')) ||
-             parseJSON(localStorage.getItem('cliente_data'));
+    parseJSON(localStorage.getItem('cliente_data'));
   if (!user) user = await fetchPerfil(token);
 
   if (!user) {
@@ -147,3 +147,79 @@ function bindLogoutLinks() {
     a.addEventListener('click', (e) => { e.preventDefault(); ensureLogout(); });
   });
 }
+
+// ============================================================
+// 🔒 CONTROL DE EXPIRACIÓN DE SESIÓN (CLIENTE)
+// ============================================================
+
+function decodeJWTPayload(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(payload);
+  } catch { return null; }
+}
+
+let _sessionTimers = [];
+
+function clearSessionTimers() {
+  _sessionTimers.forEach(id => clearTimeout(id));
+  _sessionTimers = [];
+}
+
+function startSessionWatcher(token) {
+  clearSessionTimers();
+  const payload = decodeJWTPayload(token);
+  if (!payload || !payload.exp) return;
+
+  const expiresAt = payload.exp * 1000;
+  const msLeft = expiresAt - Date.now();
+  const WARNING_MS = 30 * 1000;
+
+  if (msLeft <= 0) { ensureLogout(); return; }
+
+  if (msLeft > WARNING_MS) {
+    _sessionTimers.push(setTimeout(() => mostrarAvisoExpiracion(30), msLeft - WARNING_MS));
+  } else {
+    mostrarAvisoExpiracion(Math.floor(msLeft / 1000));
+  }
+
+  _sessionTimers.push(setTimeout(() => ensureLogout(), msLeft));
+}
+
+function mostrarAvisoExpiracion(segundosRestantes) {
+  if (typeof Swal !== 'undefined') {
+    let segs = segundosRestantes;
+    let iv;
+    Swal.fire({
+      title: '⏰ Sesión por vencer',
+      html: `Tu sesión cerrará en <strong id="swal-countdown">${segs}</strong> segundos.<br><small class="text-muted">Serás redirigido al inicio de sesión.</small>`,
+      icon: 'warning',
+      showConfirmButton: true,
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#2E7D32',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      timer: segundosRestantes * 1000,
+      timerProgressBar: true,
+      didOpen: () => {
+        iv = setInterval(() => {
+          segs--;
+          const el = document.getElementById('swal-countdown');
+          if (el) el.textContent = Math.max(segs, 0);
+          if (segs <= 0) clearInterval(iv);
+        }, 1000);
+      },
+      willClose: () => clearInterval(iv)
+    });
+  } else {
+    alert(`Tu sesión expirará en ${segundosRestantes} segundos. Por favor guarda tu trabajo.`);
+  }
+}
+
+// Arrancar vigilante al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  const token = getToken();
+  if (token) startSessionWatcher(token);
+});

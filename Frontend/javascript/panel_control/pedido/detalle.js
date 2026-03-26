@@ -181,7 +181,32 @@
     // ========== CAMBIAR ESTADO ==========
     function abrirModalCambiarEstado() {
         if (!pedidoActual) return;
-        document.getElementById('nuevoEstado').value = pedidoActual.estado;
+
+        // Estado final: no se puede cambiar
+        if (pedidoActual.estado === 'Entregado') {
+            Swal.fire({
+                icon: 'info',
+                title: 'Estado final',
+                text: 'Un pedido Entregado no puede modificar su estado.',
+                confirmButtonColor: '#2E7D32'
+            });
+            return;
+        }
+
+        // Transiciones permitidas por estado actual
+        const transiciones = {
+            'Pendiente': ['Entregado', 'Cancelado'],
+            'Cancelado': ['Pendiente']
+        };
+        const opciones = transiciones[pedidoActual.estado] || [];
+
+        // Llenar el select solo con opciones válidas
+        const select = document.getElementById('nuevoEstado');
+        select.innerHTML = opciones.map(op =>
+            `<option value="${op}">${op}</option>`
+        ).join('');
+        select.value = opciones[0] || '';
+
         new bootstrap.Modal(document.getElementById('modalCambiarEstado')).show();
     }
 
@@ -429,6 +454,223 @@
             });
         });
     }
+
+    // ========== IMPRIMIR / PDF GUÍA DE REMISIÓN ==========
+
+    function construirHTMLGuia(paraPDF = false) {
+        if (!guiaActual || !pedidoActual) {
+            Swal.fire('Aviso', 'No hay guía de remisión disponible para imprimir.', 'warning');
+            return null;
+        }
+
+        const g = guiaActual;
+        const p = pedidoActual;
+
+        const formatFecha = (f) => f ? new Date(f).toLocaleDateString('es-PE', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
+        }) : '-';
+
+        const filasProductos = (p.items || []).map(it => `
+            <tr>
+                <td>${it.nombre_producto}</td>
+                <td style="text-align:center;">${it.cantidad}</td>
+                <td>${it.unidad_medida || '-'}</td>
+                <td style="text-align:right;">S/ ${parseFloat(it.precio_unitario).toFixed(2)}</td>
+                <td style="text-align:right;"><strong>S/ ${(it.cantidad * parseFloat(it.precio_unitario)).toFixed(2)}</strong></td>
+            </tr>
+        `).join('');
+
+        return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de Remisión #${g.id_guia}</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Arial, sans-serif; font-size: 12px; color: #1a1a1a; padding: 28px; }
+
+  /* Cabecera */
+  .header { display:flex; justify-content:space-between; align-items:flex-start;
+            border-bottom: 3px solid #2E7D32; padding-bottom: 14px; margin-bottom: 14px; }
+  .empresa-nombre { font-size:22px; font-weight:bold; color:#2E7D32; }
+  .empresa-sub { font-size:11px; color:#555; margin-top:3px; }
+  .guia-titulo { text-align:right; }
+  .guia-titulo h2 { font-size:18px; color:#2E7D32; font-weight:bold; }
+  .guia-titulo p { font-size:11px; color:#555; }
+  .badge-guia { background:#2E7D32; color:#fff; padding:4px 14px;
+                border-radius:20px; font-size:13px; font-weight:bold; display:inline-block; margin-top:4px; }
+
+  /* Bloques de info */
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+  .info-box { border:1px solid #d4edda; border-radius:8px; padding:12px; background:#f9fff9; }
+  .info-box h4 { font-size:11px; color:#2E7D32; font-weight:bold; text-transform:uppercase;
+                 letter-spacing:.5px; margin-bottom:8px; border-bottom:1px solid #d4edda; padding-bottom:5px; }
+  .info-row { display:flex; margin-bottom:5px; }
+  .info-label { font-weight:bold; width:120px; flex-shrink:0; color:#333; }
+  .info-value { color:#111; }
+
+  /* Tabla de productos */
+  .section-title { font-size:13px; font-weight:bold; color:#2E7D32; margin:14px 0 8px;
+                   padding-bottom:5px; border-bottom:2px solid #d4edda; }
+  table { width:100%; border-collapse:collapse; margin-bottom:14px; }
+  thead { background:#2E7D32; color:#fff; }
+  thead th { padding:7px 10px; text-align:left; font-size:11px; font-weight:bold; }
+  tbody tr:nth-child(even) { background:#f5fdf5; }
+  tbody td { padding:6px 10px; border-bottom:1px solid #e8f5e9; vertical-align:middle; }
+  tfoot td { padding:7px 10px; font-weight:bold; background:#e8f5e9; }
+
+  /* Firma */
+  .firma-section { margin-top:28px; display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+  .firma-box { text-align:center; }
+  .firma-linea { border-top:1.5px solid #333; width:80%; margin:0 auto 6px; padding-top:6px; }
+  .firma-nombre { font-weight:bold; font-size:12px; }
+  .firma-cargo { font-size:10px; color:#555; }
+  .firma-espacio { height:55px; }
+
+  /* Footer */
+  .doc-footer { margin-top:20px; border-top:1px solid #ccc; padding-top:8px;
+                font-size:10px; color:#888; text-align:center; }
+
+  /* PDF: ocultar botones */
+  .no-print { display:none !important; }
+</style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <div class="header">
+    <div>
+      <div class="empresa-nombre">🌱 AgroConecta</div>
+      <div class="empresa-sub">Pitahaya Perú S.A.C. | RUC: 20XXXXXXXXX</div>
+      <div class="empresa-sub">Asc. Popular Lomas De Ancón Mz. 44 Lote 24, Lima</div>
+    </div>
+    <div class="guia-titulo">
+      <h2>GUÍA DE REMISIÓN</h2>
+      <div class="badge-guia">N.° ${g.id_guia}</div>
+      <p style="margin-top:6px;">Fecha de emisión: <strong>${formatFecha(g.fecha_envio)}</strong></p>
+    </div>
+  </div>
+
+  <!-- INFO GRID -->
+  <div class="info-grid">
+    <div class="info-box">
+      <h4>📦 Información del Envío</h4>
+      <div class="info-row"><span class="info-label">Transportista:</span><span class="info-value">${g.transportista_nombre || '-'}</span></div>
+      <div class="info-row"><span class="info-label">RUC:</span><span class="info-value">${g.transportista_ruc || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Vehículo:</span><span class="info-value">${g.placa || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Pedido N.°:</span><span class="info-value">#${p.id_pedido}</span></div>
+    </div>
+    <div class="info-box">
+      <h4>📍 Ruta de Entrega</h4>
+      <div class="info-row"><span class="info-label">Punto Partida:</span><span class="info-value">${g.punto_partida || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Punto Llegada:</span><span class="info-value">${g.punto_llegada || '-'}</span></div>
+    </div>
+    <div class="info-box">
+      <h4>👤 Destinatario</h4>
+      <div class="info-row"><span class="info-label">Cliente:</span><span class="info-value"><strong>${p.nombre_cliente || '-'}</strong></span></div>
+      <div class="info-row"><span class="info-label">Documento:</span><span class="info-value">${p.numero_documento || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Teléfono:</span><span class="info-value">${p.telefono || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Dirección:</span><span class="info-value">${p.direccion || '-'}</span></div>
+    </div>
+    <div class="info-box">
+      <h4>💳 Pago</h4>
+      <div class="info-row"><span class="info-label">Tipo de Pago:</span><span class="info-value">${p.tipo_pago || '-'}</span></div>
+      <div class="info-row"><span class="info-label">Total:</span><span class="info-value"><strong>S/ ${parseFloat(p.total || 0).toFixed(2)}</strong></span></div>
+    </div>
+  </div>
+
+  <!-- PRODUCTOS -->
+  <div class="section-title">🛒 Detalle de Productos</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th style="text-align:center;width:70px;">Cantidad</th>
+        <th style="width:80px;">Unidad</th>
+        <th style="text-align:right;width:100px;">P. Unitario</th>
+        <th style="text-align:right;width:100px;">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>${filasProductos}</tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" style="text-align:right;">TOTAL:</td>
+        <td style="text-align:right;">S/ ${parseFloat(p.total || 0).toFixed(2)}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <!-- FIRMA -->
+  <div class="firma-section">
+    <div class="firma-box">
+      <div class="firma-espacio"></div>
+      <div class="firma-linea">
+        <div class="firma-nombre">Responsable de Entrega</div>
+        <div class="firma-cargo">AgroConecta / Transportista</div>
+      </div>
+    </div>
+    <div class="firma-box">
+      <div class="firma-espacio"></div>
+      <div class="firma-linea">
+        <div class="firma-nombre">${p.nombre_cliente || 'Cliente'}</div>
+        <div class="firma-cargo">DNI / Firma de Conformidad</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="doc-footer">
+    Documento generado por AgroConecta &bull; Guía N.° ${g.id_guia} &bull; ${formatFecha(new Date())}
+  </div>
+
+</body>
+</html>`;
+    }
+
+    window.imprimirGuia = function () {
+        const html = construirHTMLGuia();
+        if (!html) return;
+        const win = window.open('', '_blank', 'width=900,height=700');
+        win.document.write(html);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { win.print(); }, 600);
+    };
+
+    window.descargarGuiaPDF = function () {
+        const html = construirHTMLGuia(true);
+        if (!html) return;
+
+        // Usar html2pdf.js via CDN si está disponible, si no fallback a print-to-PDF
+        if (typeof html2pdf !== 'undefined') {
+            const container = document.createElement('div');
+            container.innerHTML = html;
+            document.body.appendChild(container);
+            html2pdf().set({
+                margin: [10, 10, 10, 10],
+                filename: `Guia_Remision_${guiaActual.id_guia}.pdf`,
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(container).save().then(() => document.body.removeChild(container));
+        } else {
+            // Fallback: abrir ventana e indicar al usuario que guarde como PDF
+            const win = window.open('', '_blank', 'width=900,height=700');
+            win.document.write(html);
+            win.document.close();
+            win.focus();
+            setTimeout(() => {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Guardar como PDF',
+                    html: 'En el diálogo de impresión:<br><strong>Destino → Guardar como PDF</strong>',
+                    confirmButtonColor: '#2E7D32',
+                    timer: 3500
+                });
+                win.print();
+            }, 600);
+        }
+    };
+
+    // ========== FIN PRINT / PDF ==========
 
     // Ejecutar inmediatamente
     init();

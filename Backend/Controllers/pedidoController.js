@@ -6,9 +6,9 @@ exports.crear = async (req, res) => {
     // Obtener ID del cliente desde el middleware de autenticación
     const id_cliente = req.cliente?.id_cliente || req.user?.id_cliente || req.body.id_cliente;
     if (!id_cliente) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No autenticado. Inicia sesión para continuar.' 
+        message: 'No autenticado. Inicia sesión para continuar.'
       });
     }
 
@@ -30,10 +30,10 @@ exports.crear = async (req, res) => {
     }
 
     // Crear pedido con comprobante
-    const resultado = await pedidoModel.crearPedidoConComprobante({ 
-      id_cliente, 
-      id_tipo_pago, 
-      items 
+    const resultado = await pedidoModel.crearPedidoConComprobante({
+      id_cliente,
+      id_tipo_pago,
+      items
     });
 
     // Respuesta exitosa con datos completos para el comprobante
@@ -53,9 +53,9 @@ exports.crear = async (req, res) => {
 
   } catch (error) {
     console.error('Error al crear pedido:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: error.message || 'Error interno del servidor al crear el pedido' 
+      message: error.message || 'Error interno del servidor al crear el pedido'
     });
   }
 };
@@ -65,14 +65,14 @@ exports.listarPorCliente = async (req, res) => {
   try {
     const id_cliente = req.cliente?.id_cliente || req.user?.id_cliente;
     if (!id_cliente) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No autenticado' 
+        message: 'No autenticado'
       });
     }
 
     const pedidos = await pedidoModel.obtenerPedidosPorCliente(id_cliente);
-    
+
     res.json({
       success: true,
       pedidos: pedidos
@@ -80,9 +80,9 @@ exports.listarPorCliente = async (req, res) => {
 
   } catch (error) {
     console.error('Error al listar pedidos:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al obtener los pedidos' 
+      message: 'Error al obtener los pedidos'
     });
   }
 };
@@ -94,9 +94,9 @@ exports.obtenerDetalle = async (req, res) => {
     const { id_pedido } = req.params;
 
     if (!id_cliente) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No autenticado' 
+        message: 'No autenticado'
       });
     }
 
@@ -108,7 +108,7 @@ exports.obtenerDetalle = async (req, res) => {
     }
 
     const detalle = await pedidoModel.obtenerDetallePedido(id_pedido, id_cliente);
-    
+
     if (!detalle) {
       return res.status(404).json({
         success: false,
@@ -123,9 +123,9 @@ exports.obtenerDetalle = async (req, res) => {
 
   } catch (error) {
     console.error('Error al obtener detalle del pedido:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al obtener el detalle del pedido' 
+      message: 'Error al obtener el detalle del pedido'
     });
   }
 };
@@ -143,8 +143,41 @@ exports.actualizarEstado = async (req, res) => {
       });
     }
 
+    // Validar que el estado nuevo sea reconocido
+    const estadosValidos = ['Pendiente', 'Entregado', 'Cancelado'];
+    if (!estadosValidos.includes(estado)) {
+      return res.status(400).json({
+        success: false,
+        message: `Estado inválido. Debe ser: ${estadosValidos.join(', ')}`
+      });
+    }
+
+    // Obtener el estado actual del pedido
+    const pedidoActual = await pedidoModel.obtenerEstadoPedido(id_pedido);
+    if (!pedidoActual) {
+      return res.status(404).json({ success: false, message: 'Pedido no encontrado' });
+    }
+
+    // Reglas de transición
+    const transicionesPermitidas = {
+      'Pendiente': ['Entregado', 'Cancelado'],
+      'Entregado': [],                          // estado final — no se puede cambiar
+      'Cancelado': ['Pendiente']
+    };
+
+    const permitidas = transicionesPermitidas[pedidoActual.estado] || [];
+    if (!permitidas.includes(estado)) {
+      return res.status(400).json({
+        success: false,
+        message: `No se puede cambiar de "${pedidoActual.estado}" a "${estado}".`
+          + (pedidoActual.estado === 'Entregado'
+            ? ' Un pedido entregado es un estado final y no puede modificarse.'
+            : '')
+      });
+    }
+
     const resultado = await pedidoModel.actualizarEstadoPedido(id_pedido, estado);
-    
+
     if (!resultado) {
       return res.status(404).json({
         success: false,
@@ -159,9 +192,9 @@ exports.actualizarEstado = async (req, res) => {
 
   } catch (error) {
     console.error('Error al actualizar estado del pedido:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al actualizar el estado del pedido' 
+      message: 'Error al actualizar el estado del pedido'
     });
   }
 };
@@ -170,7 +203,7 @@ exports.actualizarEstado = async (req, res) => {
 exports.listarTodos = async (req, res) => {
   try {
     const { page = 1, limit = 10, estado, fecha_inicio, fecha_fin } = req.query;
-    
+
     const filtros = {
       page: parseInt(page),
       limit: parseInt(limit),
@@ -180,7 +213,7 @@ exports.listarTodos = async (req, res) => {
     };
 
     const resultado = await pedidoModel.obtenerTodosPedidos(filtros);
-    
+
     res.json({
       success: true,
       pedidos: resultado.pedidos,
@@ -191,9 +224,9 @@ exports.listarTodos = async (req, res) => {
 
   } catch (error) {
     console.error('Error al listar todos los pedidos:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al obtener los pedidos' 
+      message: 'Error al obtener los pedidos'
     });
   }
 };
@@ -205,9 +238,9 @@ exports.cancelar = async (req, res) => {
     const { id_pedido } = req.params;
 
     if (!id_cliente) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No autenticado' 
+        message: 'No autenticado'
       });
     }
 
@@ -219,7 +252,7 @@ exports.cancelar = async (req, res) => {
     }
 
     const resultado = await pedidoModel.cancelarPedido(id_pedido, id_cliente);
-    
+
     if (!resultado) {
       return res.status(404).json({
         success: false,
@@ -234,9 +267,9 @@ exports.cancelar = async (req, res) => {
 
   } catch (error) {
     console.error('Error al cancelar pedido:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: error.message || 'Error al cancelar el pedido' 
+      message: error.message || 'Error al cancelar el pedido'
     });
   }
 };
@@ -248,9 +281,9 @@ exports.obtenerComprobante = async (req, res) => {
     const { id_pedido } = req.params;
 
     if (!id_cliente) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No autenticado' 
+        message: 'No autenticado'
       });
     }
 
@@ -262,7 +295,7 @@ exports.obtenerComprobante = async (req, res) => {
     }
 
     const comprobante = await pedidoModel.obtenerComprobantePedido(id_pedido, id_cliente);
-    
+
     if (!comprobante) {
       return res.status(404).json({
         success: false,
@@ -277,9 +310,9 @@ exports.obtenerComprobante = async (req, res) => {
 
   } catch (error) {
     console.error('Error al obtener comprobante:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al obtener el comprobante' 
+      message: 'Error al obtener el comprobante'
     });
   }
 };
@@ -288,9 +321,9 @@ exports.obtenerComprobante = async (req, res) => {
 exports.obtenerEstadisticas = async (req, res) => {
   try {
     const { periodo = 'mes' } = req.query; // dia, semana, mes, año
-    
+
     const estadisticas = await pedidoModel.obtenerEstadisticasPedidos(periodo);
-    
+
     res.json({
       success: true,
       estadisticas: estadisticas
@@ -298,9 +331,9 @@ exports.obtenerEstadisticas = async (req, res) => {
 
   } catch (error) {
     console.error('Error al obtener estadísticas:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error al obtener las estadísticas' 
+      message: 'Error al obtener las estadísticas'
     });
   }
 };

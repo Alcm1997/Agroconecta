@@ -26,9 +26,91 @@ window.initRegistrarProducto = async function () {
     const id_unidad = document.getElementById('id_unidad');
     const stock = document.getElementById('stock');
     const precio_unitario = document.getElementById('precio_unitario');
-    const imagen_url = document.getElementById('imagen_url');
+    const imagen_url = document.getElementById('imagen_url');       // hidden
+    const fileInput = document.getElementById('fileInput');
+    const uploadZone = document.getElementById('uploadZone');
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const previewImg = document.getElementById('previewImagen');
+    const uploadError = document.getElementById('uploadError');
+    const uploadSuccess = document.getElementById('uploadSuccess');
+    const uploadLoading = document.getElementById('uploadLoading');
     const es_pack = document.getElementById('es_pack');
     const btnVolver = document.getElementById('btnVolverProductos');
+
+    // ===== UPLOADER =====
+    function mostrarPreview(src) {
+        previewImg.src = src;
+        previewImg.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+    }
+    function resetPreview() {
+        previewImg.style.display = 'none';
+        previewImg.src = '';
+        uploadPlaceholder.style.display = 'flex';
+        imagen_url.value = '';
+        uploadSuccess.style.display = 'none';
+        uploadError.style.display = 'none';
+    }
+    function mostrarError(msg) {
+        uploadError.textContent = msg;
+        uploadError.style.display = 'block';
+        uploadSuccess.style.display = 'none';
+    }
+    async function procesarArchivo(file) {
+        if (!file || !file.type.startsWith('image/')) {
+            mostrarError('Solo se permiten archivos de imagen.');
+            return;
+        }
+        // Validar cuadrado con Image
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = async () => {
+            URL.revokeObjectURL(objectUrl);
+            if (img.naturalWidth !== img.naturalHeight) {
+                mostrarError(`La imagen debe ser cuadrada. La tuya es ${img.naturalWidth}×${img.naturalHeight} px.`);
+                resetPreview();
+                return;
+            }
+            // Mostrar preview local antes de subir
+            const reader = new FileReader();
+            reader.onload = e => mostrarPreview(e.target.result);
+            reader.readAsDataURL(file);
+            uploadError.style.display = 'none';
+            // Subir al servidor
+            uploadLoading.style.display = 'block';
+            uploadSuccess.style.display = 'none';
+            try {
+                const fd = new FormData();
+                fd.append('imagen', file);
+                const res = await fetch('/api/panel/upload/producto-imagen', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: fd
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || 'Error al subir');
+                imagen_url.value = data.url;
+                uploadSuccess.style.display = 'block';
+            } catch (err) {
+                mostrarError('Error al subir la imagen: ' + err.message);
+                resetPreview();
+            } finally {
+                uploadLoading.style.display = 'none';
+            }
+        };
+        img.onerror = () => { URL.revokeObjectURL(objectUrl); mostrarError('No se pudo leer la imagen.'); };
+        img.src = objectUrl;
+    }
+    if (fileInput) fileInput.addEventListener('change', e => { if (e.target.files[0]) procesarArchivo(e.target.files[0]); });
+    if (uploadZone) {
+        uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault(); uploadZone.classList.remove('drag-over');
+            if (e.dataTransfer.files[0]) procesarArchivo(e.dataTransfer.files[0]);
+        });
+    }
+    // ===== FIN UPLOADER =====
 
     const descuentosContainer = document.getElementById('descuentosContainer');
     const btnAddDescuento = document.getElementById('btnAddDescuento');

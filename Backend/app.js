@@ -36,6 +36,7 @@ const asesoriaRoutes = require('./Routes/asesoriaRoutes');
 const transporteRoutes = require('./Routes/transporteRoutes');
 const guiaRemisionRoutes = require('./Routes/guiaRemisionRoutes');
 const reporteRoutes = require('./Routes/reporteRoutes');
+const uploadRoutes = require('./Routes/uploadRoutes');
 
 
 
@@ -66,6 +67,8 @@ app.use('/api/panel/transporte', transporteRoutes);
 app.use('/api/panel/guias', guiaRemisionRoutes);
 // Reportes
 app.use('/api/panel/reportes', reporteRoutes);
+// Subida de imágenes
+app.use('/api/panel/upload', uploadRoutes);
 
 
 // ✅ RUTA PRINCIPAL: SERVIR agroconecta.html
@@ -129,6 +132,9 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
+
+// Exportar para pruebas con supertest
+module.exports = app;
 
 app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);

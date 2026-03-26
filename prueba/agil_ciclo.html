@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; background-color: #f4f4f4; }
+        .diagram-container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 50px; }
+        h2 { color: #2c3e50; border-bottom: 2px solid #27ae60; padding-bottom: 10px; }
+        
+        /* Gráfico 1: Espectro */
+        .spectrum { display: flex; align-items: center; justify-content: space-between; position: relative; margin: 40px 0; height: 60px; background: linear-gradient(90deg, #3498db, #9b59b6, #2ecc71); border-radius: 30px; }
+        .spectrum-label { color: white; font-weight: bold; padding: 0 30px; z-index: 2; }
+        .arrow-indicator { position: absolute; top: -15px; right: 5%; color: #e74c3c; font-size: 40px; }
+        .spectrum-sub { text-align: center; font-size: 0.9em; color: #7f8c8d; margin-top: 10px; }
+
+        /* Gráfico 2: Iteraciones */
+        .iteration-flow { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .vision-box { background: #34495e; color: white; padding: 20px; border-radius: 8px; width: 150px; text-align: center; }
+        .iter-circle { width: 120px; height: 120px; border: 6px solid #27ae60; border-radius: 50%; border-top-color: transparent; display: flex; align-items: center; justify-content: center; font-weight: bold; position: relative; }
+        .iter-circle::after { content: '➔'; position: absolute; top: -15px; right: 20px; font-size: 24px; color: #27ae60; }
+        .feedback-box { background: #ecf0f1; border: 1px dashed #7f8c8d; padding: 10px; font-size: 0.8em; margin-top: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="diagram-container">
+        <h2>Figura 1: Enfoque de Desarrollo de AgroConecta</h2>
+        <div class="spectrum">
+            <span class="spectrum-label">Predictivo</span>
+            <span class="spectrum-label">Híbrido</span>
+            <span class="spectrum-label" style="background: rgba(0,0,0,0.2); border-radius: 20px; padding: 5px 20px;">Adaptativo (Ágil)</span>
+            <div class="arrow-indicator">▼</div>
+        </div>
+        <div class="spectrum-sub">Cada vez más Iterativo e Incremental</div>
+    </div>
+
+    <div class="diagram-container">
+        <h2>Figura 2: Ciclo de Vida Adaptativo del Software</h2>
+        <div class="iteration-flow">
+            <div class="vision-box">Definir Visión:<br><strong>AgroConecta</strong></div>
+            <div style="font-size: 30px;">➔</div>
+            <div>
+                <div class="iter-circle">Iteración 1<br>(MVP)</div>
+                <div class="feedback-box">Retroalimentación<br>Trabajo Pendiente<br>Priorización</div>
+            </div>
+            <div style="font-size: 30px;">➔</div>
+            <div>
+                <div class="iter-circle" style="border-color: #2980b9;">Iteración 2<br>(E-commerce)</div>
+                <div class="feedback-box">Retroalimentación<br>Priorización Técnica</div>
+            </div>
+            <div style="font-size: 30px;">➔</div>
+            <div>
+                <div class="iter-circle" style="border-color: #8e44ad;">Iteración 3<br>(Dashboard)</div>
+                <div class="feedback-box">Validación Final<br>Cierre Sprint</div>
+            </div>
+            <div style="font-size: 30px;">➔</div>
+            <div class="vision-box" style="background: #27ae60;">Despliegue y<br>Producción</div>
+        </div>
+    </div>
+
+</body>
+</html>

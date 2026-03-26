@@ -33,101 +33,78 @@
         </div>
     </div>
 
-    <!-- Futuras configuraciones -->
-    <div class="col-md-6 mb-4">
-        <div class="config-card disabled">
-            <div class="config-icon bg-warning">
-                <i class="fas fa-truck"></i>
-            </div>
-            <h5>Transportistas</h5>
-            <p>Configuración de empresas de transporte</p>
-            <span class="badge bg-secondary">Próximamente</span>
-        </div>
-    </div>
 
-    <div class="col-md-6 mb-4">
-        <div class="config-card disabled">
-            <div class="config-icon bg-info">
-                <i class="fas fa-percentage"></i>
-            </div>
-            <h5>Descuentos</h5>
-            <p>Configuración de descuentos y promociones</p>
-            <span class="badge bg-secondary">Próximamente</span>
-        </div>
-    </div>
-</div>
+    <style>
+        .config-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem 1.5rem;
+            height: 180px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
 
-<style>
-.config-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    height: 180px;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
+        .config-card:not(.disabled):hover {
+            transform: translateY(-4px);
+            border-color: #2E7D32;
+            box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
+        }
 
-.config-card:not(.disabled):hover {
-    transform: translateY(-4px);
-    border-color: #2E7D32;
-    box-shadow: 0 8px 24px rgba(46, 125, 50, 0.15);
-}
+        .config-card.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #f8f9fa;
+        }
 
-.config-card.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: #f8f9fa;
-}
+        .config-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: #fff;
+        }
 
-.config-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
-    font-size: 1.5rem;
-    color: #fff;
-}
+        .config-card h5 {
+            color: #2E7D32;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
 
-.config-card h5 {
-    color: #2E7D32;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-}
+        .config-card p {
+            color: #6c757d;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
 
-.config-card p {
-    color: #6c757d;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    margin-bottom: 1rem;
-}
+        .config-arrow {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            color: #2E7D32;
+            opacity: 0;
+            transition: 0.3s;
+        }
 
-.config-arrow {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    color: #2E7D32;
-    opacity: 0;
-    transition: 0.3s;
-}
+        .config-card:not(.disabled):hover .config-arrow {
+            opacity: 1;
+        }
 
-.config-card:not(.disabled):hover .config-arrow {
-    opacity: 1;
-}
-
-.badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    font-size: 0.75rem;
-}
-</style>
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+        }
+    </style>
