@@ -1,45 +1,39 @@
 # 🌿 AgroConecta - Pitahaya Perú
 
-Sistema integral de comercio electrónico y gestión para la venta de productos agrícolas, especializado en el cultivo de Pitahaya.
+Sistema integral de gestión empresarial (ERP) y comercio electrónico (SPA) especializado en la comercialización y logística de productos agrícolas.
 
+![SPA Architecture](https://img.shields.io/badge/Architecture-SPA-FF69B4?style=flat-square)
+![ERP System](https://img.shields.io/badge/System-Admin_ERP-blue?style=flat-square)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=flat&logo=bootstrap&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange?style=flat&logo=jsonwebtokens)
 
 ---
 
-## 📋 Descripción
+## 📋 Descripción del Sistema
 
-AgroConecta es una plataforma web full-stack diseñada para la comercialización de productos agrícolas. Incluye tienda online, panel de administración, gestión de pedidos, generación de guías de remisión y dashboard de reportes.
+AgroConecta no es solo una tienda en línea; es un ecosistema digital completo que integra la experiencia de compra del cliente final con las operaciones críticas de negocio de **Pitahaya Perú**. 
+
+El sistema está dividido en dos portales independientes pero sincronizados:
+1.  **Portal del Cliente:** Una aplicación de página única (SPA) rápida y segura.
+2.  **Panel de Control Administrativo:** Una herramienta de gestión interna para control de ventas, inventario y logística.
 
 ---
 
-## ✨ Funcionalidades Principales
+## ✨ Módulos Principales
 
-### 🛒 Tienda Online E-commerce
-- Catálogo de productos por categorías (Fertilizantes, Esquejes, Packs, Frutas)
-- Carrito de compras persistente
-- Sistema de descuentos por volumen
-- Checkout con generación de comprobantes
+### 🛒 Portal del Cliente (B2C Experience)
+*   **Navegación SPA:** Router personalizado en JavaScript Vanilla para transiciones instantáneas sin recargas.
+*   **Seguridad Avanzada:** Flujo de autenticación con JWT, medidor de fortaleza de contraseñas en tiempo real y recuperación vía email.
+*   **E-commerce dinámico:** Catálogo categorizado, carrito de compras sincronizado y proceso de checkout fluido.
+*   **Centro de Asesoría:** Módulo de consultas técnicas directas para soporte en el cultivo de pitahaya.
 
-### 📦 Gestión de Pedidos y Logística
-- Seguimiento de estados (Pendiente → Entregado → Cancelado)
-- Generación de Guías de Remisión
-- Gestión de transportistas y vehículos
-- Control de puntos de origen/destino
-
-### 📊 Dashboard de Reportes
-- KPIs en tiempo real (ventas, pedidos, clientes)
-- Gráficos interactivos con Chart.js
-- Top productos más vendidos
-- Top clientes por volumen de compra
-
-### 👥 Gestión de Clientes
-- Registro de clientes (Natural y Jurídica)
-- Sistema de asesorías gratuitas
-- Segmentación por ubicación geográfica
+### 🖥️ Panel Administrativo (ERP Operations)
+*   **Dashboard de Inteligencia:** Gráficos estadísticos e interactivos (Chart.js) para monitoreo de ventas y KPIs.
+*   **Gestión Logística:** Módulo completo de Guías de Remisión, control de transportistas y unidades de medida.
+*   **Control de Inventario:** Gestión avanzada de productos (CRUD) con carga de medios y categorías.
+*   **Gestión de Ventas:** Seguimiento detallado de pedidos, estados de entrega y facturación.
+*   **Trazabilidad:** Sistema de respuesta a asesorías con registro del administrador responsable.
 
 ---
 
@@ -47,108 +41,61 @@ AgroConecta es una plataforma web full-stack diseñada para la comercialización
 
 | Capa | Tecnología |
 |------|------------|
-| **Backend** | Node.js, Express.js |
-| **Base de Datos** | PostgreSQL |
-| **Frontend** | HTML5, CSS3, JavaScript, Bootstrap 5 |
-| **Autenticación** | JWT (JSON Web Tokens) |
-| **Gráficos** | Chart.js |
-| **Alertas** | SweetAlert2 |
+| **Backend** | Node.js & Express.js |
+| **Base de Datos** | PostgreSQL (Relacional) |
+| **Frontend Tienda** | Vanilla JavaScript (SPA), HTML5, CSS3 |
+| **Diseño** | Bootstrap 5, Google Fonts, Font Awesome |
+| **Autenticación** | JWT (JSON Web Tokens) & Bcrypt |
+| **Comunicación** | Nodemailer (SMTP Service) |
+| **Visualización** | Chart.js & SweetAlert2 |
 
 ---
 
-## 🚀 Instalación
+## 🚀 Instalación y Configuración
 
 ### Prerrequisitos
-- Node.js v18+
-- PostgreSQL 14+
-- npm o yarn
+- Node.js v18 o superior.
+- PostgreSQL 14 o superior.
 
-### Pasos
+### Pasos para ejecución local
 
-1. **Clonar el repositorio**
-```bash
-git clone https://github.com/Alcm1997/Agroconecta.git
-cd Agroconecta
-```
+1.  **Clonar el repositorio**
+    ```bash
+    git clone https://github.com/Alcm1997/Agroconecta.git
+    cd Agroconecta
+    ```
 
-2. **Instalar dependencias del backend**
-```bash
-cd Backend
-npm install
-```
+2.  **Configurar el Backend**
+    ```bash
+    cd Backend
+    npm install
+    cp .env.example .env # Configura tus credenciales de BD y Gmail
+    ```
 
-3. **Configurar variables de entorno**
-```bash
-cp .env.example .env
-# Editar .env con tus credenciales
-```
+3.  **Preparar la Base de Datos**
+    *   Crear una base de datos en PostgreSQL llamada `agroconecta`.
+    *   Ejecutar el script SQL incluido:
+    ```bash
+    psql -U tu_usuario -d agroconecta -f AgroConecta.sql
+    ```
 
-4. **Crear la base de datos**
-```bash
-# En PostgreSQL, ejecutar el script:
-psql -U postgres -f AgroConecta.sql
-```
-
-5. **Iniciar el servidor**
-```bash
-npm start
-```
-
-6. **Acceder a la aplicación**
-```
-http://localhost:3001
-```
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-Agroconecta/
-├── Backend/
-│   ├── Controllers/     # Lógica de negocio
-│   ├── Models/          # Consultas a BD
-│   ├── Routes/          # Endpoints API
-│   ├── Middleware/      # Autenticación JWT
-│   └── app.js           # Punto de entrada
-├── Frontend/
-│   ├── html/            # Páginas HTML
-│   ├── javascript/      # Scripts JS
-│   ├── css/             # Estilos
-│   └── icono/           # Assets
-└── AgroConecta.sql      # Script de BD
-```
-
----
-
-## 🔐 Credenciales de Prueba
-
-| Rol | Usuario | Contraseña |
-|-----|---------|------------|
-| Admin | admin | admin123 |
-
----
-
-## 📸 Screenshots
-
-### Tienda Online
-*Catálogo de productos con carrito de compras*
-
-### Panel de Administración
-*Dashboard con métricas y gestión de pedidos*
-
-### Reportes
-*Gráficos de ventas y KPIs*
+4.  **Iniciar el Sistema**
+    ```bash
+    npm start
+    ```
+    *   Tienda: `http://localhost:3001/`
+    *   Admin: `http://localhost:3001/login-panel`
 
 ---
 
 ## 👨‍💻 Autor
 
 **Alberto Carrillo Millones**
-- GitHub: [@Alcm1997](https://github.com/Alcm1997)
+- **GitHub:** [@Alcm1997](https://github.com/Alcm1997)
+- **Proyecto:** AgroConecta - Pitahaya Perú
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT.
+Este proyecto está bajo la Licencia MIT - Consulta el archivo [LICENSE](LICENSE) para más detalles.
