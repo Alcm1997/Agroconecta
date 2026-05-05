@@ -66,7 +66,7 @@ async function enviarCodigoRecuperacion() {
         });
 
         // Enviar solicitud al backend
-        const response = await fetch('http://localhost:3001/api/recovery/send-code', {
+        const response = await fetch('/api/recovery/send-code', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -92,6 +92,10 @@ async function enviarCodigoRecuperacion() {
                 confirmButtonColor: '#E91E63',
                 allowOutsideClick: false
             }).then(() => {
+                // GUARDAR TIMESTAMP DE EXPIRACIÓN (10 minutos a futuro)
+                const expirationTime = Date.now() + (10 * 60 * 1000);
+                sessionStorage.setItem('recoveryExpiration', expirationTime);
+
                 // Redirigir a la página de ingreso de código
                 window.location.href = `/verificar-codigo?email=${encodeURIComponent(email)}`;
             });

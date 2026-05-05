@@ -279,7 +279,7 @@
 
         container.innerHTML = products.map(p => `
       <div class="col-md-3">
-        <a href="/html/producto_detalle.html?id=${p.id_producto}" class="text-decoration-none">
+        <a href="/producto?id=${p.id_producto}" class="text-decoration-none">
           <div class="card related-product h-100">
             <img src="${p.imagen_url || '/icono/favicon-96x96.png'}" 
                  class="card-img-top" 
@@ -338,7 +338,8 @@
     }
 
     // Inicializar
-    document.addEventListener('DOMContentLoaded', () => {
+    // Función de inicialización
+    const initProduct = () => {
         loadProduct();
         updateCartBadge();
 
@@ -346,9 +347,16 @@
         const cartBtn = document.getElementById('cartButton');
         if (cartBtn) {
             cartBtn.addEventListener('click', () => {
-                window.location.href = '/html/checkout.html';
+                window.navigateTo('/checkout');
             });
         }
-    });
+    };
+
+    // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initProduct);
+    } else {
+        initProduct();
+    }
 
 })();

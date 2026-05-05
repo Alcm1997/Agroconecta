@@ -1,0 +1,142 @@
+/* ============================================================
+   verificar.css — Página: Verificar Código
+   Estilos específicos de verificarcodigoagroconecta.html
+   ============================================================ */
+
+/* Reset total — elimina bordes blancos del navegador */
+html, body {
+  margin:     0 !important;
+  padding:    0 !important;
+  border:     none !important;
+  outline:    none !important;
+  overflow-x: hidden;
+}
+
+.container {
+  display:         flex;
+  justify-content: center;
+  align-items:     center;
+  min-height:      calc(100vh - 64px); /* resta la altura del navbar */
+  width:           100%;
+  padding-top:     100px; /* Mas espacio para que no este pegado al navbar */
+  padding-bottom:  40px;  /* aire en la parte inferior */
+}
+
+.verificar-card { max-width: 450px; text-align: center; }
+
+/* Email enviado */
+.email-enviado {
+  background:    rgba(233, 30, 99, 0.10);
+  border:        1px solid rgba(233, 30, 99, 0.30);
+  border-radius: 10px;
+  padding:       15px;
+  margin-bottom: 20px;
+}
+.email-texto { color: var(--color-primary); font-weight: 600; margin: 0; }
+
+/* Input del código */
+.codigo-input {
+  font-size:     1.5rem;
+  text-align:    center;
+  letter-spacing:5px;
+  font-weight:   600;
+  border:        2px solid #ddd;
+  border-radius: 10px;
+  padding:       15px;
+  margin-bottom: 20px;
+}
+.codigo-input:focus {
+  border-color: var(--color-primary);
+  box-shadow:   0 0 0 0.2rem var(--color-primary-shadow);
+}
+
+/* Timer */
+.timer-container {
+  background:    rgba(255, 193, 7, 0.10);
+  border:        1px solid rgba(255, 193, 7, 0.30);
+  border-radius: var(--radius-sm);
+  padding:       10px;
+  margin-bottom: 20px;
+}
+.timer-text { color: #F57C00; font-weight: 600; margin: 0; }
+
+/* Botones de acción */
+.btn-verificar {
+  background:    linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  border:        none;
+  color:         white;
+  font-weight:   600;
+  font-size:     1.1rem;
+  border-radius: 10px;
+  padding:       12px 0;
+  width:         100%;
+  margin-bottom: 15px;
+  transition:    var(--transition-base);
+}
+.btn-verificar:hover {
+  background:  linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
+  transform:   translateY(-2px);
+}
+.btn-reenviar {
+  background:    transparent;
+  border:        2px solid var(--color-muted);
+  color:         var(--color-muted);
+  font-weight:   500;
+  border-radius: var(--radius-sm);
+  padding:       8px 20px;
+  margin:        0 10px;
+  transition:    var(--transition-base);
+}
+.btn-reenviar:hover { background: var(--color-muted); color: white; }
+
+.btn-volver {
+  background:    transparent;
+  border:        2px solid var(--color-primary);
+  color:         var(--color-primary);
+  font-weight:   500;
+  border-radius: var(--radius-sm);
+  padding:       8px 20px;
+  margin:        0 10px;
+  transition:    var(--transition-base);
+}
+.btn-volver:hover { background: var(--color-primary); color: white; }
+
+/* Toggle de contraseña
+   Override intencional de components.css (.password-toggle):
+   en esta página usa right:40px por el padding del .password-input-container */
+.password-input-container { position: relative; margin-bottom: 15px; }
+.password-toggle {
+  position:  absolute;
+  right:     40px;  /* diferente al 14px de components.css — layout específico de verificar */
+  top:       50%;
+  transform: translateY(-50%);
+  cursor:    pointer;
+  color:     var(--color-muted);
+  z-index:   10;
+}
+.password-toggle:hover { color: var(--color-primary); }
+
+/* Indicador de pasos */
+.step-indicator {
+  display:         flex;
+  justify-content: center;
+  align-items:     center;
+  margin-bottom:   20px;
+}
+.step {
+  width:           30px;
+  height:          30px;
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  margin:          0 10px;
+  font-weight:     600;
+  font-size:       14px;
+}
+.step.active    { background: var(--color-primary); color: white; }
+.step.completed { background: #28a745;              color: white; }
+.step.pending   { background: #e9ecef;              color: var(--color-muted); }
+.step-line          { width: 40px; height: 2px; background: #e9ecef; }
+.step-line.completed{ background: #28a745; }
+

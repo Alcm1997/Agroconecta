@@ -1,0 +1,81 @@
+/* ============================================================
+   comprobante.css — Página: Comprobante de Pedido
+   Estilos específicos de comprobante.html
+   Requiere: theme.css + components.css cargados antes
+   ============================================================ */
+
+/* ── NAVBAR DEL COMPROBANTE ─────────────────────────────────── */
+.navbar-comprobante {
+  background: var(--color-green);
+}
+
+/* ── ÍCONO DE ÉXITO ─────────────────────────────────────────── */
+.success-icon {
+  width:           80px;
+  height:          80px;
+  background:      linear-gradient(135deg, var(--color-green), var(--color-green-mid));
+  border-radius:   50%;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  margin:          0 auto 1.5rem;
+  font-size:       2rem;
+  color:           #fff;
+  box-shadow:      0 4px 16px rgba(46, 125, 50, 0.30);
+}
+
+/* ── CONTENEDOR DEL COMPROBANTE ─────────────────────────────── */
+.comprobante-container {
+  background:    #fff;
+  border-radius: var(--radius-md);
+  box-shadow:    var(--shadow-md);
+  overflow:      hidden;
+  max-width:     860px;
+  margin:        0 auto;
+}
+
+/* ── CABECERA DEL COMPROBANTE ───────────────────────────────── */
+.comprobante-header {
+  background:    linear-gradient(135deg, var(--color-green), var(--color-green-mid));
+  color:         #fff;
+  padding:       2rem;
+}
+
+.comprobante-header h2 { margin: 0 0 0.25rem; font-weight: 700; }
+.comprobante-header p  { margin: 0; opacity: 0.90; font-size: 0.95rem; }
+
+/* ── NÚMERO / TIPO DE COMPROBANTE ───────────────────────────── */
+.comprobante-numero {
+  background:    rgba(255, 255, 255, 0.20);
+  border-radius: var(--radius-sm);
+  padding:       0.75rem 1.25rem;
+  text-align:    center;
+  font-size:     1.1rem;
+  letter-spacing: 0.5px;
+}
+
+/* ── TABLA DE PRODUCTOS ─────────────────────────────────────── */
+.table-comprobante thead tr {
+  background: linear-gradient(45deg, var(--color-green), var(--color-green-mid));
+  color:      #fff;
+}
+.table-comprobante thead th { border: none; padding: 12px; font-weight: 600; }
+.table-comprobante tbody td { vertical-align: middle; padding: 12px; }
+
+/* ── SECCIÓN DE TOTALES ─────────────────────────────────────── */
+.total-section {
+  background:    #f8f9fa;
+  border-radius: var(--radius-sm);
+  padding:       1.25rem;
+  border:        1px solid #e9ecef;
+}
+
+/* ── UTILIDAD: OCULTAR EN IMPRESIÓN ─────────────────────────── */
+@media print {
+  .no-print { display: none !important; }
+
+  .comprobante-container {
+    box-shadow: none;
+    border:     1px solid #ddd;
+  }
+}

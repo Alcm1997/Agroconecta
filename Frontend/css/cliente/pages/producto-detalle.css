@@ -1,0 +1,25 @@
+/* ============================================================
+   producto-detalle.css — Página: Detalle de Producto
+   Estilos específicos de producto_detalle.html
+   ============================================================ */
+
+.producto-detalle-wrapper .product-image {
+  width:         100%;
+  max-width:     500px;
+  height:        auto;
+  border-radius: var(--radius-md);
+  box-shadow:    0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+/* Price tag con tamaño mayor que el de la tienda */
+.producto-detalle-wrapper .price-tag { font-size: 1.5rem; }
+
+.producto-detalle-wrapper .discount-table { background: #fff; border-radius: var(--radius-sm); overflow: hidden; }
+
+.producto-detalle-wrapper .stock-badge { font-size: 1.1rem; padding: 8px 16px; }
+
+.producto-detalle-wrapper .related-product           { transition: transform .2s; }
+.producto-detalle-wrapper .related-product:hover     { transform: translateY(-4px); }
+
+/* Input de cantidad: ancho acotado */
+.quantity-input { max-width: 150px; }

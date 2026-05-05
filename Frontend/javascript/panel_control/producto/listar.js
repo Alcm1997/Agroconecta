@@ -5,7 +5,7 @@ window.initProductosListado = async function () {
     const token = localStorage.getItem('panel_token') || localStorage.getItem('token');
     if (!token) {
         console.log('❌ No hay token');
-        window.location.href = '/html/panel_control/login-panel.html';
+        window.location.href = '/panel-login';
         return;
     }
 
@@ -89,7 +89,7 @@ window.initProductosListado = async function () {
                     console.log('window.panelControl:', window.panelControl);
                     
                     // Fallback: recargar la página con parámetro
-                    window.location.href = `/html/panel_control/producto/actualizar.html?id=${id}`;
+                    window.location.href = `/panel-control#producto-editar-${id}`;
                 }
             };
 

@@ -1,0 +1,110 @@
+    <!-- Contenido Principal -->
+    <div class="container py-5 producto-detalle-wrapper">
+        <div id="loadingSpinner" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-3">Cargando producto...</p>
+        </div>
+
+        <div id="productContent" style="display:none;">
+            <!-- Información del Producto -->
+            <div class="row mb-5">
+                <div class="col-md-6 mb-4">
+                    <img id="productImage" src="" alt="" class="product-image">
+                </div>
+                <div class="col-md-6">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/" onclick="event.preventDefault(); window.navigateTo('/')">Tienda</a></li>
+                            <li class="breadcrumb-item" id="breadcrumbCategory"></li>
+                            <li class="breadcrumb-item active" id="breadcrumbProduct"></li>
+                        </ol>
+                    </nav>
+
+                    <h1 id="productName" class="mb-3"></h1>
+                    <p id="productDescription" class="text-muted mb-4"></p>
+
+                    <div class="mb-3">
+                        <span class="badge bg-info text-dark me-2" id="productCategory"></span>
+                        <span class="badge stock-badge" id="productStock"></span>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h4 class="mb-3">Precio</h4>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="price-tag me-3" id="productPrice"></span>
+                                <span class="text-muted" id="productUnit"></span>
+                            </div>
+
+                            <!-- Selector de Cantidad -->
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label fw-bold">Cantidad:</label>
+                                <input type="number" id="quantity" class="form-control quantity-input" min="1"
+                                    value="1">
+                            </div>
+
+                            <!-- Opciones Adicionales (NDS) -->
+                            <div id="optionsContainer" class="mb-3"></div>
+
+                            <!-- Total -->
+                            <div class="mb-3">
+                                <h5>Total: <span class="price-tag" id="totalPrice"></span></h5>
+                            </div>
+
+                            <!-- Botón Agregar al Carrito -->
+                            <button id="btnAddToCart" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-cart-plus me-2"></i>Agregar al Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Descuentos por Volumen -->
+            <div id="discountsSection" class="row mb-5" style="display:none;">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0"><i class="fas fa-percentage me-2"></i>Descuentos por Volumen</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover discount-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Cantidad Mínima</th>
+                                            <th>Cantidad Máxima</th>
+                                            <th>Precio con Descuento</th>
+                                            <th>Ahorro</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="discountsTable"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Productos Relacionados -->
+            <div id="relatedSection" class="row">
+                <div class="col-12 mb-4">
+                    <h3><i class="fas fa-box me-2"></i>Productos Relacionados</h3>
+                </div>
+                <div id="relatedProducts" class="row g-4"></div>
+            </div>
+        </div>
+
+        <!-- Error -->
+        <div id="errorContent" style="display:none;">
+            <div class="alert alert-danger">
+                <h4><i class="fas fa-exclamation-triangle me-2"></i>Producto no encontrado</h4>
+                <p>El producto que buscas no existe o no está disponible.</p>
+                <a href="/" class="btn btn-primary" onclick="event.preventDefault(); window.navigateTo('/')">Volver a la Tienda</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/javascript/producto_detalle.js"></script>

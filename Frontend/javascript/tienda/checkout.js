@@ -99,14 +99,14 @@
           reverseButtons: true
         }).then(result => {
           if (result.isConfirmed) {
-            window.location.replace('/html/loginagroconecta.html');
+            window.location.replace('/login');
           } else {
-            window.location.replace('/html/agroconecta.html');
+            window.location.replace('/');
           }
         });
       } else {
         alert('Inicia sesión para continuar con el checkout.');
-        window.location.replace('/html/loginagroconecta.html');
+        window.location.replace('/login');
       }
       return false;
     }
@@ -472,7 +472,7 @@
           </div>`;
       }
 
-      setTimeout(() => window.location.href = '/html/comprobante.html', 1500);
+      setTimeout(() => window.location.href = '/comprobante', 1500);
 
     } catch (e) {
       console.error('Error en placeOrder:', e);
@@ -526,18 +526,26 @@
   }
 
   // ========== Init ==========
-  document.addEventListener('DOMContentLoaded', async () => {
+  // Función de inicialización
+  const initCheckout = async () => {
     await updateAuthUI();
     loadTiposPago();
     loadAndRender();
     if (tipoPago) tipoPago.addEventListener('change', renderCamposPago);
     if (btnPedir) btnPedir.addEventListener('click', placeOrder);
-  });
+  };
+
+  // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCheckout);
+  } else {
+    initCheckout();
+  }
 })();
 
 // Logout global
 window.logout = function () {
   localStorage.clear();
   sessionStorage.clear();
-  window.location.href = '/html/loginagroconecta.html';
+  window.location.href = '/login';
 };

@@ -1,0 +1,216 @@
+<div class="mi-cuenta-wrapper position-relative py-5">
+    <!-- Fondo decorativo tipo auth-bg adaptado a SPA -->
+    <div class="mi-cuenta-bg"></div>
+    
+    <div class="container position-relative z-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="perfil-container">
+                    <div class="perfil-header">
+                        <h2><i class="fas fa-user-circle"></i> Mi Cuenta</h2>
+                        <p class="text-muted">Gestiona tu perfil y revisa tus pedidos</p>
+                    </div>
+                    
+                    <!-- Sistema de Pestañas -->
+                    <ul class="nav nav-tabs" id="miCuentaTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="perfil-tab" data-bs-toggle="tab" data-bs-target="#perfil" type="button" role="tab">
+                                <i class="fas fa-user-edit"></i>Mi Perfil
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#pedidos" type="button" role="tab">
+                                <i class="fas fa-shopping-bag"></i>Mis Pedidos
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Contenido de las Pestañas -->
+                    <div class="tab-content" id="miCuentaTabsContent">
+                        
+                        <!-- TAB 1: Mi Perfil -->
+                        <div class="tab-pane fade show active" id="perfil" role="tabpanel">
+                            <form id="perfilForm">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="tipo_cliente" class="form-label">Tipo de Cliente</label>
+                                            <select class="form-select" id="tipo_cliente" name="tipo_cliente" onchange="mostrarCamposCliente()">
+                                                <option value="Natural">Natural</option>
+                                                <option value="Jurídica">Jurídica</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div id="campos_natural">
+                                            <div class="mb-3">
+                                                <label for="nombres" class="form-label">Nombres</label>
+                                                <input type="text" class="form-control" id="nombres" name="nombres" autocomplete="given-name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="apellidos" class="form-label">Apellidos</label>
+                                                <input type="text" class="form-control" id="apellidos" name="apellidos" autocomplete="family-name">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="numero_documento" class="form-label">DNI</label>
+                                                <input type="text" class="form-control" id="numero_documento" name="numero_documento" maxlength="8" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="campos_juridica" style="display:none;">
+                                            <div class="mb-3">
+                                                <label for="razon_social" class="form-label">Razón Social</label>
+                                                <input type="text" class="form-control" id="razon_social" name="razon_social" autocomplete="organization">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="numero_documento_juridica" class="form-label">RUC</label>
+                                                <input type="text" class="form-control" id="numero_documento_juridica" name="numero_documento_juridica" maxlength="11" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Correo Electrónico</label>
+                                            <input type="email" class="form-control" id="email" name="email" autocomplete="email">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="telefono" class="form-label">Teléfono</label>
+                                            <input type="text" class="form-control" id="telefono" name="telefono" maxlength="9" autocomplete="tel">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="direccion" class="form-label">Dirección</label>
+                                            <input type="text" class="form-control" id="direccion" name="direccion" autocomplete="street-address">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="id_distrito" class="form-label">Departamento - Distrito</label>
+                                            <select class="form-select" id="id_distrito" name="id_distrito" autocomplete="address-level2">
+                                                <option value="">Seleccione un distrito</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn btn-actualizar me-3">
+                                        <i class="fas fa-save"></i> Actualizar Datos
+                                    </button>
+                                    <a href="/" class="btn-volver" onclick="event.preventDefault(); window.navigateTo('/')">
+                                        <i class="fas fa-arrow-left"></i> Volver
+                                    </a>
+                                </div>
+                            </form>
+                            
+                            <!-- Zona Peligro -->
+                            <div class="zona-peligro mt-5">
+                                <div class="text-center">
+                                    <h5 class="text-warning mb-3">
+                                        <i class="fas fa-pause-circle me-2"></i>Desactivar Cuenta
+                                    </h5>
+                                    <p class="text-muted mb-3">
+                                        Desactiva temporalmente tu cuenta. Podrás reactivarla contactando con soporte.
+                                    </p>
+                                    <button type="button" class="btn btn-warning" id="btnEliminarCuenta">
+                                        <i class="fas fa-pause me-2"></i>Desactivar Mi Cuenta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- TAB 2: Mis Pedidos -->
+                        <div class="tab-pane fade" id="pedidos" role="tabpanel">
+                            <div class="mb-4">
+                                <h5 class="text-success">
+                                    <i class="fas fa-history me-2"></i>Historial de Pedidos
+                                </h5>
+                                <p class="text-muted">Aquí puedes ver todos tus pedidos y su estado actual.</p>
+                            </div>
+                            
+                            <!-- Contenedor de pedidos (renderizado por pedidos_cliente.js) -->
+                            <div id="pedidosContainer">
+                                <div class="text-center py-4">
+                                    <div class="spinner-border text-success" role="status">
+                                        <span class="visually-hidden">Cargando...</span>
+                                    </div>
+                                    <p class="text-muted mt-2">Cargando tus pedidos...</p>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <a href="/" class="btn btn-success" onclick="event.preventDefault(); window.navigateTo('/')">
+                                    <i class="fas fa-store me-2"></i>Seguir Comprando
+                                </a>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Modal de Detalle de Pedido -->
+    <div class="modal fade" id="modalDetallePedido" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detalleModalTitle">Detalle del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Fecha:</strong> <span id="detalleFecha"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Estado:</strong> <span id="detalleEstado"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Tipo de Pago:</strong> <span id="detalleTipoPago"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total:</strong> <span class="text-success fw-bold" id="detalleTotal"></span>
+                        </div>
+                    </div>
+                    <h6 class="mt-4">Productos:</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unit.</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detalleProductosBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts locales de la vista -->
+    <script src="/javascript/miCuenta.js"></script>
+    <script src="/javascript/pedidos_cliente.js"></script>
+    <script>
+        // Inicializar lógica de la pestaña de pedidos si es necesario
+        setTimeout(() => {
+            const pedidosTab = document.getElementById('pedidos-tab');
+            if (pedidosTab) {
+                pedidosTab.addEventListener('shown.bs.tab', function () {
+                    if (typeof cargarPedidos === 'function') {
+                        cargarPedidos();
+                    }
+                });
+            }
+        }, 100);
+    </script>

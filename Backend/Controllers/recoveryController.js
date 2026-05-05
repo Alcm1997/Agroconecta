@@ -133,8 +133,8 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Todos los campos son requeridos.' });
     }
 
-    if (nuevaContrasena.length < 6) {
-      return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres.' });
+    if (nuevaContrasena.length < 8) {
+      return res.status(400).json({ message: 'La contraseña debe tener al menos 8 caracteres.' });
     }
 
     // ✅ VERIFICAR: Cliente existe (cualquier estado para recuperación)

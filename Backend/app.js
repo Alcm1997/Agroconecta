@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 
 const app = express();
 app.use(cors({
@@ -73,32 +73,45 @@ app.use('/api/panel/upload', uploadRoutes);
 
 // ✅ RUTA PRINCIPAL: SERVIR agroconecta.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/agroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/agroconecta.html'));
 });
 
-// ✅ RUTAS ESPECÍFICAS PARA CADA PÁGINA
+// ✅ RUTAS LIMPIAS (normalizadas) — zona cliente
+// Archivos HTML ubicados en /Frontend/html/cliente/
 app.get('/agroconecta', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/agroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/agroconecta.html'));
 });
 
 app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/loginagroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/loginagroconecta.html'));
 });
 
 app.get('/registro', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/registroagroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/registroagroconecta.html'));
 });
 
 app.get('/mi-cuenta', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/miCuenta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/agroconecta.html'));
+});
+
+app.get('/checkout', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/agroconecta.html'));
+});
+
+app.get('/comprobante', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/comprobante.html'));
+});
+
+app.get('/producto', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/agroconecta.html'));
 });
 
 app.get('/recuperar-contrasena', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/recuperarcontrasenaagroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/recuperarcontrasenaagroconecta.html'));
 });
 
 app.get('/verificar-codigo', (req, res) => {
-  res.sendFile(path.join(__dirname, '../Frontend/html/verificarcodigoagroconecta.html'));
+  res.sendFile(path.join(__dirname, '../Frontend/html/cliente/verificarcodigoagroconecta.html'));
 });
 
 // Webmanifest desde la ubicación correcta
@@ -115,7 +128,11 @@ app.get('/panel-control', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/html/panel_control/menu.html'));
 });
 
-app.get('/panel-control/*', (req, res) => {
+app.get('/panel-login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Frontend/html/panel_control/login-panel.html'));
+});
+
+app.get('/panel-control/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../Frontend/html/panel_control/menu.html'));
 });
 
@@ -140,23 +157,34 @@ app.listen(PORT, async () => {
   console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   console.log(`📁 Sirviendo frontend desde: ${path.join(__dirname, '../Frontend')}`);
 
-  const url = `http://localhost:${PORT}`;
+  const urlTienda = `http://localhost:${PORT}/`;
+  const urlPanel = `http://localhost:${PORT}/html/panel_control/login-panel.html`;
 
   try {
     // ✅ IMPORT DINÁMICO para open (compatible con CommonJS)
     const open = (await import('open')).default;
-    await open(url);
-    console.log(`🌐 AgroConecta abierto automáticamente en: ${url}`);
-    console.log(`✅ Página principal: agroconecta.html`);
+
+    // Abrir tienda principal
+    await open(urlTienda);
+    console.log(`🌐 Tienda abierta en:     ${urlTienda}`);
+
+    // Pequeño delay para que el navegador no bloquee la 2ª pestaña
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Abrir panel de administración
+    await open(urlPanel);
+    console.log(`🛠️  Panel admin abierto en: ${urlPanel}`);
+
   } catch (error) {
-    console.log(`⚠️ No se pudo abrir automáticamente.`);
-    console.log(`🔗 Abre manualmente: ${url}`);
+    console.log(`⚠️ No se pudo abrir automáticamente. Abre manualmente:`);
+    console.log(`   🌐 Tienda: ${urlTienda}`);
+    console.log(`   🛠️  Panel: ${urlPanel}`);
 
     // ✅ FALLBACK: Comando del sistema para Windows
     const { exec } = require('child_process');
-    exec(`start ${url}`, (execError) => {
+    exec(`start "" "${urlTienda}" & start "" "${urlPanel}"`, (execError) => {
       if (!execError) {
-        console.log(`🌐 Navegador abierto con comando Windows`);
+        console.log(`🌐 Ambas pestañas abiertas con comando Windows`);
       }
     });
   }

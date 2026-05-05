@@ -1,0 +1,82 @@
+/* ============================================================
+   recuperar.css — Página: Recuperar Contraseña
+   Estilos específicos de recuperarcontrasenaagroconecta.html
+   ============================================================ */
+
+/* Reset total — elimina bordes blancos y scrollbar no deseado */
+html, body {
+  margin:     0 !important;
+  padding:    0 !important;
+  border:     none !important;
+  outline:    none !important;
+  width:      100%;
+  height:     100%;
+  overflow:   hidden; /* Sin barra deslizadora lateral */
+}
+
+/* Flex column para que el navbar empuje el contenido hacia abajo */
+.auth-bg {
+  display:        flex !important;
+  flex-direction: column !important;
+  min-height:     100vh;
+  padding-top:    64px !important; /* Espacio para el navbar fixed */
+}
+
+/* Card centrada en el espacio restante */
+.recuperar-card {
+  max-width:  400px;
+  width:      100%;
+  text-align: center;
+  margin:     auto; /* Centra vertical y horizontalmente */
+}
+
+/* ── Subtítulo y descripción ──────────────────────────────── */
+.subtitle    { color: #6c3483; font-weight: 600; margin-bottom: 0.5rem; }
+.descripcion { color: #444;    font-size: 1rem;  margin-bottom: 1.5rem; }
+
+.icono-candado {
+  font-size:     3.5rem;
+  color:         var(--color-secondary);
+  border-radius: 50%;
+  padding:       5px;
+  margin-bottom: 1rem;
+  display:       inline-block;
+}
+
+/* ── Botón buscar cuenta ──────────────────────────────────── */
+.btn-buscar {
+  background:    linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  border:        none;
+  color:         white;
+  font-weight:   600;
+  font-size:     1.1rem;
+  border-radius: 10px;
+  padding:       12px 0;
+  width:         100%;
+  margin-bottom: 15px;
+  transition:    var(--transition-base);
+}
+.btn-buscar:hover {
+  background:  linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
+  transform:   translateY(-2px);
+  color:       white;
+}
+
+/* ── Botón volver al login ────────────────────────────────── */
+.btn-iniciar {
+  background:      transparent;
+  border:          2px solid var(--color-primary);
+  color:           var(--color-primary);
+  font-weight:     500;
+  border-radius:   var(--radius-sm);
+  padding:         8px 20px;
+  transition:      var(--transition-base);
+  text-decoration: none;
+}
+.btn-iniciar:hover {
+  background:      var(--color-primary);
+  color:           white;
+  text-decoration: none;
+}
+
+.form-control { border-radius: var(--radius-sm); font-size: 1.1rem; }

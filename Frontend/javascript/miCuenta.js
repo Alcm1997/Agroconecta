@@ -1,8 +1,9 @@
-document.addEventListener('DOMContentLoaded', function() {
+// Función de inicialización
+const initMiCuenta = function() {
     // Verificar autenticación
-    const token = localStorage.getItem('token');
+    const token = typeof getToken === 'function' ? getToken() : localStorage.getItem('token_cliente') || localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/login';
+        window.navigateTo('/login');
         return;
     }
     
@@ -19,12 +20,19 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('btnEliminarCuenta').addEventListener('click', function() {
         confirmarEliminacionCuenta();
     });
-});
+};
+
+// Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMiCuenta);
+} else {
+    initMiCuenta();
+}
 
 async function cargarPerfilUsuario() {
     try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3001/api/client/profile', {
+        const token = typeof getToken === 'function' ? getToken() : localStorage.getItem('token_cliente') || localStorage.getItem('token');
+        const response = await fetch('/api/client/profile', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -35,10 +43,19 @@ async function cargarPerfilUsuario() {
         if (response.ok) {
             const cliente = await response.json();
             llenarFormulario(cliente);
-        } else if (response.status === 401) {
-            // Token expirado o inválido
+        } else if (response.status === 401 || response.status === 404) {
+            console.error('Token inválido o expirado. Cerrando sesión.');
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            localStorage.removeItem('token_cliente');
+            localStorage.removeItem('cliente_token');
+            sessionStorage.clear();
+            Swal.fire({
+                title: 'Sesión Expirada',
+                text: 'Por favor, inicia sesión nuevamente.',
+                icon: 'warning'
+            }).then(() => {
+                window.location.href = '/login';
+            });
         } else {
             Swal.fire({
                 title: 'Error',
@@ -82,7 +99,7 @@ function llenarFormulario(cliente) {
 async function cargarDistritoDelCliente(idDistrito) {
     try {
         // Obtener información del distrito para saber a qué departamento pertenece
-        const response = await fetch(`http://localhost:3001/api/distritos/${idDistrito}`);
+        const response = await fetch(`/api/distritos/${idDistrito}`);
         if (!response.ok) throw new Error('Error al obtener datos del distrito');
         
         const distrito = await response.json();
@@ -150,8 +167,8 @@ async function actualizarPerfil() {
             return;
         }
 
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3001/api/client/profile', {
+        const token = typeof getToken === 'function' ? getToken() : localStorage.getItem('token_cliente') || localStorage.getItem('token');
+        const response = await fetch('/api/client/profile', {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -224,7 +241,7 @@ async function actualizarPerfil() {
 
 async function cargarDepartamentos() {
     try {
-        const response = await fetch('http://localhost:3001/api/departamentos');
+        const response = await fetch('/api/departamentos');
         if (!response.ok) throw new Error('Error al cargar departamentos');
         
         const departamentos = await response.json();
@@ -277,7 +294,7 @@ async function cargarDistritosPorDepartamento(idDepartamento) {
             return;
         }
         
-        const response = await fetch(`http://localhost:3001/api/distritos/departamento/${idDepartamento}`);
+        const response = await fetch(`/api/distritos/departamento/${idDepartamento}`);
         if (!response.ok) throw new Error('Error al cargar distritos');
         
         const distritos = await response.json();
@@ -379,7 +396,7 @@ async function desactivarCuentaDefinitivamente() {
         });
         
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3001/api/client/account', {
+        const response = await fetch('/api/client/account', {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,

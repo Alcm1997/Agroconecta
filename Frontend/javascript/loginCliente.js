@@ -17,10 +17,21 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         const email = document.getElementById('email').value;
-        const contrasena = document.getElementById('contrasena').value;
+        const contrasenaInput = document.getElementById('contrasena');
+        const contrasena = contrasenaInput.value;
+
+        // Validación de longitud
+        if (contrasena.length < 8 || contrasena.length > 15) {
+            contrasenaInput.classList.add('is-invalid');
+            document.getElementById('loginError').textContent = 'La contraseña debe tener entre 8 y 15 caracteres.';
+            return;
+        } else {
+            contrasenaInput.classList.remove('is-invalid');
+            document.getElementById('loginError').textContent = '';
+        }
 
         try {
-            const response = await fetch('http://localhost:3001/api/client/login', {
+            const response = await fetch('/api/client/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, contrasena })
@@ -31,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (response.ok) {
                 // Guardar token en localStorage
                 localStorage.setItem('token', result.token);
+                localStorage.setItem('token_cliente', result.token);
 
                 // ✅ NUEVO: Guardar datos del cliente para identificar su carrito
                 if (result.cliente) {

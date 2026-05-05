@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pitahaya Perú</title>
+  <meta name="description"
+    content="Pitahaya Perú - Marketplace especializado en fertilizantes agrícolas, esquejes de pitahaya, packs y frutas frescas. Productos de calidad con asesoría profesional en cultivo de pitahaya." />
+
+  <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+  <link rel="shortcut icon" href="/icono/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-title" content="MyAgroiOS" />
+  <link rel="manifest" href="/site.webmanifest" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="/css/cliente/theme.css" />
+  <link rel="stylesheet" href="/css/cliente/components.css" />
+  
+  <!-- Estilos de Vistas SPA -->
+  <link rel="stylesheet" href="/css/cliente/pages/mi-cuenta.css" />
+  <link rel="stylesheet" href="/css/cliente/pages/checkout.css" />
+  <link rel="stylesheet" href="/css/cliente/pages/producto-detalle.css" />
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top navbar-cliente">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo Pitahaya Perú">
+        PITAHAYA PERÚ
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link active" href="/#fertilizantes">Fertilizantes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#packs">Packs</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#esquejes">Esquejes</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#frutas">Frutas</a></li>
+          <li class="nav-item"><a class="nav-link" href="/#contacto">Contacto</a></li>
+        </ul>
+        <div class="d-flex">
+          <button id="loginButton" class="btn login-btn me-2">
+            <i class="fas fa-user me-1"></i> Iniciar Sesión
+          </button>
+          <button id="cartButton" class="btn btn-outline-light">
+            <i class="fas fa-shopping-cart me-1"></i> Carrito de Compras
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="app-content">
+    <!-- El contenido de las páginas se cargará aquí dinámicamente -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 footer-cliente">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5><i class="fas fa-seedling me-2"></i>Pitahaya Perú</h5>
+          <p>Tu marketplace especializado en productos para el cultivo de pitahaya y otros frutos tropicales.</p>
+        </div>
+        <div class="col-md-4 mb-4 mb-md-0">
+          <h5>Enlaces Rápidos</h5>
+          <ul class="list-unstyled">
+            <li><a href="/#fertilizantes" class="text-white">Fertilizantes</a></li>
+            <li><a href="/#packs" class="text-white">Packs</a></li>
+            <li><a href="/#esquejes" class="text-white">Esquejes</a></li>
+            <li><a href="/#contacto" class="text-white">Contacto</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Redes Sociales</h5>
+          <div class="d-flex align-items-center">
+            <a href="https://web.facebook.com/pitahayavivero" class="text-white me-3" target="_blank" rel="noopener"><i
+                class="fab fa-facebook-f fa-lg"></i></a>
+            <a href="https://wa.me/51993346052" class="text-white me-3" target="_blank" rel="noopener"><i
+                class="fab fa-whatsapp fa-lg"></i></a>
+            <a href="https://www.youtube.com/@ElvisCarreraPitahayaPeru" class="text-white" target="_blank"
+              rel="noopener"><i class="fab fa-youtube fa-lg"></i></a>
+          </div>
+        </div>
+      </div>
+      <hr class="my-4 bg-light" />
+      <div class="text-center">
+        <p class="mb-0">&copy; 2026 Pitahaya Perú S.A.C. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
+  
+  <!-- Scripts globales (Navbar y SPA) -->
+  <script src="/javascript/authStatus.js"></script>
+  <script src="/javascript/tienda/cart-sync.js"></script>
+  <script src="/javascript/router_cliente.js"></script>
+</body>
+
+</html>

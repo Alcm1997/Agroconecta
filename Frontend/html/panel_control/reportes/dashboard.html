@@ -1,4 +1,11 @@
-<!-- ✅ SECCIÓN: DASHBOARD DE REPORTES -->
+﻿<!-- ✅ SECCIÓN: DASHBOARD DE REPORTES -->
+
+<!-- Título de sección — mismo patrón que Productos, Clientes y Usuarios -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h2 class="mb-0" style="color: #2E7D32; font-weight: 600;">
+        <i class="fas fa-chart-line me-2"></i>Reportes del Sistema
+    </h2>
+</div>
 <div class="dashboard-card">
     <!-- KPIs -->
     <div class="row mb-4">
@@ -75,24 +82,26 @@
                 <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-trophy text-warning me-2"></i>Top 5 Productos Más Vendidos</h5>
                 </div>
-                <div class="card-body">
-                    <table class="table table-hover table-sm">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Producto</th>
-                                <th>Categoría</th>
-                                <th>Cant.</th>
-                                <th>Ingresos</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaTopProductos">
-                            <tr>
-                                <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
-                                    Cargando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card-body p-0 p-sm-3">
+                    <div class="tabla-reportes-wrap">
+                        <table class="table table-hover table-sm mb-0" id="tablaTopProductos">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Cant.</th>
+                                    <th>Ingresos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTopProductos">
+                                <tr>
+                                    <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
+                                        Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,24 +112,26 @@
                 <div class="card-header">
                     <h5 class="mb-0"><i class="fas fa-star text-success me-2"></i>Top 5 Clientes</h5>
                 </div>
-                <div class="card-body">
-                    <table class="table table-hover table-sm">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Cliente</th>
-                                <th>Tipo</th>
-                                <th>Pedidos</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaTopClientes">
-                            <tr>
-                                <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
-                                    Cargando...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="card-body p-0 p-sm-3">
+                    <div class="tabla-reportes-wrap">
+                        <table class="table table-hover table-sm mb-0" id="tablaTopClientes">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Cliente</th>
+                                    <th>Tipo</th>
+                                    <th>Pedidos</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaTopClientes">
+                                <tr>
+                                    <td colspan="5" class="text-center py-3"><i class="fas fa-spinner fa-spin"></i>
+                                        Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,149 @@
+  <!-- Hero -->
+  <section class="hero-section text-center">
+    <div class="container">
+      <h1 class="display-5 fw-bold mb-3">Todo para el cultivo de Pitahaya</h1>
+      <p class="lead mb-4">Productos especializados, esquejes de calidad y asesoría profesional</p>
+      <a href="#fertilizantes" class="btn btn-primary btn-lg px-4 me-2">
+        <i class="fas fa-leaf me-1"></i> Ver Productos
+      </a>
+      <a href="#contacto" class="btn btn-outline-light btn-lg px-4">
+        <i class="fas fa-phone-alt me-1"></i> Contactar
+      </a>
+    </div>
+  </section>
+
+  <!-- Barra de Búsqueda y Filtros -->
+  <section class="py-3 bg-white border-bottom shadow-sm">
+    <div class="container">
+      <div class="row g-2 align-items-center">
+        <!-- Buscador -->
+        <div class="col-12 col-md-5">
+          <div class="input-group">
+            <span class="input-group-text search-icon-addon">
+              <i class="fas fa-search"></i>
+            </span>
+            <input type="text" id="searchInput" class="form-control"
+              placeholder="Buscar productos por nombre o descripción..." autocomplete="off">
+          </div>
+        </div>
+        <!-- Filtro por categoría -->
+        <div class="col-6 col-md-3">
+          <select id="filterCategory" class="form-select">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+        <!-- Ordenar -->
+        <div class="col-6 col-md-3">
+          <select id="sortBy" class="form-select">
+            <option value="default">Ordenar por...</option>
+            <option value="name-asc">Nombre A → Z</option>
+            <option value="name-desc">Nombre Z → A</option>
+            <option value="price-asc">Precio: menor a mayor</option>
+            <option value="price-desc">Precio: mayor a menor</option>
+          </select>
+        </div>
+        <!-- Limpiar -->
+        <div class="col-12 col-md-1 d-grid">
+          <button id="btnClearFilters" class="btn btn-outline-secondary" title="Limpiar filtros">
+            <i class="fas fa-times me-1"></i>
+            <span class="d-md-none">Limpiar</span>
+          </button>
+        </div>
+      </div>
+      <!-- Resultado de búsqueda -->
+      <div id="filterResults" class="text-muted small mt-2"></div>
+    </div>
+  </section>
+
+  <!-- Fertilizantes -->
+  <section id="fertilizantes" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Productos Fertilizantes Agrícolas</h2>
+      <div id="gridFertilizantes" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Packs -->
+  <section id="packs" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Promociones de Packs Fertilizantes Agrícolas</h2>
+      <div id="gridPacks" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Esquejes -->
+  <section id="esquejes" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="section-title">Esquejes de Pitahaya</h2>
+      <div id="gridEsquejes" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Frutas -->
+  <section id="frutas" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Frutas Frescas de Pitahaya</h2>
+      <div id="gridFrutas" class="row g-4">
+        <!-- dinámico -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Contacto -->
+  <section id="contacto" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="section-title">Contacto</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fas fa-info-circle me-2"></i>Información</h3>
+              <ul class="list-unstyled">
+                <li class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Dirección: Asc. Popular Lomas De Ancón Mz.
+                  44 Lote. 24 Ancón - Lima - Lima</li>
+                <li class="mb-2"><i class="fas fa-phone me-2"></i> Teléfono: +51 993 346 052</li>
+                <li class="mb-2"><i class="fas fa-envelope me-2"></i> Email: elvis02c@gmail.com</li>
+                <li class="mb-2"><i class="fas fa-clock me-2"></i> Horario: Lunes a Viernes 8:00 am - 6:00 pm</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h3 class="card-title"><i class="fas fa-comments me-2"></i>Asesoría Gratuita</h3>
+              <p>Ofrecemos asesorías virtuales gratuitas para el cultivo de pitahaya.</p>
+              <form id="formAsesoria" onsubmit="enviarConsultaAsesoria(event)">
+                <div class="mb-3">
+                  <input type="text" class="form-control" id="asesoriaName" placeholder="Nombre" required
+                    minlength="2" />
+                </div>
+                <div class="mb-3">
+                  <input type="email" class="form-control" id="asesoriaEmail" placeholder="Email" required />
+                </div>
+                <div class="mb-3">
+                  <textarea class="form-control" id="asesoriaMensaje" rows="3" placeholder="Mensaje" required
+                    minlength="10"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnEnviarAsesoria">
+                  <span id="btnAsesoriaText">Enviar Mensaje</span>
+                  <span id="btnAsesoriaSpinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lógica específica del catálogo (necesario ejecutar al cargar esta vista) -->
+  <script src="/javascript/tienda/agroconecta.js"></script>
+  <script src="/javascript/tienda/search-filters.js"></script>
+  <script src="/javascript/tienda/asesoria.js"></script>

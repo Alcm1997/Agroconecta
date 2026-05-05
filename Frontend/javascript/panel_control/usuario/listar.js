@@ -5,7 +5,7 @@ window.initUsuariosListado = async function () {
     const token = localStorage.getItem('token');
     if (!token) {
         console.log('❌ No hay token');
-        window.location.href = '/html/panel_control/login-panel.html';
+        window.location.href = '/panel-login';
         return;
     }
 
@@ -76,7 +76,7 @@ window.initUsuariosListado = async function () {
                     console.log('window.panelControl:', window.panelControl);
                     
                     // Fallback: recargar la página con parámetro
-                    window.location.href = `/html/panel_control/usuario/actualizar.html?id=${id}`;
+                    window.location.href = `/panel-control#usuario-editar-${id}`;
                 }
             };
 

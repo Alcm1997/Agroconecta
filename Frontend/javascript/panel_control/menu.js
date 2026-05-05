@@ -14,7 +14,7 @@ class PanelControl {
         try {
             const token = localStorage.getItem('token');
             if (!token) {
-                window.location.href = '/html/panel_control/login-panel.html';
+                window.location.href = '/panel-login';
                 return;
             }
 
@@ -24,7 +24,7 @@ class PanelControl {
 
             if (!response.ok) {
                 localStorage.removeItem('token');
-                window.location.href = '/html/panel_control/login-panel.html';
+                window.location.href = '/panel-login';
                 return;
             }
 
@@ -32,7 +32,7 @@ class PanelControl {
             this.updateUserInfo();
         } catch (error) {
             console.error('Error verificando autenticación:', error);
-            window.location.href = '/html/panel_control/login-panel.html';
+            window.location.href = '/panel-login';
         }
     }
 
@@ -58,7 +58,8 @@ class PanelControl {
         const sidebarToggle = document.getElementById('sidebarToggle');
         if (sidebarToggle) {
             sidebarToggle.addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('show');
+                const isOpen = document.getElementById('sidebar').classList.toggle('show');
+                document.getElementById('sidebarBackdrop')?.classList.toggle('show', isOpen);
             });
         }
 
@@ -71,6 +72,7 @@ class PanelControl {
                 !sidebar.contains(e.target) &&
                 !toggle.contains(e.target)) {
                 sidebar.classList.remove('show');
+                document.getElementById('sidebarBackdrop')?.classList.remove('show');
             }
         });
     }
@@ -149,22 +151,37 @@ class PanelControl {
     showLoading() {
         const l = document.getElementById('loading');
         const d = document.getElementById('dynamicContent');
-        if (l) l.style.display = 'block';
-        if (d) d.style.display = 'none';
+        if (l) {
+            l.style.display = 'block';
+            l.style.textAlign = 'center';
+            l.style.padding = '2rem';
+        }
+        if (d) {
+            d.style.opacity = '0.5';
+            d.style.pointerEvents = 'none';
+            d.style.transition = 'opacity 0.2s';
+        }
     }
 
     hideLoading() {
         const l = document.getElementById('loading');
         const d = document.getElementById('dynamicContent');
         if (l) l.style.display = 'none';
-        if (d) d.style.display = 'block';
+        if (d) {
+            d.style.opacity = '1';
+            d.style.pointerEvents = 'auto';
+        }
     }
 
     updateActiveNav(sectionName) {
         document.querySelectorAll('.nav-link').forEach(link => {
             link.classList.remove('active');
         });
-        const target = document.querySelector(`[data-section="${sectionName}"]`);
+        
+        // Si es una subsección (ej. productos_registrar), mantener activo el padre
+        const baseSection = sectionName.split('_')[0];
+        
+        const target = document.querySelector(`[data-section="${baseSection}"]`);
         if (target) target.classList.add('active');
     }
 
@@ -177,7 +194,7 @@ class PanelControl {
             clientes: 'Gestión de Clientes',
             productos: 'Gestión de Productos',
             pedidos: 'Gestión de Pedidos',
-            reportes: 'Reportes y Analytics',
+            reportes: 'Reportes del Sistema',
             usuarios: 'Gestión de Usuarios',
             asesorias: 'Consultas de Asesoría',
             transporte: 'Gestión de Transporte'
@@ -205,135 +222,28 @@ class PanelControl {
         }
         if (window.innerWidth <= 768) {
             document.getElementById('sidebar')?.classList.remove('show');
+            document.getElementById('sidebarBackdrop')?.classList.remove('show');
         }
     }
 
     // Dashboard
     async loadDashboard() {
-        const adminName = this.adminData ? `${this.adminData.nombres} ${this.adminData.apellidos}` : 'Administrador';
-        return `
-            <div class="welcome-container">
-                <div class="welcome-card">
-                    <div class="welcome-header">
-                        <div class="welcome-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h1>¡Bienvenido al Panel de Control!</h1>
-                        <p class="welcome-subtitle">Hola <strong>${adminName}</strong>, tienes acceso completo al sistema de administración.</p>
-                    </div>
-                    <div class="welcome-content">
-                        <div class="row">
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('usuarios')">
-                                    <div class="feature-icon bg-primary">
-                                        <i class="fas fa-user-shield"></i>
-                                    </div>
-                                    <h5>Gestión de Usuarios</h5>
-                                    <p>Administra los usuarios del sistema, crea, edita y gestiona permisos.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('productos')">
-                                    <div class="feature-icon bg-success">
-                                        <i class="fas fa-box"></i>
-                                    </div>
-                                    <h5>Productos</h5>
-                                    <p>Gestiona el catálogo de productos, precios e inventario.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('clientes')">
-                                    <div class="feature-icon bg-info">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <h5>Clientes</h5>
-                                    <p>Administra la base de datos de clientes.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('pedidos')">
-                                    <div class="feature-icon bg-warning">
-                                        <i class="fas fa-shopping-cart"></i>
-                                    </div>
-                                    <h5>Pedidos</h5>
-                                    <p>Revisa y gestiona pedidos.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('reportes')">
-                                    <div class="feature-icon bg-purple">
-                                        <i class="fas fa-chart-line"></i>
-                                    </div>
-                                    <h5>Reportes</h5>
-                                    <p>Visualiza estadísticas del sistema.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                            <div class="col-md-4 mb-4">
-                                <div class="feature-card" onclick="panelControl.loadSection('configuracion')">
-                                    <div class="feature-icon bg-secondary">
-                                        <i class="fas fa-cog"></i>
-                                    </div>
-                                    <h5>Configuración</h5>
-                                    <p>Ajusta valores generales.</p>
-                                    <span class="feature-arrow"><i class="fas fa-arrow-right"></i></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="welcome-footer">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <i class="fas fa-clock text-primary"></i>
-                                    <div>
-                                        <strong>Último acceso:</strong><br>
-                                        <span id="currentDateTime">${(() => { const ts = localStorage.getItem('ultimo_acceso_panel'); if (!ts) return 'sesión actual'; return new Date(ts).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }); })()}</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="info-box">
-                                    <i class="fas fa-shield-check text-success"></i>
-                                    <div>
-                                        <strong>Estado del sistema:</strong><br>
-                                        <span class="text-success">Operativo</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <style>
-                .welcome-container{max-width:1200px;margin:0 auto;}
-                .welcome-card{background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08);padding:3rem;text-align:center;}
-                .welcome-header{margin-bottom:3rem;}
-                .welcome-icon{width:80px;height:80px;background:linear-gradient(135deg,#2E7D32,#66BB6A);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:2rem;color:#fff;}
-                .welcome-header h1{color:#2E7D32;font-weight:700;margin-bottom:1rem;font-size:2.5rem;}
-                .welcome-subtitle{color:#6c757d;font-size:1.1rem;margin:0;}
-                .feature-card{background:#f8f9fa;border-radius:12px;padding:2rem 1.5rem;height:100%;border:2px solid transparent;transition:.3s;cursor:pointer;position:relative;overflow:hidden;}
-                .feature-card:hover{transform:translateY(-4px);border-color:#2E7D32;box-shadow:0 8px 24px rgba(46,125,50,.15);}
-                .feature-icon{width:60px;height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:1.5rem;color:#fff;}
-                .bg-purple{background:linear-gradient(135deg,#9C27B0,#E91E63)!important;}
-                .feature-card h5{color:#2E7D32;font-weight:600;margin-bottom:.75rem;}
-                .feature-card p{color:#6c757d;font-size:.9rem;line-height:1.5;margin-bottom:1rem;}
-                .feature-arrow{position:absolute;bottom:1rem;right:1rem;color:#2E7D32;opacity:0;transition:.3s;}
-                .feature-card:hover .feature-arrow{opacity:1;}
-                .welcome-footer{margin-top:3rem;padding-top:2rem;border-top:1px solid #e9ecef;}
-                .info-box{display:flex;align-items:center;gap:1rem;padding:1rem;background:#f8f9fa;border-radius:8px;text-align:left;}
-                .info-box i{font-size:1.5rem;flex-shrink:0;}
-                @media (max-width:768px){
-                    .welcome-card{padding:2rem 1rem;}
-                    .welcome-header h1{font-size:2rem;}
-                    .feature-card{margin-bottom:1rem;}
-                }
-            </style>
-        `;
+        try {
+            const resp = await fetch('/html/panel_control/inicio.html');
+            if (!resp.ok) {
+                return '<div class="alert alert-danger">Error cargando el inicio.</div>';
+            }
+            let html = await resp.text();
+            
+            // Reemplazar el marcador {{ADMIN_NAME}}
+            const adminName = this.adminData ? `${this.adminData.nombres} ${this.adminData.apellidos}` : 'Administrador';
+            html = html.replace('{{ADMIN_NAME}}', adminName);
+            
+            return html;
+        } catch (error) {
+            console.error('Error cargando el dashboard:', error);
+            return '<div class="alert alert-danger">Error de conexión al cargar el inicio.</div>';
+        }
     }
 
 
@@ -623,12 +533,10 @@ class PanelControl {
         const html = await fetch('/html/panel_control/transporte/listar.html').then(r => r.text());
         this.renderContent(html);
         this.currentSection = 'transporte';
-        // Esperar a que el DOM esté disponible antes de cargar los datos
-        setTimeout(() => {
-            if (typeof window.cargarTransportistas === 'function') {
-                window.cargarTransportistas();
-            }
-        }, 100);
+        await import('/javascript/panel_control/transporte/listar.js?cache=' + Date.now());
+        if (typeof window.initTransporteListado === 'function') {
+            window.initTransporteListado();
+        }
     }
 }
 
@@ -648,7 +556,7 @@ function cerrarSesion() {
         }).then((result) => {
             if (result.isConfirmed) {
                 localStorage.removeItem('token');
-                window.location.href = '/html/panel_control/login-panel.html';
+                window.location.href = '/panel-login';
             }
         });
     } else {
@@ -681,7 +589,7 @@ function limpiarTimersAdmin() {
 
 function forzarLogoutAdmin() {
     localStorage.removeItem('token');
-    window.location.href = '/html/panel_control/login-panel.html';
+    window.location.href = '/panel-login';
 }
 
 function iniciarVigilanteSesionAdmin() {

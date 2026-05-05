@@ -14,7 +14,7 @@ window.initRegistrarProducto = async function () {
     const token = localStorage.getItem('token') || localStorage.getItem('panel_token');
     if (!token) {
         alert('Sesión expirada. Inicia sesión nuevamente.');
-        window.location.href = '/html/panel_control/login-panel.html';
+        window.location.href = '/panel-login';
         return;
     }
 
@@ -213,7 +213,7 @@ window.initRegistrarProducto = async function () {
                 <label class="form-label">Precio (S/)</label>
                 <input type="number" class="form-control d-precio" min="0" step="0.01" value="${values.precio_descuento ?? ''}">
             </div>
-            <div class="col-md-3 d-flex align-items-end">
+            <div class="col-auto field-action">
                 <button type="button" class="btn btn-danger btn-sm btn-del-desc"><i class="fas fa-trash"></i></button>
             </div>
         `;
@@ -342,7 +342,7 @@ window.initRegistrarProducto = async function () {
         btnVolver.addEventListener('click', (e) => {
             e.preventDefault();
             if (window.panelControl) window.panelControl.loadSection('productos');
-            else window.location.href = '/html/panel_control/menu.html#productos';
+                else window.location.href = '/panel-control#productos';
         });
     }
 
@@ -433,7 +433,7 @@ window.initRegistrarProducto = async function () {
                     alert('Producto registrado correctamente.');
                 }
                 if (window.panelControl) window.panelControl.loadSection('productos');
-                else window.location.href = '/html/panel_control/menu.html#productos';
+                    else window.location.href = '/panel-control#productos';
 
             } catch (err) {
                 console.error('❌ Registro avanzado:', err);

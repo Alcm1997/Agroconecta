@@ -1,5 +1,6 @@
 const asesoriaModel = require('../Models/asesoriaModel');
 const nodemailer = require('nodemailer');
+const { sendMail } = require('../utils/mailer');
 
 // Configurar transporter de email
 const transporter = nodemailer.createTransport({
@@ -195,32 +196,73 @@ exports.obtenerConsulta = async (req, res) => {
     }
 };
 
-// Marcar como respondida (admin)
+// Marcar como respondida y enviar correo (admin)
 exports.marcarRespondida = async (req, res) => {
     try {
         const { id } = req.params;
+        const { respuesta } = req.body; // <-- Recibimos la respuesta del frontend
         const id_usuario = req.user?.id_usuario;
 
-        const consulta = await asesoriaModel.marcarComoRespondida(id, id_usuario);
+        if (!respuesta || respuesta.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'El texto de la respuesta es obligatorio.'
+            });
+        }
 
-        if (!consulta) {
+        // Obtener la consulta para saber el email del cliente
+        const consultaExistente = await asesoriaModel.obtenerConsultaPorId(id);
+        if (!consultaExistente) {
             return res.status(404).json({
                 success: false,
                 message: 'Consulta no encontrada'
             });
         }
 
+        // Preparar el cuerpo del correo en HTML
+        const htmlBody = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+                <div style="background: linear-gradient(135deg, #2E7D32, #4CAF50); padding: 20px; text-align: center;">
+                    <h1 style="color: white; margin: 0;">🌱 Pitahaya Perú</h1>
+                </div>
+                <div style="background: #f9f9f9; padding: 20px; border: 1px solid #ddd;">
+                    <h2 style="color: #2E7D32;">¡Hola ${consultaExistente.nombre}!</h2>
+                    <p>En respuesta a tu consulta sobre: <em>"${consultaExistente.mensaje.substring(0, 100)}..."</em></p>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #2E7D32; margin: 20px 0;">
+                        <p style="white-space: pre-wrap; margin: 0;">${respuesta}</p>
+                    </div>
+                    
+                    <p>Esperamos que esta información te sea de utilidad.</p>
+                    
+                    <p style="color: #666; font-size: 14px; margin-top: 20px;">
+                        Saludos cordiales,<br>
+                        <strong>Equipo Pitahaya Perú</strong>
+                    </p>
+                </div>
+                <div style="background: #333; color: white; padding: 10px; text-align: center; font-size: 12px;">
+                    © ${new Date().getFullYear()} Pitahaya Perú - Asesoría en cultivo de pitahaya
+                </div>
+            </div>
+        `;
+
+        // Enviar el correo
+        await sendMail(consultaExistente.email, 'Pitahaya Perú - Respuesta a tu consulta', htmlBody);
+
+        // Si el correo se envía, actualizamos en la Base de Datos
+        const consulta = await asesoriaModel.marcarComoRespondida(id, id_usuario, respuesta);
+
         res.json({
             success: true,
-            message: 'Consulta marcada como respondida',
+            message: 'Respuesta enviada y guardada correctamente',
             consulta
         });
 
     } catch (error) {
-        console.error('Error al marcar consulta:', error);
+        console.error('Error al marcar consulta y enviar correo:', error);
         res.status(500).json({
             success: false,
-            message: 'Error al actualizar la consulta'
+            message: 'Error al enviar el correo o actualizar la consulta'
         });
     }
 };

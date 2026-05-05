@@ -1,0 +1,101 @@
+/* ============================================================
+   mi-cuenta.css — Página: Mi Cuenta
+   Estilos específicos de miCuenta.html
+   ============================================================ */
+
+.mi-cuenta-wrapper { padding: 20px 0; }
+
+/* Fondo decorativo desenfocado (igual al auth-bg pero para SPA) */
+.mi-cuenta-bg {
+  position:            absolute;
+  top: 0; left: 0;
+  width:               100%;
+  height:              100%;
+  background-image:    url('/imagenes_pitahaya/fondo_login_2.png');
+  background-size:     cover;
+  background-position: center;
+  filter:              blur(2px) brightness(0.9);
+  z-index:             -1;
+}
+
+/* Override de .perfil-container para la vista SPA de Mi Cuenta
+   (base glassmorphism viene de components.css — aquí se adapta al fondo blanco) */
+.mi-cuenta-wrapper .perfil-container {
+  background:    white;
+  border-radius: var(--radius-lg, 12px);
+  padding:       30px;
+  box-shadow:    0 4px 15px rgba(0, 0, 0, 0.10);
+}
+
+.perfil-header {
+  text-align:    center;
+  margin-bottom: 1.5rem;
+  color:         var(--color-green);
+}
+
+/* Pestañas personalizadas */
+.nav-tabs { border-bottom: 2px solid var(--color-primary); margin-bottom: 1.5rem; }
+
+.nav-tabs .nav-link {
+  color:         #666;
+  font-weight:   600;
+  border:        none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  padding:       12px 24px;
+  transition:    var(--transition-base);
+}
+.nav-tabs .nav-link:hover {
+  color:      var(--color-primary);
+  background: var(--color-primary-light);
+}
+.nav-tabs .nav-link.active {
+  color:      #fff;
+  background: linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  border:     none;
+}
+.nav-tabs .nav-link i { margin-right: 8px; }
+
+/* Botones del perfil */
+.btn-actualizar {
+  background:    linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  border:        none;
+  color:         white;
+  padding:       12px 30px;
+  border-radius: 25px;
+  font-weight:   bold;
+  font-size:     1.1rem;
+}
+.btn-actualizar:hover {
+  background:  linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
+  transform:   translateY(-2px);
+  color:       white;
+}
+.btn-volver {
+  background:      #6c757d;
+  color:           white;
+  padding:         10px 25px;
+  border-radius:   20px;
+  text-decoration: none;
+}
+.btn-volver:hover {
+  background:      #5a6268;
+  color:           white;
+  text-decoration: none;
+}
+
+/* Zona de peligro */
+.zona-peligro {
+  background:    rgba(248, 215, 218, 0.30);
+  border:        1px solid rgba(220, 53, 69, 0.20);
+  border-radius: var(--radius-md);
+  padding:       2rem;
+  margin-top:    2rem;
+}
+
+/* Tabla de pedidos */
+.mi-cuenta-wrapper .table          { background: white; border-radius: 10px; overflow: hidden; }
+.mi-cuenta-wrapper .table thead    { background: linear-gradient(45deg, var(--color-green), var(--color-green-mid)); color: white; }
+.mi-cuenta-wrapper .table th       { border: none; padding: 12px; font-weight: 600; }
+.mi-cuenta-wrapper .table td       { vertical-align: middle; padding: 12px; }
+.mi-cuenta-wrapper .badge          { padding: 6px 12px; font-size: 0.85rem; }
+#pedidosContainer .btn-sm { margin: 2px; }

@@ -1,0 +1,25 @@
+﻿/* ============================================================
+   THEME-PANEL.CSS — Panel de Control | Pitahaya Perú
+   Capa 1: Design tokens y configuraciones globales del panel
+   ============================================================ */
+
+:root {
+    --sidebar-width: 280px;
+    --primary-color: #2E7D32;
+    --secondary-color: #E91E63;
+    --sidebar-bg: #1E3A8A;
+    --sidebar-hover: #3B82F6;
+    --text-muted: #6c757d;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+/* Scrollbar global (opcional) */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }

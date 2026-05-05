@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>{{TIPO_COMPROBANTE}} {{NUMERO_COMPROBANTE}}</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:Arial,sans-serif;font-size:12px;color:#1a1a1a;padding:28px;}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;
+          border-bottom:3px solid #2E7D32;padding-bottom:14px;margin-bottom:16px;}
+  .empresa-nombre{font-size:22px;font-weight:bold;color:#2E7D32;}
+  .empresa-sub{font-size:11px;color:#555;margin-top:3px;}
+  .comp-titulo{text-align:right;}
+  .comp-titulo h2{font-size:18px;font-weight:bold;color:#2E7D32;}
+  .badge-comp{background:#2E7D32;color:#fff;padding:4px 14px;
+              border-radius:20px;font-size:13px;font-weight:bold;display:inline-block;margin-top:4px;}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  .info-box{border:1px solid #d4edda;border-radius:8px;padding:12px;background:#f9fff9;}
+  .info-box h4{font-size:11px;color:#2E7D32;font-weight:bold;text-transform:uppercase;
+               letter-spacing:.5px;margin-bottom:8px;border-bottom:1px solid #d4edda;padding-bottom:5px;}
+  .info-row{display:flex;margin-bottom:5px;}
+  .info-label{font-weight:bold;width:130px;flex-shrink:0;color:#333;}
+  .info-value{color:#111;}
+  .section-title{font-size:13px;font-weight:bold;color:#2E7D32;margin:14px 0 8px;
+                 padding-bottom:5px;border-bottom:2px solid #d4edda;}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  thead{background:#2E7D32;color:#fff;}
+  thead th{padding:7px 10px;text-align:left;font-size:11px;font-weight:bold;}
+  tbody tr:nth-child(even){background:#f5fdf5;}
+  tbody td{padding:6px 10px;border-bottom:1px solid #e8f5e9;vertical-align:middle;}
+  tfoot td{padding:7px 10px;font-weight:bold;background:#e8f5e9;}
+  .totales{margin-left:auto;width:280px;margin-bottom:20px;}
+  .totales table{margin:0;}
+  .totales td{padding:5px 10px;border:none;background:transparent;}
+  .totales tr.total-final td{font-size:14px;font-weight:bold;color:#2E7D32;
+                              border-top:2px solid #2E7D32;}
+  .doc-footer{margin-top:20px;border-top:1px solid #ccc;padding-top:8px;
+              font-size:10px;color:#888;text-align:center;}
+  .gracias{text-align:center;margin:16px 0;padding:12px;background:#f0faf0;
+           border-radius:8px;color:#2E7D32;font-weight:bold;font-size:13px;}
+  .btn-actions{display:flex;gap:10px;margin-bottom:20px;}
+  .btn-actions button{padding:8px 20px;border:none;border-radius:6px;cursor:pointer;
+                      font-size:13px;font-weight:bold;}
+  .btn-print{background:#2E7D32;color:#fff;}
+  .btn-pdf{background:#e53935;color:#fff;}
+  @media print{.btn-actions{display:none!important;}}
+</style>
+</head>
+<body>
+  <div class="btn-actions">
+    <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="btn-pdf" onclick="window.print()">📄 Guardar PDF</button>
+  </div>
+
+  <div class="header">
+    <div>
+      <div class="empresa-nombre">🌱 AgroConecta</div>
+      <div class="empresa-sub">Pitahaya Perú S.A.C. | RUC: 20XXXXXXXXX</div>
+      <div class="empresa-sub">Asc. Popular Lomas De Ancón Mz. 44 Lote 24, Lima</div>
+    </div>
+    <div class="comp-titulo">
+      <h2>{{TIPO_COMPROBANTE_UPPER}}</h2>
+      <div class="badge-comp">{{NUMERO_COMPROBANTE}}</div>
+      <p style="margin-top:6px;font-size:11px;color:#555;">
+        Emisión: <strong>{{FECHA_EMISION}}</strong>
+      </p>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-box">
+      <h4>👤 Datos del Cliente</h4>
+      <div class="info-row"><span class="info-label">Nombre:</span><span class="info-value"><strong>{{NOMBRE_CLIENTE}}</strong></span></div>
+      <div class="info-row"><span class="info-label">Tipo:</span><span class="info-value">{{TIPO_CLIENTE}}</span></div>
+      <div class="info-row"><span class="info-label">Documento:</span><span class="info-value">{{NUMERO_DOCUMENTO}}</span></div>
+      <div class="info-row"><span class="info-label">Email:</span><span class="info-value">{{EMAIL_CLIENTE}}</span></div>
+    </div>
+    <div class="info-box">
+      <h4>📋 Datos del Pedido</h4>
+      <div class="info-row"><span class="info-label">Pedido N.°:</span><span class="info-value">#{{ID_PEDIDO}}</span></div>
+      <div class="info-row"><span class="info-label">Fecha Pedido:</span><span class="info-value">{{FECHA_PEDIDO}}</span></div>
+      <div class="info-row"><span class="info-label">Tipo de Pago:</span><span class="info-value">{{TIPO_PAGO}}</span></div>
+      <div class="info-row"><span class="info-label">Estado:</span><span class="info-value">{{ESTADO_PEDIDO}}</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">🛒 Detalle de Productos</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th style="text-align:center;width:70px;">Cant.</th>
+        <th style="width:80px;">Unidad</th>
+        <th style="text-align:right;width:110px;">Precio Unit.</th>
+        <th style="text-align:right;width:110px;">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>{{FILAS_PRODUCTOS}}</tbody>
+  </table>
+
+  <div class="totales">
+    <table>
+      <tr><td>Subtotal (sin IGV):</td><td style="text-align:right;">S/ {{SUBTOTAL}}</td></tr>
+      <tr><td>IGV (18%):</td><td style="text-align:right;">S/ {{IGV}}</td></tr>
+      <tr class="total-final"><td>TOTAL:</td><td style="text-align:right;">S/ {{TOTAL_PAGO}}</td></tr>
+    </table>
+  </div>
+
+  <div class="gracias">¡Gracias por tu compra! 🌱 AgroConecta — Pitahaya Perú</div>
+
+  <div class="doc-footer">
+    {{TIPO_COMPROBANTE}} N.° {{NUMERO_COMPROBANTE}} &bull;
+    Emitido el {{FECHA_EMISION}} &bull;
+    Documento generado por AgroConecta
+  </div>
+</body>
+</html>

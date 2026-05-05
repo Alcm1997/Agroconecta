@@ -268,6 +268,9 @@
     });
   }
 
+  // Exponer para que search-filters.js pueda reasignar eventos tras filtrar
+  window.bindCalcAndCart = bindCalcAndCart;
+
   function renderSection(el, list, cardFn) {
     if (!el) return;
     el.innerHTML = (list || []).map(cardFn).join('');
@@ -297,14 +300,21 @@
     }
   }
 
-  // Eventos iniciales
-  document.addEventListener('DOMContentLoaded', () => {
+  // Función de inicialización
+  const init = () => {
     loadProductos();
     updateCartBadge();
     if (cartBtn) {
       cartBtn.addEventListener('click', () => {
-        window.location.href = '/html/checkout.html';
+        window.navigateTo('/checkout');
       });
     }
-  });
+  };
+
+  // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

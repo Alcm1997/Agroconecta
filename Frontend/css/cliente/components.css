@@ -1,0 +1,355 @@
+/* ============================================================
+   COMPONENTS.CSS — Zona Cliente | Pitahaya Perú
+   Capa 2: Componentes reutilizables entre páginas
+   Requiere: theme.css cargado antes
+   ============================================================ */
+
+/* ── NAVBAR ─────────────────────────────────────────────────── */
+.navbar-cliente {
+  background:  var(--color-green) !important;
+  box-shadow:  0 2px 10px rgba(0, 0, 0, 0.10);
+  z-index:     1030 !important;
+  position:    sticky;
+  top:         0;
+}
+.navbar-cliente .navbar-brand {
+  font-weight:  700;
+  color:        var(--color-white) !important;
+  display:      flex;
+  align-items:  center;
+  gap:          8px;
+}
+/* Logo circular dentro del navbar principal */
+.navbar-cliente .navbar-brand img {
+  width:         32px;
+  height:        32px;
+  border-radius: 50%;
+  object-fit:    cover;
+  border:        2px solid rgba(255, 255, 255, 0.55);
+  flex-shrink:   0;
+}
+.navbar-cliente .nav-link {
+  color: var(--color-white) !important;
+}
+
+/* ── LOGIN BUTTON (amber gradient — navbar) ──────────────────── */
+.login-btn,
+.login-btn:focus,
+.login-btn:active,
+.login-btn.show,
+.dropdown.show > .login-btn {
+  background:  linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark)) !important;
+  color:       #111 !important;
+  border:      none !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 600 !important;
+  box-shadow:  0 6px 18px rgba(255, 160, 0, 0.25) !important;
+  transition:  var(--transition-fast);
+}
+.login-btn:hover {
+  background:  linear-gradient(135deg, #FFB300, var(--color-secondary-darker)) !important;
+  color:       #111 !important;
+}
+.login-btn.dropdown-toggle::after {
+  color: #111 !important;
+}
+
+/* ── HERO SECTION (agroconecta) ─────────────────────────────── */
+.hero-section {
+  background: linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+              url('/imagenes_pitahaya/hero_section.jpg') no-repeat center right / cover;
+  color:         #fff;
+  padding:       100px 0;
+  margin-bottom: 30px;
+}
+
+/* ── SECTION TITLE ──────────────────────────────────────────── */
+.section-title {
+  color:          var(--color-primary);
+  position:       relative;
+  padding-bottom: 10px;
+  margin-bottom:  30px;
+}
+.section-title::after {
+  content:    '';
+  position:   absolute;
+  bottom: 0; left: 0;
+  width:      50px;
+  height:     3px;
+  background: var(--color-secondary);
+}
+
+/* ── PRODUCT CARD ───────────────────────────────────────────── */
+.product-card {
+  border:        1px solid #e9ecef;
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+  background:    var(--color-surface);
+  transition:    var(--transition-fast);
+}
+.product-card:hover {
+  transform:  translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+.product-img {
+  width:       100%;
+  height:      auto;
+  object-fit:  contain;
+}
+
+/* ── PRICE TAG ──────────────────────────────────────────────── */
+.price-tag {
+  color:         var(--color-dark);
+  background:    var(--color-secondary);
+  padding:       4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight:   700;
+}
+
+/* ── FOOTER ─────────────────────────────────────────────────── */
+.footer-cliente {
+  background: var(--color-green);
+  color:      #fff;
+  padding:    30px 0;
+}
+
+/* ── SKELETON LOADING ───────────────────────────────────────── */
+.skeleton {
+  height:          220px;
+  background:      linear-gradient(90deg, #eee 25%, #f5f5f5 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation:       shimmer 1.4s ease infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position:   0 0; }
+}
+
+/* ── SEARCH BAR (input-group addon de búsqueda en tienda) ──── */
+.search-icon-addon {
+  background:   var(--color-green);
+  border-color: var(--color-green);
+  color:        #fff;
+}
+
+/* ── AUTH BACKGROUND (login, registro, recuperar, verificar, miCuenta) */
+.auth-bg {
+  position:        relative;
+  min-height:      100vh;
+  min-height:      100dvh;
+  display:         flex;
+  align-items:     center;
+  justify-content: center;
+  background-color: #0e1a0e; /* Color oscuro base para evitar líneas blancas en bordes */
+  overflow-x:      hidden;
+}
+.auth-bg::before {
+  content:             "";
+  position:            fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:    url('/imagenes_pitahaya/fondo_login_2.png');
+  background-size:     cover;
+  background-position: center;
+  background-color:    #0e1a0e;
+  filter:              blur(2px) brightness(0.9);
+  z-index:             -1;
+}
+
+/* ── AUTH CARD (glassmorphism compartido) ───────────────────── */
+/* Aplica a: .login-card .registro-card .recuperar-card .verificar-card .perfil-container */
+.login-card,
+.registro-card,
+.recuperar-card,
+.verificar-card,
+.perfil-container {
+  background:    rgba(255, 255, 255, 0.92);
+  border-radius: var(--radius-lg);
+  box-shadow:    var(--shadow-md);
+  padding:       2.5rem 2rem;
+  width:         100%;
+}
+
+/* ── AUTH TITLE ─────────────────────────────────────────────── */
+.login-title,
+.registro-title,
+.recuperar-title,
+.verificar-title {
+  color:         var(--color-primary);
+  font-weight:   700;
+  margin-bottom: 1.5rem;
+  text-align:    center;
+}
+
+/* ── AUTH ACTION BUTTONS (recuperar, verificar) ─────────────── */
+.btn-auth-gradient {
+  background:    linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  border:        none;
+  color:         white;
+  font-weight:   600;
+  font-size:     1.1rem;
+  border-radius: 10px;
+  padding:       12px 0;
+  width:         100%;
+  margin-bottom: 15px;
+  transition:    var(--transition-base);
+}
+.btn-auth-gradient:hover {
+  background:  linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
+  transform:   translateY(-2px);
+  color:       white;
+}
+
+.btn-auth-outline {
+  background:    transparent;
+  border:        2px solid var(--color-primary);
+  color:         var(--color-primary);
+  font-weight:   500;
+  border-radius: var(--radius-sm);
+  padding:       8px 20px;
+  transition:    var(--transition-base);
+  text-decoration: none;
+}
+.btn-auth-outline:hover {
+  background: var(--color-primary);
+  color:      white;
+  text-decoration: none;
+}
+
+.btn-auth-secondary {
+  background:    transparent;
+  border:        2px solid var(--color-muted);
+  color:         var(--color-muted);
+  font-weight:   500;
+  border-radius: var(--radius-sm);
+  padding:       12px 20px;
+  font-size:     1rem;
+  transition:    var(--transition-base);
+}
+.btn-auth-secondary:hover {
+  background:  var(--color-muted);
+  color:       white;
+  transform:   translateY(-1px);
+  box-shadow:  0 4px 12px rgba(108, 117, 125, 0.30);
+}
+
+/* ── AUTH LINK (enlaces de color primario en formularios auth) ── */
+.auth-link {
+  color:           var(--color-primary);
+  font-weight:     500;
+  text-decoration: none;
+}
+.auth-link:hover {
+  color:           var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* ── PASSWORD INPUT CONTAINER (Para posicionar el ojo) ──────── */
+.password-input-container {
+  position: relative;
+}
+
+/* ── PASSWORD TOGGLE (ojo mostrar/ocultar contraseña) ────────── */
+.password-toggle {
+  position:    absolute;
+  top:         50%; /* Compensa la altura del label para quedar centrado en el input */
+  right:       18px;
+  transform:   translateY(-50%);
+  cursor:      pointer;
+  color:       var(--color-muted);
+  font-size:   1.1rem;
+  line-height: 1;
+  z-index:     5;
+}
+
+/* ── ÍCONOS DE AUTH CON COLOR SECUNDARIO (candado, sobre, etc) ── */
+.icono-secondary {
+  font-size:     3rem;
+  color:         var(--color-secondary);
+  margin-bottom: 1rem;
+  display:       inline-block;
+}
+
+/* ── NAVBAR AUTH SIMPLIFICADO (login + registro) ─────────────── */
+/* Solo logo + "Volver a la tienda". Sin botones de sesión/carrito. */
+.navbar-auth {
+  position:            fixed;
+  top:                 0;
+  left:                0;
+  right:               0;
+  z-index:             100;
+  display:             flex;
+  align-items:         center;
+  justify-content:     space-between;
+  padding:             14px 45px; /* Más ancho y con más aire */
+  background:          rgba(0, 0, 0, 0.40);
+  backdrop-filter:     blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom:       1px solid rgba(255, 255, 255, 0.05);
+}
+
+.navbar-auth-brand {
+  display:        flex;
+  align-items:    center;
+  gap:            10px;
+  text-decoration: none;
+  color:           #fff;
+  font-weight:     700;
+  font-size:       1.05rem;
+  letter-spacing:  0.02em;
+}
+
+.navbar-auth-brand img {
+  width:         36px;
+  height:        36px;
+  border-radius: 50%;
+  object-fit:    cover;
+  border:        2px solid rgba(255, 255, 255, 0.50);
+}
+
+.navbar-auth-back {
+  display:     flex;
+  align-items: center;
+  gap:         6px;
+  color:       rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size:   0.875rem;
+  font-weight: 500;
+  transition:  color 0.2s, opacity 0.2s;
+}
+
+.navbar-auth-back:hover {
+  color:   #fff;
+  opacity: 1;
+}
+
+/* ── PASSWORD STRENGTH METER (Barra de seguridad) ─────────────── */
+.password-strength-meter {
+  text-align:    left;
+  margin-bottom: 15px;
+}
+
+.meter-bar-container {
+  height:           8px;
+  background-color: #e9ecef;
+  border-radius:    4px;
+  overflow:         hidden;
+  margin-bottom:    5px;
+}
+
+.meter-bar {
+  height:     100%;
+  width:      0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.meter-text {
+  font-size: 0.85rem;
+  color:     #666;
+}
+
+/* Colores de fortaleza */
+.strength-weak { width: 25%; background-color: #ff4d4d !important; }
+.strength-medium { width: 50%; background-color: #ffa500 !important; }
+.strength-good { width: 75%; background-color: #ffd700 !important; }
+.strength-strong { width: 100%; background-color: #2ecc71 !important; }
+

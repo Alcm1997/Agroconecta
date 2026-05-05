@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pitahaya Perú - Verificar Código</title>
+    <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
+    <link rel="shortcut icon" href="/icono/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="MyAgroiOS" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Capa 1: tokens y variables globales -->
+    <link rel="stylesheet" href="/css/cliente/theme.css">
+    <!-- Capa 2: componentes reutilizables (incluye .navbar-auth, .auth-bg, etc.) -->
+    <link rel="stylesheet" href="/css/cliente/components.css">
+    <!-- Capa 3: estilos exclusivos de esta página -->
+    <link rel="stylesheet" href="/css/cliente/pages/verificar.css">
+</head>
+<body class="auth-bg">
+
+    <!-- Navbar idéntico al del resto del flujo de autenticación -->
+    <nav class="navbar-auth">
+        <a href="/" class="navbar-auth-brand">
+            <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo Pitahaya Perú">
+            Pitahaya Perú
+        </a>
+        <a href="/" class="navbar-auth-back">
+            <i class="fas fa-arrow-left"></i> Volver a la tienda
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="verificar-card">
+            <!-- Indicador de pasos -->
+            <div class="step-indicator">
+                <div class="step completed">1</div>
+                <div class="step-line completed"></div>
+                <div class="step active">2</div>
+                <div class="step-line pending"></div>
+                <div class="step pending">3</div>
+            </div>
+
+            <div class="text-center mb-4">
+                <h2 class="verificar-title">Verificar Código</h2>
+                <i class="fas fa-envelope-open icono-secondary mb-3"></i>
+            </div>
+
+            <!-- Mostrar email al que se envió el código -->
+            <div class="email-enviado">
+                <p class="email-texto">Código enviado a:</p>
+                <p class="email-texto" id="emailDestino">correo@ejemplo.com</p>
+            </div>
+
+            <!-- Timer de expiración -->
+            <div class="timer-container">
+                <p class="timer-text">
+                    <i class="fas fa-clock me-2"></i>
+                    El código expira en: <span id="timerDisplay">10:00</span>
+                </p>
+            </div>
+
+            <form id="verificarForm">
+                <!-- Campo para el código -->
+                <div class="mb-3">
+                    <label for="codigo" class="form-label">Código de Verificación (6 dígitos)</label>
+                    <input type="text"
+                           class="form-control codigo-input"
+                           id="codigo"
+                           name="codigo"
+                           placeholder="000000"
+                           maxlength="6"
+                           pattern="[0-9]{6}"
+                           required>
+                    <div class="invalid-feedback">
+                        Por favor ingresa el código de 6 dígitos.
+                    </div>
+                </div>
+
+                <!-- Campo para nueva contraseña -->
+                <div class="mb-3">
+                    <label for="nuevaContrasena" class="form-label">Nueva Contraseña</label>
+                    <div class="password-input-container">
+                        <input type="password"
+                               class="form-control"
+                               id="nuevaContrasena"
+                               name="nuevaContrasena"
+                               placeholder="Crea una contraseña segura"
+                               minlength="8"
+                               maxlength="15"
+                               required>
+                        <span class="password-toggle" onclick="togglePassword('nuevaContrasena')">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <!-- Medidor de fortaleza -->
+                    <div class="password-strength-meter mt-1">
+                        <div class="meter-bar-container">
+                            <div class="meter-bar" id="meterBar"></div>
+                        </div>
+                        <small class="meter-text" id="meterText">
+                            Fortaleza: <span class="fw-bold">Esperando...</span>
+                        </small>
+                    </div>
+                    <div class="invalid-feedback">
+                        La contraseña debe tener entre 8 y 15 caracteres.
+                    </div>
+                </div>
+
+                <!-- Campo para confirmar contraseña -->
+                <div class="mb-4">
+                    <label for="confirmarContrasena" class="form-label">Confirmar Nueva Contraseña</label>
+                    <div class="password-input-container">
+                        <input type="password"
+                               class="form-control"
+                               id="confirmarContrasena"
+                               name="confirmarContrasena"
+                               placeholder="Confirma tu contraseña"
+                               minlength="8"
+                               maxlength="15"
+                               required>
+                        <span class="password-toggle" onclick="togglePassword('confirmarContrasena')">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <div class="invalid-feedback">
+                        Las contraseñas deben coincidir y tener entre 8 y 15 caracteres.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-verificar" id="verificarBtn">
+                    <i class="fas fa-check me-2"></i>Cambiar Contraseña
+                </button>
+            </form>
+
+            <div class="text-center">
+                <button type="button" class="btn-reenviar" id="reenviarBtn" onclick="reenviarCodigo()">
+                    <i class="fas fa-redo me-2"></i>Reenviar Código
+                </button>
+                <button type="button" class="btn-volver" onclick="volverAtras()">
+                    <i class="fas fa-arrow-left me-2"></i>Volver
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
+    <script src="/javascript/verificarCodigo.js"></script>
+</body>
+</html>

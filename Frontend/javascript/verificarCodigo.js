@@ -1,6 +1,6 @@
 let emailUsuario = '';
 let timerInterval;
-let tiempoRestante = 600; // 10 minutos en segundos
+let tiempoRestante = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Obtener email de la URL
@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
     emailUsuario = urlParams.get('email');
     
     if (!emailUsuario) {
-        // Si no hay email, redirigir a la página de recuperación
         window.location.href = '/recuperar-contrasena';
         return;
     }
@@ -16,8 +15,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mostrar el email en la interfaz
     document.getElementById('emailDestino').textContent = emailUsuario;
     
-    // Iniciar timer
-    iniciarTimer();
+    // LÓGICA DE TIEMPO PERSISTENTE
+    const expirationTimestamp = sessionStorage.getItem('recoveryExpiration');
+    
+    if (expirationTimestamp) {
+        const ahora = Date.now();
+        tiempoRestante = Math.floor((expirationTimestamp - ahora) / 1000);
+        
+        if (tiempoRestante <= 0) {
+            mostrarCodigoExpirado();
+            return;
+        }
+        
+        iniciarTimer();
+    } else {
+        // Si por alguna razón no hay timestamp, fallback a 10 min pero avisamos
+        console.warn('No se encontró timestamp de expiración. Usando fallback.');
+        tiempoRestante = 600;
+        iniciarTimer();
+    }
     
     // Event listeners
     const form = document.getElementById('verificarForm');
@@ -28,38 +44,67 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Validación en tiempo real del código
     const codigoInput = document.getElementById('codigo');
-    codigoInput.addEventListener('input', function(e) {
-        // Solo permitir números
-        e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        validarCodigo();
-    });
+    if (codigoInput) {
+        codigoInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            validarCodigo();
+        });
+    }
     
     // Validación de contraseñas
     const nuevaContrasena = document.getElementById('nuevaContrasena');
     const confirmarContrasena = document.getElementById('confirmarContrasena');
     
-    nuevaContrasena.addEventListener('input', validarContrasenas);
-    confirmarContrasena.addEventListener('input', validarContrasenas);
+    if (nuevaContrasena) nuevaContrasena.addEventListener('input', validarContrasenas);
+    if (confirmarContrasena) confirmarContrasena.addEventListener('input', validarContrasenas);
 });
 
 function iniciarTimer() {
+    // Actualización inmediata para no esperar el primer segundo
+    actualizarPantallaTimer();
+
     timerInterval = setInterval(function() {
-        const minutos = Math.floor(tiempoRestante / 60);
-        const segundos = tiempoRestante % 60;
-        
-        document.getElementById('timerDisplay').textContent = 
-            `${minutos}:${segundos.toString().padStart(2, '0')}`;
+        tiempoRestante--;
         
         if (tiempoRestante <= 0) {
             clearInterval(timerInterval);
+            tiempoRestante = 0;
+            actualizarPantallaTimer();
             mostrarCodigoExpirado();
+        } else {
+            actualizarPantallaTimer();
         }
-        
-        tiempoRestante--;
     }, 1000);
 }
 
+function actualizarPantallaTimer() {
+    const minutos = Math.floor(tiempoRestante / 60);
+    const segundos = tiempoRestante % 60;
+    
+    const display = document.getElementById('timerDisplay');
+    if (display) {
+        display.textContent = `${minutos}:${segundos.toString().padStart(2, '0')}`;
+        
+        // Alerta visual cuando queda menos de 1 minuto
+        if (tiempoRestante < 60) {
+            display.style.color = '#ff4444';
+            display.style.fontWeight = 'bold';
+        }
+    }
+}
+
 function mostrarCodigoExpirado() {
+    // BLOQUEAR FORMULARIO
+    const form = document.getElementById('verificarForm');
+    if (form) {
+        const elements = form.querySelectorAll('input, button');
+        elements.forEach(el => el.disabled = true);
+    }
+    
+    // Deshabilitar también el botón de reenviar si existe
+    const reenviarBtn = document.getElementById('reenviarBtn');
+    if (reenviarBtn) reenviarBtn.disabled = true;
+
     Swal.fire({
         title: '⏰ Código Expirado',
         text: 'El código de verificación ha expirado. Solicita un nuevo código.',
@@ -68,6 +113,8 @@ function mostrarCodigoExpirado() {
         confirmButtonColor: '#E91E63',
         allowOutsideClick: false
     }).then(() => {
+        // Limpiar storage al salir
+        sessionStorage.removeItem('recoveryExpiration');
         window.location.href = '/recuperar-contrasena';
     });
 }
@@ -95,7 +142,15 @@ function validarContrasenas() {
     const confirmarContrasena = document.getElementById('confirmarContrasena').value;
     const confirmarInput = document.getElementById('confirmarContrasena');
     
-    if (nuevaContrasena.length >= 6 && confirmarContrasena.length > 0) {
+    // 1. Calcular fortaleza
+    const fortaleza = calcularFortaleza(nuevaContrasena);
+    actualizarMedidorFortaleza(fortaleza);
+    
+    // 2. Validar requisitos mínimos (8-15 caracteres)
+    const esValida = nuevaContrasena.length >= 8 && nuevaContrasena.length <= 15;
+    
+    // 3. Validar coincidencia
+    if (esValida && confirmarContrasena.length > 0) {
         if (nuevaContrasena === confirmarContrasena) {
             confirmarInput.classList.remove('is-invalid');
             confirmarInput.classList.add('is-valid');
@@ -108,6 +163,47 @@ function validarContrasenas() {
     } else {
         confirmarInput.classList.remove('is-invalid', 'is-valid');
         return false;
+    }
+}
+
+function calcularFortaleza(password) {
+    let score = 0;
+    if (!password) return { score: 0, label: 'Esperando...', class: '' };
+
+    // Longitud
+    if (password.length >= 8) score += 25;
+    
+    // Mayúsculas
+    if (/[A-Z]/.test(password)) score += 25;
+    
+    // Números
+    if (/[0-9]/.test(password)) score += 25;
+    
+    // Símbolos
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 25;
+
+    if (score <= 25) return { score, label: 'Débil', class: 'strength-weak' };
+    if (score <= 50) return { score, label: 'Regular', class: 'strength-medium' };
+    if (score <= 75) return { score, label: 'Buena', class: 'strength-good' };
+    return { score, label: 'Fuerte', class: 'strength-strong' };
+}
+
+function actualizarMedidorFortaleza(fortaleza) {
+    const meterBar = document.getElementById('meterBar');
+    const meterText = document.getElementById('meterText').querySelector('span');
+    
+    if (meterBar && meterText) {
+        // Limpiar clases anteriores
+        meterBar.className = 'meter-bar';
+        if (fortaleza.class) meterBar.classList.add(fortaleza.class);
+        
+        meterText.textContent = fortaleza.label;
+        
+        // Color del texto
+        if (fortaleza.score <= 25) meterText.style.color = '#ff4d4d';
+        else if (fortaleza.score <= 50) meterText.style.color = '#ffa500';
+        else if (fortaleza.score <= 75) meterText.style.color = '#ffd700';
+        else meterText.style.color = '#2ecc71';
     }
 }
 
@@ -142,10 +238,10 @@ async function verificarCodigoYCambiarContrasena() {
         return;
     }
     
-    if (nuevaContrasena.length < 6) {
+    if (nuevaContrasena.length < 8 || nuevaContrasena.length > 15) {
         Swal.fire({
-            title: 'Contraseña Muy Corta',
-            text: 'La contraseña debe tener al menos 6 caracteres.',
+            title: 'Contraseña Inválida',
+            text: 'La contraseña debe tener entre 8 y 15 caracteres.',
             icon: 'error',
             confirmButtonColor: '#E91E63'
         });
@@ -176,7 +272,7 @@ async function verificarCodigoYCambiarContrasena() {
         });
         
         // Enviar solicitud al backend
-        const response = await fetch('http://localhost:3001/api/recovery/reset-password', {
+        const response = await fetch('/api/recovery/reset-password', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -256,7 +352,7 @@ async function reenviarCodigo() {
             }
         });
         
-        const response = await fetch('http://localhost:3001/api/recovery/send-code', {
+        const response = await fetch('/api/recovery/send-code', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -269,6 +365,11 @@ async function reenviarCodigo() {
         if (response.ok) {
             // Reiniciar timer
             clearInterval(timerInterval);
+            
+            // ACTUALIZAR TIMESTAMP DE EXPIRACIÓN (Nuevos 10 minutos)
+            const expirationTime = Date.now() + (10 * 60 * 1000);
+            sessionStorage.setItem('recoveryExpiration', expirationTime);
+            
             tiempoRestante = 600;
             iniciarTimer();
             

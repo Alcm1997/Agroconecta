@@ -82,7 +82,7 @@
         <div class="alert alert-warning">
           <h4>No se encontraron datos del comprobante</h4>
           <p>Por favor, realiza un pedido primero.</p>
-          <a href="/html/agroconecta.html" class="btn btn-primary">Ir a la tienda</a>
+          <a href="/" class="btn btn-primary">Ir a la tienda</a>
         </div>
       </div>`;
   }

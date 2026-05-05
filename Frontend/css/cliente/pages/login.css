@@ -1,0 +1,39 @@
+/* ============================================================
+   login.css — Página: Iniciar Sesión
+   Estilos específicos de loginagroconecta.html
+   ============================================================ */
+
+/* Reset total para eliminar bordes blancos del navegador en los contornos */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  outline: none !important;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Configuración de centrado perfecto: relativo al espacio DEBAJO del navbar */
+.auth-bg {
+  display:         flex !important;
+  flex-direction:  column !important;
+  min-height:      100vh;
+  padding-top:     64px !important; /* Espacio para el navbar fijo */
+}
+
+.login-card {
+  max-width: 370px;
+  margin:    auto; /* ESTA ES LA CLAVE: centra verticalmente en el espacio sobrante */
+}
+
+
+/* Logo circular del login */
+.login-logo {
+  width:         110px;
+  height:        110px;
+  border-radius: 50%;
+  object-fit:    cover;
+  box-shadow:    0 2px 12px rgba(0, 0, 0, 0.10);
+  border:        4px solid #fff;
+}

@@ -40,6 +40,7 @@ async function obtenerConsultas(filtros = {}) {
       ca.fecha_consulta,
       ca.estado,
       ca.fecha_respuesta,
+      ca.respuesta_texto,
       u.nombres || ' ' || u.apellidos as respondido_por_nombre
     FROM consulta_asesoria ca
     LEFT JOIN usuario u ON ca.respondido_por = u.id_usuario
@@ -70,6 +71,7 @@ async function obtenerConsultaPorId(id_consulta) {
       ca.fecha_consulta,
       ca.estado,
       ca.fecha_respuesta,
+      ca.respuesta_texto,
       u.nombres || ' ' || u.apellidos as respondido_por_nombre
     FROM consulta_asesoria ca
     LEFT JOIN usuario u ON ca.respondido_por = u.id_usuario
@@ -81,17 +83,18 @@ async function obtenerConsultaPorId(id_consulta) {
 }
 
 // Marcar consulta como respondida
-async function marcarComoRespondida(id_consulta, id_usuario) {
+async function marcarComoRespondida(id_consulta, id_usuario, respuesta_texto) {
     const query = `
     UPDATE consulta_asesoria 
     SET estado = 'Respondida', 
         respondido_por = $2, 
-        fecha_respuesta = CURRENT_TIMESTAMP
+        fecha_respuesta = CURRENT_TIMESTAMP,
+        respuesta_texto = $3
     WHERE id_consulta = $1
     RETURNING *
   `;
 
-    const result = await pool.query(query, [id_consulta, id_usuario]);
+    const result = await pool.query(query, [id_consulta, id_usuario, respuesta_texto]);
     return result.rows[0] || null;
 }
 

@@ -3,12 +3,12 @@ document.addEventListener('DOMContentLoaded', initAuthUI);
 // -------- Utilidades --------
 function getToken() {
   const t =
-    localStorage.getItem('token') ||
     localStorage.getItem('token_cliente') ||
     localStorage.getItem('cliente_token') ||
-    sessionStorage.getItem('token') ||
+    localStorage.getItem('token') ||
     sessionStorage.getItem('token_cliente') ||
     sessionStorage.getItem('cliente_token') ||
+    sessionStorage.getItem('token') ||
     '';
   return (t || '').replace(/^"|"$/g, '').trim();
 }
@@ -48,7 +48,7 @@ function mapToCliente(u) {
 // -------- API perfil --------
 async function fetchPerfil(token) {
   const urls = [
-    'http://localhost:3001/api/client/profile',
+    '/api/client/profile',
     '/api/tienda/clientes/me',
     '/api/clientes/me',
     '/api/tienda/cliente/perfil'
@@ -66,7 +66,7 @@ async function fetchPerfil(token) {
 function ensureLogout() {
   ['token', 'token_cliente', 'cliente_token', 'cliente', 'cliente_data', 'perfil_cliente', 'user', 'usuario']
     .forEach(k => { localStorage.removeItem(k); sessionStorage.removeItem(k); });
-  window.location.href = '/html/loginagroconecta.html';
+  window.location.href = '/login';
 }
 
 // -------- UI --------
@@ -80,7 +80,7 @@ async function initAuthUI() {
     if (clientNameEl) clientNameEl.textContent = 'Invitado';
     if (loginButton) {
       loginButton.style.display = '';
-      loginButton.onclick = () => (window.location.href = '/html/loginagroconecta.html');
+      loginButton.onclick = () => (window.location.href = '/login');
     }
     bindLogoutLinks();
     return;
@@ -104,7 +104,7 @@ async function initAuthUI() {
     if (clientNameEl) clientNameEl.textContent = 'Invitado';
     if (loginButton) {
       loginButton.style.display = '';
-      loginButton.onclick = () => (window.location.href = '/html/loginagroconecta.html');
+      loginButton.onclick = () => (window.location.href = '/login');
     }
     bindLogoutLinks();
     return;
@@ -127,7 +127,7 @@ async function initAuthUI() {
         <i class="fas fa-user me-1"></i> ${displayName}
       </button>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuButton">
-        <li><a class="dropdown-item" href="/html/miCuenta.html"><i class="fas fa-user-cog me-2"></i>Mi Cuenta</a></li>
+        <li><a class="dropdown-item" href="/mi-cuenta"><i class="fas fa-user-cog me-2"></i>Mi Cuenta</a></li>
         <li><hr class="dropdown-divider"></li>
         <li><a class="dropdown-item" href="#" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</a></li>
       </ul>

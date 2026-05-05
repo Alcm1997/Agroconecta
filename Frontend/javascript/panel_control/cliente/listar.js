@@ -4,7 +4,7 @@ window.initClientesListado = async function () {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        window.location.href = '/html/panel_control/login-panel.html';
+        window.location.href = '/panel-login';
         return;
     }
 

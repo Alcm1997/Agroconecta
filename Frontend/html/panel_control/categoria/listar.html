@@ -1,12 +1,15 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0" style="color: #2E7D32; font-weight: 600;">
+﻿<div class="d-flex justify-content-between align-items-center mb-4 flex-column flex-sm-row gap-2">
+    <h2 class="mb-0 align-self-start" style="color: #2E7D32; font-weight: 600;">
         <i class="fas fa-tags me-2"></i>Gestión de Categorías
     </h2>
-    <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" onclick="panelControl.loadSection('configuracion')" title="Volver a Configuración">
+    <!-- En móvil: fila full-width con botones en cada extremo -->
+    <!-- En escritorio: fila auto-width alineada a la derecha -->
+    <div class="d-flex justify-content-between gap-2 cat-header-btns">
+        <button class="btn btn-outline-secondary btn-sm" onclick="panelControl.loadSection('configuracion')"
+            title="Volver a Configuración">
             <i class="fas fa-arrow-left me-1"></i>Configuración
         </button>
-        <button class="btn btn-primary" onclick="mostrarModalNuevaCategoria()">
+        <button class="btn btn-primary btn-sm" onclick="mostrarModalNuevaCategoria()">
             <i class="fas fa-plus me-2"></i>Nueva Categoría
         </button>
     </div>
@@ -51,10 +54,3 @@
         </div>
     </div>
 </div>
-
-<style>
-.dashboard-card { background:#fff; border-radius:12px; padding:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,.06); border:1px solid #e9ecef; }
-.table th { border-top:none; }
-.btn-sm { padding:.4rem .6rem; }
-.swal2-actions.swal2-actions-spaced { gap:12px!important; }
-</style>

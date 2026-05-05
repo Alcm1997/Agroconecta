@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar departamentos al iniciar
-    fetch('http://localhost:3001/api/departamentos')
-        .then(res => {
-            if (!res.ok) throw new Error('Error al cargar departamentos');
-            return res.json();
-        })
+    // Cargar departamentos al iniciar (Lógica existente)
+    fetch('/api/departamentos')
+        .then(res => res.json())
         .then(departamentos => {
             const selectDepartamento = document.createElement('select');
             selectDepartamento.className = 'form-select mb-3';
@@ -15,18 +12,12 @@ document.addEventListener('DOMContentLoaded', function() {
             departamentos.forEach(dep => {
                 selectDepartamento.innerHTML += `<option value="${dep.id_departamento}">${dep.nombre_departamento}</option>`;
             });
-            // Insertar antes del select de distrito
             document.getElementById('id_distrito').parentNode.insertBefore(selectDepartamento, document.getElementById('id_distrito'));
             
-            // Evento para cargar distritos
             selectDepartamento.addEventListener('change', function() {
                 if (!this.value) return;
-                
-                fetch(`http://localhost:3001/api/distritos/departamento/${this.value}`)
-                    .then(res => {
-                        if (!res.ok) throw new Error('Error al cargar distritos');
-                        return res.json();
-                    })
+                fetch(`/api/distritos/departamento/${this.value}`)
+                    .then(res => res.json())
                     .then(distritos => {
                         const selectDistrito = document.getElementById('id_distrito');
                         selectDistrito.innerHTML = '<option value="">Seleccione un distrito</option>';
@@ -34,56 +25,74 @@ document.addEventListener('DOMContentLoaded', function() {
                             selectDistrito.innerHTML += `<option value="${dis.id_distrito}">${dis.nombre_distrito}</option>`;
                         });
                         selectDistrito.disabled = false;
-                    })
-                    .catch(err => {
-                        console.error('Error:', err);
-                        alert('No se pudieron cargar los distritos');
                     });
             });
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('No se pudieron cargar los departamentos');
         });
 
     // Mostrar campos según tipo de cliente
     mostrarCamposCliente();
     document.getElementById('tipo_cliente').addEventListener('change', mostrarCamposCliente);
 
+    // LÓGICA DE FORTALEZA DE CONTRASEÑA
+    const contrasenaInput = document.getElementById('contrasena');
+    if (contrasenaInput) {
+        contrasenaInput.addEventListener('input', function() {
+            const fortaleza = calcularFortaleza(this.value);
+            actualizarMedidorFortaleza(fortaleza);
+        });
+    }
+
     // Validación y envío del formulario
     document.getElementById('registroForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        const contrasena = document.getElementById('contrasena').value;
+
+        // Validar requisitos de seguridad
+        if (contrasena.length < 8 || contrasena.length > 15) {
+            Swal.fire({
+                title: 'Contraseña Inválida',
+                text: 'La contraseña debe tener entre 8 y 15 caracteres.',
+                icon: 'error',
+                confirmButtonColor: '#E91E63'
+            });
+            return;
+        }
+
         const tipo_cliente = document.getElementById('tipo_cliente').value;
         let numero_documento = '';
         if (tipo_cliente === 'Natural') {
-            numero_documento = document.getElementById('numero_documento').value;
+            numero_documento = document.getElementById('numero_documento')?.value || '';
         } else {
-            numero_documento = document.getElementById('numero_documento_juridica').value;
+            numero_documento = document.getElementById('numero_documento_juridica')?.value || '';
         }
 
-        // Validar que se haya seleccionado un distrito
         const id_distrito = document.getElementById('id_distrito').value;
         if (!id_distrito) {
-            alert('Por favor seleccione un departamento y distrito');
+            Swal.fire({
+                title: 'Ubicación Requerida',
+                text: 'Por favor seleccione un departamento y distrito',
+                icon: 'warning',
+                confirmButtonColor: '#E91E63'
+            });
             return;
         }
 
         const data = {
             tipo_cliente,
-            nombres: document.getElementById('nombres').value,
-            apellidos: document.getElementById('apellidos').value,
-            razon_social: document.getElementById('razon_social').value,
+            nombres: document.getElementById('nombres')?.value || '',
+            apellidos: document.getElementById('apellidos')?.value || '',
+            razon_social: document.getElementById('razon_social')?.value || '',
             numero_documento,
             email: document.getElementById('email').value,
             telefono: document.getElementById('telefono').value,
             direccion: document.getElementById('direccion').value,
             id_distrito: parseInt(id_distrito),
-            contrasena: document.getElementById('contrasena').value
+            contrasena: contrasena
         };
 
         try {
-            const response = await fetch('http://localhost:3001/api/client/register', {
+            const response = await fetch('/api/client/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -100,30 +109,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     showConfirmButton: false,
                     allowOutsideClick: false
                 }).then(() => {
-                    this.reset(); // Limpia el formulario
-                    window.location.href = '/login'; // Redirige al login
+                    window.location.href = '/login';
                 });
             } else {
-                // REEMPLAZO DEL ALERT DE ERROR
                 Swal.fire({
                     title: 'Error en el Registro',
-                    text: result.message || 'No se pudo completar el registro. Por favor, verifica tus datos.',
+                    text: result.message || 'No se pudo completar el registro.',
                     icon: 'error',
                     confirmButtonColor: '#E91E63'
                 });
             }
         } catch (error) {
             console.error('Error de conexión:', error);
-            // REEMPLAZO DEL ALERT DE ERROR DE CONEXIÓN
             Swal.fire({
                 title: 'Error de Conexión',
-                text: 'No se pudo comunicar con el servidor. Inténtalo más tarde.',
+                text: 'No se pudo comunicar con el servidor.',
                 icon: 'error',
                 confirmButtonColor: '#E91E63'
             });
         }
     });
 });
+
+function calcularFortaleza(password) {
+    let score = 0;
+    if (!password) return { score: 0, label: 'Esperando...', class: '' };
+
+    if (password.length >= 8) score += 25;
+    if (/[A-Z]/.test(password)) score += 25;
+    if (/[0-9]/.test(password)) score += 25;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 25;
+
+    if (score <= 25) return { score, label: 'Débil', class: 'strength-weak' };
+    if (score <= 50) return { score, label: 'Regular', class: 'strength-medium' };
+    if (score <= 75) return { score, label: 'Buena', class: 'strength-good' };
+    return { score, label: 'Fuerte', class: 'strength-strong' };
+}
+
+function actualizarMedidorFortaleza(fortaleza) {
+    const meterBar = document.getElementById('meterBar');
+    const meterText = document.getElementById('meterText')?.querySelector('span');
+    
+    if (meterBar && meterText) {
+        meterBar.className = 'meter-bar';
+        if (fortaleza.class) meterBar.classList.add(fortaleza.class);
+        meterText.textContent = fortaleza.label;
+        
+        if (fortaleza.score <= 25) meterText.style.color = '#ff4d4d';
+        else if (fortaleza.score <= 50) meterText.style.color = '#ffa500';
+        else if (fortaleza.score <= 75) meterText.style.color = '#ffd700';
+        else meterText.style.color = '#2ecc71';
+    }
+}
 
 // Función para mostrar campos según tipo de cliente
 function mostrarCamposCliente() {
@@ -132,9 +169,9 @@ function mostrarCamposCliente() {
     document.getElementById('campos_juridica').style.display = (tipo === 'Jurídica') ? 'block' : 'none';
 }
 
-function togglePasswordVisibility() {
+function togglePassword() {
     const passwordInput = document.getElementById('contrasena');
-    const icon = document.getElementById('iconoPassword'); // Asegúrate que este ID coincida con tu HTML
+    const icon = document.getElementById('iconoPassword');
 
     if (passwordInput.type === 'password') {
         passwordInput.type = 'text';

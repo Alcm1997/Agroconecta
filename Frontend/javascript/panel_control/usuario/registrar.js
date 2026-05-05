@@ -17,7 +17,7 @@ window.initRegistrarUsuario = async function () {
     const token = localStorage.getItem('token');
     if (!token) {
         alert('Sesión expirada, inicia sesión nuevamente.');
-        window.location.href = '/html/panel_control/login-panel.html';
+        window.location.href = '/panel-login';
         return;
     }
 
@@ -93,7 +93,7 @@ window.initRegistrarUsuario = async function () {
             if (window.panelControl) {
                 window.panelControl.loadSection('usuarios');
             } else {
-                window.location.href = '/html/panel_control/usuario/listar.html';
+                window.location.href = '/panel-control#usuarios';
             }
         });
     }
@@ -143,13 +143,13 @@ window.initRegistrarUsuario = async function () {
                     if (window.panelControl) {
                         window.panelControl.loadSection('usuarios');
                     } else {
-                        window.location.href = '/html/panel_control/usuario/listar.html';
+                        window.location.href = '/panel-control#usuarios';
                     }
                 } else {
                     alert(data.message || 'No se pudo registrar el usuario.');
                     if (res.status === 401 || res.status === 403) {
                         // Sesión inválida
-                        window.location.href = '/html/panel_control/login-panel.html';
+                        window.location.href = '/panel-login';
                     }
                 }
             } catch (error) {

@@ -7,11 +7,18 @@
         sort: 'default'
     };
 
-    // Esperar a que el DOM esté listo
-    document.addEventListener('DOMContentLoaded', () => {
+    // Función de inicialización
+    const initSearch = () => {
         // Esperar un momento para que agroconecta.js cargue los productos
         setTimeout(initSearchAndFilters, 1000);
-    });
+    };
+
+    // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSearch);
+    } else {
+        initSearch();
+    }
 
     function initSearchAndFilters() {
         const searchInput = document.getElementById('searchInput');
@@ -131,24 +138,29 @@
         const elFert = document.getElementById('gridFertilizantes');
         const elPacks = document.getElementById('gridPacks');
         const elEsq = document.getElementById('gridEsquejes');
+        const elFrutas = document.getElementById('gridFrutas'); // ✅ FIX: incluir sección frutas
 
         if (!elFert || !elPacks || !elEsq) return;
 
-        // Clasificar productos
+        // Clasificar productos (idéntico a agroconecta.js para consistencia)
         const isEsqueje = p => (p.categoria || '').toLowerCase().includes('esquej');
+        const isFruta = p => (p.categoria || '').toLowerCase().includes('fruta'); // ✅ FIX
         const packs = products.filter(p => p.es_pack === true);
         const esquejes = products.filter(isEsqueje);
-        const ferts = products.filter(p => !p.es_pack && !isEsqueje(p));
+        const frutas = products.filter(isFruta);                                  // ✅ FIX
+        const ferts = products.filter(p => !p.es_pack && !isEsqueje(p) && !isFruta(p)); // ✅ FIX
 
         // Renderizar cada sección
         renderSection(elFert, ferts, 'fertilizante');
         renderSection(elPacks, packs, 'pack');
         renderSection(elEsq, esquejes, 'esqueje');
+        if (elFrutas) renderSection(elFrutas, frutas, 'fruta');                   // ✅ FIX
 
         // Mostrar/ocultar secciones vacías
         toggleSection('fertilizantes', ferts.length > 0);
         toggleSection('packs', packs.length > 0);
         toggleSection('esquejes', esquejes.length > 0);
+        if (elFrutas) toggleSection('frutas', frutas.length > 0);                 // ✅ FIX
     }
 
     function renderSection(el, products, type) {
@@ -176,9 +188,10 @@
         const ndsPrice = hasNDS ? Number(ndsObj.precio_adicional || 0) : 0;
 
         const colClass = type === 'esqueje' ? 'col-md-3' : 'col-md-4';
-        const qtyLabel = type === 'pack' ? 'Packs' : type === 'esqueje' ? 'Cantidad' : 'Litros';
+        const qtyLabel = type === 'pack' ? 'Packs' : type === 'esqueje' ? 'Cantidad' : type === 'fruta' ? 'Cantidad (Kg)' : 'Litros';
         const minQty = type === 'esqueje' ? 20 : 1;
         const defaultQty = type === 'esqueje' ? 20 : 1;
+        const stepAttr = type === 'fruta' ? 'step="0.5"' : '';
 
         return `
       <div class="${colClass}">
@@ -190,7 +203,7 @@
             <div class="text-muted mb-2">${p.descripcion || ''}</div>
             <div class="mb-2">
               <label class="fw-bold mb-1">${qtyLabel}:</label>
-              <input id="${idQty}" type="number" min="${minQty}" value="${defaultQty}" class="form-control" style="max-width:120px">
+              <input id="${idQty}" type="number" min="${minQty}" value="${defaultQty}" ${stepAttr} class="form-control" style="max-width:120px">
             </div>
             ${hasNDS ? `
             <div class="form-check mb-2">
