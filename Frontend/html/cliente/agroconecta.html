@@ -45,15 +45,43 @@
           <li class="nav-item"><a class="nav-link" href="/#frutas">Frutas</a></li>
           <li class="nav-item"><a class="nav-link" href="/#contacto">Contacto</a></li>
         </ul>
-        <div class="d-flex">
-          <button id="loginButton" class="btn login-btn me-2">
+        <div class="d-flex align-items-center">
+          <!-- Botón Iniciar Sesión (Invitado) -->
+          <button id="loginButton" class="btn login-btn me-2" style="display: none;">
             <i class="fas fa-user me-1"></i> Iniciar Sesión
           </button>
+
+          <!-- Dropdown Cliente (Logueado) -->
+          <div id="clientDropdown" class="dropdown me-2" style="display: none;">
+            <button class="btn login-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle me-1"></i> <span id="clientName">Cliente</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><a class="dropdown-item" href="/mi-cuenta"><i class="fas fa-id-card me-2"></i>Mi Cuenta</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item text-danger" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</button></li>
+            </ul>
+          </div>
+
+          <!-- Botón Carrito -->
           <button id="cartButton" class="btn btn-outline-light">
             <i class="fas fa-shopping-cart me-1"></i> Carrito de Compras
           </button>
         </div>
       </div>
+    </div>
+  </nav>
+
+  <!-- Navbar de Autenticación (Se muestra mediante router_cliente.js) -->
+  <nav id="authNavbar" class="navbar-auth" style="display: none;">
+    <div class="auth-nav-wrapper">
+      <a href="/" class="brand-auth">
+        <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo Pitahaya Perú">
+        PITAHAYA PERÚ
+      </a>
+      <a href="/" class="back-to-store">
+        <i class="fas fa-arrow-left"></i> Volver a la tienda
+      </a>
     </div>
   </nav>
 
@@ -101,8 +129,8 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
   
   <!-- Scripts globales (Navbar y SPA) -->
-  <script src="/javascript/authStatus.js"></script>
   <script src="/javascript/tienda/cart-sync.js"></script>
+  <script src="/javascript/navbar.js"></script>
   <script src="/javascript/router_cliente.js"></script>
 </body>
 

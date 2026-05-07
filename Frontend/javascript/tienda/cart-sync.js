@@ -1,145 +1,201 @@
-// Extensión para sincronización automática de carrito con backend
+/**
+ * CartService - El "Cerebro" único del carrito de compras.
+ * Gestiona localStorage, sincronización con Backend y eventos globales.
+ */
 (function () {
+    "use strict";
 
-    // Obtener token de autenticación
-    function getToken() {
-        const t =
-            localStorage.getItem('token_cliente') ||
-            localStorage.getItem('cliente_token') ||
-            localStorage.getItem('token') ||
-            sessionStorage.getItem('token_cliente') ||
-            sessionStorage.getItem('cliente_token') ||
-            sessionStorage.getItem('token') || '';
+    // --- UTILIDADES ---
+    const getToken = () => {
+        const t = localStorage.getItem('token_cliente') || localStorage.getItem('token') || '';
         return (t || '').replace(/^"|"$/g, '').trim();
-    }
+    };
 
-    // Verificar si está autenticado
-    function isLoggedIn() {
-        return !!getToken();
-    }
-
-    // Obtener clave del carrito
-    function getCartKey() {
+    const getClienteId = () => {
         try {
-            const cliente = JSON.parse(localStorage.getItem('cliente') || 'null');
-            return cliente?.id_cliente ? `cart_${cliente.id_cliente}` : 'cart_tmp';
-        } catch {
-            return 'cart_tmp';
-        }
-    }
+            const c = JSON.parse(localStorage.getItem('cliente') || localStorage.getItem('cliente_data') || 'null');
+            return c?.id_cliente || c?.id || null;
+        } catch { return null; }
+    };
 
-    // Sincronizar item con backend
-    async function syncItemToBackend(item) {
-        if (!isLoggedIn()) return;
+    const getCartKey = () => {
+        const id = getClienteId();
+        return id ? `cart_${id}` : 'cart_tmp';
+    };
 
-        try {
+    const triggerUpdate = () => {
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+    };
+
+    // --- API DEL SERVICIO ---
+    const CartService = {
+        
+        getCart: function() {
+            try { return JSON.parse(localStorage.getItem(getCartKey()) || '[]'); }
+            catch { return []; }
+        },
+
+        saveLocal: function(items) {
+            localStorage.setItem(getCartKey(), JSON.stringify(items || []));
+            triggerUpdate();
+        },
+
+        // Añadir producto (Sincronizado)
+        addItem: async function(item) {
+            // 1. Actualizar Local primero (Optimismo)
+            let cart = this.getCart();
+            const idx = cart.findIndex(it => 
+                it.id_producto === item.id_producto && 
+                JSON.stringify(it.opciones || []) === JSON.stringify(item.opciones || [])
+            );
+
+            if (idx >= 0) {
+                cart[idx].cantidad += Number(item.cantidad || 1);
+            } else {
+                cart.push(item);
+            }
+            this.saveLocal(cart);
+
+            // 2. Sincronizar con Backend si está logueado
             const token = getToken();
-            await fetch('/api/client/carrito', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    id_producto: item.id_producto,
-                    cantidad: item.cantidad,
-                    opciones: item.opciones || []
-                })
-            });
-        } catch (e) {
-            console.error('Error sincronizando carrito:', e);
-            // No mostrar error al usuario, el carrito local funciona
-        }
-    }
+            if (token) {
+                try {
+                    await fetch('/api/client/carrito', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            id_producto: item.id_producto,
+                            cantidad: item.cantidad,
+                            opciones: item.opciones || []
+                        })
+                    });
+                    // Refrescar para obtener el id_carrito oficial
+                    await this.syncFromServer();
+                } catch (e) { console.warn('Error sincronizando item:', e); }
+            }
+        },
 
-    // Sincronizar carrito completo al login
-    async function syncCartOnLogin() {
-        if (!isLoggedIn()) return;
+        // Actualizar cantidad exacta (Sincronizado - Crucial para Checkout)
+        updateQuantity: async function(id_carrito, id_producto, newQty) {
+            let cart = this.getCart();
+            const idx = cart.findIndex(it => 
+                (id_carrito && it.id_carrito === id_carrito) || 
+                (!id_carrito && it.id_producto === id_producto)
+            );
 
-        const carritoLocal = JSON.parse(localStorage.getItem('cart_tmp') || '[]');
+            if (idx === -1) return;
+            cart[idx].cantidad = Number(newQty);
+            this.saveLocal(cart);
 
-        if (carritoLocal.length === 0) {
-            // Cargar carrito desde servidor
-            await loadCartFromServer();
-            return;
-        }
-
-        try {
             const token = getToken();
-            const response = await fetch('/api/client/carrito/sincronizar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items: carritoLocal })
-            });
+            if (token && (id_carrito || id_producto)) {
+                try {
+                    // Si tenemos id_carrito (preferido), usamos el endpoint PUT específico
+                    const url = id_carrito ? `/api/client/carrito/${id_carrito}` : `/api/client/carrito/producto/${id_producto}`;
+                    const r = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ cantidad: newQty })
+                    });
+                    if (!r.ok) throw new Error('Error en servidor');
+                } catch (e) { 
+                    console.warn('Error actualizando cantidad en backend:', e);
+                    // Opcional: Revertir localmente si falla críticamente
+                }
+            }
+        },
 
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.items) {
-                    // Actualizar localStorage con carrito sincronizado
-                    const cliente = JSON.parse(localStorage.getItem('cliente') || 'null');
-                    if (cliente?.id_cliente) {
-                        localStorage.setItem(`cart_${cliente.id_cliente}`, JSON.stringify(data.items));
+        // Eliminar producto (Sincronizado)
+        removeItem: async function(id_carrito, id_producto) {
+            let cart = this.getCart();
+            cart = cart.filter(it => !(
+                (id_carrito && it.id_carrito === id_carrito) || 
+                (!id_carrito && it.id_producto === id_producto)
+            ));
+            this.saveLocal(cart);
+
+            const token = getToken();
+            if (token && id_carrito) {
+                try {
+                    await fetch(`/api/client/carrito/${id_carrito}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                } catch (e) { console.warn('Error eliminando del backend:', e); }
+            }
+        },
+
+        // Descargar la "verdad absoluta" del servidor
+        syncFromServer: async function() {
+            const token = getToken();
+            if (!token) return;
+
+            try {
+                const r = await fetch('/api/client/carrito', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (r.ok) {
+                    const data = await r.json();
+                    if (data.success && data.data && Array.isArray(data.data.items)) {
+                        localStorage.setItem(getCartKey(), JSON.stringify(data.data.items));
+                        triggerUpdate();
+                        window.dispatchEvent(new CustomEvent('cartSynced'));
+                        return data.data.items;
                     }
-                    // Limpiar carrito temporal
+                }
+            } catch (e) { console.error('Error en syncFromServer:', e); }
+        },
+
+        // Sincronizar cart_tmp -> servidor al iniciar sesión
+        mergeTempCart: async function() {
+            const token = getToken();
+            if (!token) return;
+            const tmpItems = JSON.parse(localStorage.getItem('cart_tmp') || '[]');
+            if (tmpItems.length === 0) return this.syncFromServer();
+
+            try {
+                const r = await fetch('/api/client/carrito/sincronizar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ items: tmpItems })
+                });
+                if (r.ok) {
                     localStorage.removeItem('cart_tmp');
+                    await this.syncFromServer();
                 }
-            }
-        } catch (e) {
-            console.error('Error sincronizando carrito al login:', e);
+            } catch (e) { console.error('Error merging cart:', e); }
         }
-    }
+    };
 
-    // Cargar carrito desde servidor
-    async function loadCartFromServer() {
-        if (!isLoggedIn()) return;
+    // --- EXPOSICIÓN GLOBAL ---
+    window.CartService = CartService;
+    // Compatibilidad con código antiguo
+    window.addToCart = (item) => CartService.addItem(item);
 
-        try {
-            const token = getToken();
-            const response = await fetch('/api/client/carrito', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.items) {
-                    const cliente = JSON.parse(localStorage.getItem('cliente') || 'null');
-                    if (cliente?.id_cliente) {
-                        localStorage.setItem(`cart_${cliente.id_cliente}`, JSON.stringify(data.items));
-                    }
-                }
-            }
-        } catch (e) {
-            console.error('Error cargando carrito desde servidor:', e);
-        }
-    }
-
-    // Interceptar función addToCart original
-    const originalAddToCart = window.addToCart;
-    if (typeof originalAddToCart === 'function') {
-        window.addToCart = async function (item) {
-            // Llamar función original
-            originalAddToCart(item);
-
-            // Sincronizar con backend si está autenticado
-            await syncItemToBackend(item);
-        };
-    }
-
-    // Sincronizar al cargar la página si está autenticado
-    document.addEventListener('DOMContentLoaded', () => {
-        if (isLoggedIn()) {
-            syncCartOnLogin();
+    // --- ESCUCHA DE EVENTOS ---
+    // Sincronización multi-pestaña
+    window.addEventListener('storage', (e) => {
+        if (e.key === getCartKey()) {
+            triggerUpdate();
         }
     });
 
-    // Exponer funciones globalmente
-    window.cartSync = {
-        syncItemToBackend,
-        syncCartOnLogin,
-        loadCartFromServer
-    };
+    // Inicio automático si está logueado
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            if (getToken()) CartService.syncFromServer();
+        });
+    } else {
+        if (getToken()) CartService.syncFromServer();
+    }
 
 })();
