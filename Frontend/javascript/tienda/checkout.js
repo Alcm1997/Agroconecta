@@ -250,19 +250,36 @@
 
     // Validación de campos según el método
     const id = Number(tp.value);
+    const PF = window.PaymentFormatter;
+
     if (id === 1) { // Tarjeta
-      const n = document.getElementById('cardNum').value;
+      const n = PF.unformat(document.getElementById('cardNum').value);
       const e = document.getElementById('cardExp').value;
       const c = document.getElementById('cardCvv').value;
+      
       if (!n || !e || !c) return Swal.fire('Atención', 'Completa los datos de tu tarjeta', 'warning');
-    } else if (id === 2) { // Yape
-      const p = document.getElementById('yapePhone').value;
-      const c = document.getElementById('yapeCode').value;
-      if (!p || !c) return Swal.fire('Atención', 'Completa los datos de tu Yape', 'warning');
-    } else if (id === 3) { // Plin
-      const p = document.getElementById('plinPhone').value;
-      const c = document.getElementById('plinCode').value;
-      if (!p || !c) return Swal.fire('Atención', 'Completa los datos de tu Plin', 'warning');
+      
+      const cardType = PF.detectCardType(n);
+      if (!cardType) return Swal.fire('Error', 'Tipo de tarjeta no reconocido', 'error');
+      if (n.length < cardType.maxLen) return Swal.fire('Atención', `El número de tarjeta debe tener ${cardType.maxLen} dígitos`, 'warning');
+      if (!PF.validateLuhn(n)) return Swal.fire('Error', 'Número de tarjeta inválido (Luhn Check failed)', 'error');
+      
+      const expiryCheck = PF.validateExpiryDate(e);
+      if (!expiryCheck.valid) return Swal.fire('Atención', expiryCheck.msg, 'warning');
+
+      if (c.length < cardType.cvvLen) return Swal.fire('Atención', `El CVV para ${cardType.niceName} debe tener ${cardType.cvvLen} dígitos`, 'warning');
+
+    } else if (id === 2 || id === 3) { // Yape o Plin
+      const fieldPrefix = id === 2 ? 'yape' : 'plin';
+      const p = PF.unformat(document.getElementById(`${fieldPrefix}Phone`).value);
+      const c = document.getElementById(`${fieldPrefix}Code`).value;
+      
+      if (!p || !c) return Swal.fire('Atención', `Completa los datos de tu ${fieldPrefix.toUpperCase()}`, 'warning');
+      
+      const phoneCheck = PF.validatePhone(p);
+      if (!phoneCheck.valid) return Swal.fire('Atención', phoneCheck.msg, 'warning');
+
+      if (c.length !== 6) return Swal.fire('Atención', 'El código de aprobación debe tener 6 dígitos', 'warning');
     }
 
     try {
@@ -309,9 +326,120 @@
     }
   }
 
+  const setupPaymentMasks = () => {
+    const PF = window.PaymentFormatter;
+    if (!PF) return;
+
+    // --- Máscara Tarjeta ---
+    const cardInput = document.getElementById('cardNum');
+    const cvvInput = document.getElementById('cardCvv');
+    const iconContainer = document.getElementById('cardBrandIcon');
+
+    if (cardInput) {
+      cardInput.addEventListener('input', (e) => {
+        const cursor = e.target.selectionStart;
+        const oldVal = e.target.value;
+        const clean = PF.unformat(oldVal);
+        const cardType = PF.detectCardType(clean);
+
+        // Aplicar máscara
+        e.target.value = PF.formatCardNumber(clean, cardType);
+
+        // Ajustar CVV y Placeholder
+        if (cardType) {
+          cvvInput.maxLength = cardType.cvvLen;
+          cvvInput.placeholder = cardType.name === 'amex' ? '0000' : '000';
+          if (iconContainer) {
+            const icons = {
+              visa: 'fab fa-cc-visa',
+              mastercard: 'fab fa-cc-mastercard',
+              amex: 'fab fa-cc-amex',
+              diners: 'fab fa-cc-diners-club'
+            };
+            iconContainer.innerHTML = `<i class="${icons[cardType.name] || 'fas fa-credit-card'} animate__animated animate__flipInX"></i>`;
+            iconContainer.className = `position-absolute top-50 end-0 translate-middle-y me-3 text-${cardType.name}`;
+          }
+        } else {
+          cvvInput.maxLength = 3;
+          cvvInput.placeholder = 'CVV';
+          if (iconContainer) {
+            iconContainer.innerHTML = '<i class="fas fa-credit-card"></i>';
+            iconContainer.className = 'position-absolute top-50 end-0 translate-middle-y me-3 text-muted';
+          }
+        }
+
+        // Mantener posición del cursor (aproximado por espacios)
+        if (cursor < oldVal.length) {
+            e.target.setSelectionRange(cursor, cursor);
+        }
+      });
+    }
+
+    // --- Máscara Expiración ---
+    const expInput = document.getElementById('cardExp');
+    if (expInput) {
+      expInput.addEventListener('input', (e) => {
+        e.target.value = PF.formatExpiry(e.target.value);
+      });
+
+      expInput.addEventListener('blur', (e) => {
+        if (e.target.value.length === 5) {
+          const check = PF.validateExpiryDate(e.target.value);
+          if (!check.valid) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Fecha inválida',
+              text: check.msg,
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000
+            });
+            e.target.classList.add('is-invalid');
+          } else {
+            e.target.classList.remove('is-invalid');
+            e.target.classList.add('is-valid');
+          }
+        }
+      });
+    }
+
+    // --- Máscara Celulares (Yape/Plin) ---
+    ['yapePhone', 'plinPhone'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          e.target.value = PF.formatPhone(e.target.value);
+        });
+
+        el.addEventListener('blur', (e) => {
+          if (e.target.value.length >= 1) {
+            const check = PF.validatePhone(e.target.value);
+            if (!check.valid) {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Celular inválido',
+                text: check.msg,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+              });
+              e.target.classList.add('is-invalid');
+            } else {
+              e.target.classList.remove('is-invalid');
+              e.target.classList.add('is-valid');
+            }
+          }
+        });
+      }
+    });
+  };
+
   const initCheckout = () => {
     loadTiposPago();
     loadAndRender();
+    setupPaymentMasks();
     
     const btn = document.getElementById('btnPedir');
     if (btn) btn.addEventListener('click', placeOrder);

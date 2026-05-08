@@ -82,15 +82,18 @@
                 <!-- Formulario Tarjeta -->
                 <div id="formTarjeta" class="payment-details-box p-3 border rounded-3 bg-light" style="display: none;">
                   <h6 class="mb-3"><i class="fas fa-credit-card me-2"></i>Datos de Tarjeta</h6>
-                  <div class="mb-2">
-                    <input type="text" class="form-control" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19">
+                  <div class="mb-2 position-relative">
+                    <input type="text" class="form-control pe-5" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number">
+                    <div id="cardBrandIcon" class="position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="font-size: 1.2rem;">
+                      <i class="fas fa-credit-card"></i>
+                    </div>
                   </div>
                   <div class="row g-2">
                     <div class="col-7">
-                      <input type="text" class="form-control" id="cardExp" placeholder="MM/AA" maxlength="5">
+                      <input type="text" class="form-control" id="cardExp" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
                     </div>
                     <div class="col-5">
-                      <input type="text" class="form-control" id="cardCvv" placeholder="CVV" maxlength="3">
+                      <input type="text" class="form-control" id="cardCvv" placeholder="CVV" maxlength="3" autocomplete="cc-csc">
                     </div>
                   </div>
                 </div>
@@ -100,7 +103,7 @@
                   <h6 class="text-purple mb-3"><i class="fas fa-mobile-alt me-2"></i>Pago con Yape</h6>
                   <div class="mb-2">
                     <label class="small text-muted">Número de celular</label>
-                    <input type="text" class="form-control border-purple" id="yapePhone" placeholder="987 654 321" maxlength="9">
+                    <input type="text" class="form-control border-purple" id="yapePhone" placeholder="9XX XXX XXX" maxlength="11">
                   </div>
                   <div class="mb-0">
                     <label class="small text-muted">Código de aprobación</label>
@@ -113,7 +116,7 @@
                   <h6 class="text-teal mb-3"><i class="fas fa-mobile-alt me-2"></i>Pago con Plin</h6>
                   <div class="mb-2">
                     <label class="small text-muted">Número de celular</label>
-                    <input type="text" class="form-control border-teal" id="plinPhone" placeholder="987 654 321" maxlength="9">
+                    <input type="text" class="form-control border-teal" id="plinPhone" placeholder="9XX XXX XXX" maxlength="11">
                   </div>
                   <div class="mb-0">
                     <label class="small text-muted">Código de verificación</label>
@@ -135,4 +138,5 @@
   </div>
 </div>
 
+  <script src="/javascript/tienda/payment-formatter.js"></script>
   <script src="/javascript/tienda/checkout.js"></script>
