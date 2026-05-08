@@ -305,14 +305,35 @@
         body: JSON.stringify(payload)
       });
       
+      if (r.status === 401) {
+        throw new Error('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.');
+      }
+      
       if (!r.ok) throw new Error('Error al procesar el pedido');
 
       const out = await r.json();
-      localStorage.setItem('ultimo_pedido', JSON.stringify({ ...out, items, cliente: getCliente() }));
-      saveCart([]);
+      
+      // Capturamos el nombre visual del método seleccionado para el comprobante
+      const btnText = document.getElementById('selectedPaymentText');
+      const nombreMetodo = btnText ? btnText.textContent.trim() : 'Pago Online';
 
-      Swal.fire('¡Gracias por tu compra!', 'Tu pedido ha sido procesado correctamente.', 'success').then(() => {
-        window.location.href = '/comprobante';
+      // Guardamos la respuesta oficial + el nombre visual capturado
+      localStorage.setItem('ultimo_pedido', JSON.stringify({ 
+        ...out, 
+        metodo_pago: nombreMetodo,
+        items, 
+        cliente: getCliente() 
+      }));
+
+      saveCart([]); // Vaciar localmente tras éxito
+
+      Swal.fire({
+        title: '¡Gracias por tu compra!',
+        text: 'Tu pedido ha sido procesado correctamente.',
+        icon: 'success',
+        confirmButtonColor: '#2E7D32'
+      }).then(() => {
+        window.navigateTo('/comprobante');
       });
 
     } catch (e) {

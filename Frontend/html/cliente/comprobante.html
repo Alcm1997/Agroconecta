@@ -1,124 +1,127 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Comprobante | Pitahaya Perú</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="/css/cliente/theme.css"/>
-  <link rel="stylesheet" href="/css/cliente/components.css"/>
-  <link rel="stylesheet" href="/css/cliente/pages/comprobante.css"/>
-</head>
-<body class="bg-light">
-  <nav class="navbar navbar-expand-lg navbar-dark no-print navbar-comprobante">
-    <div class="container">
-      <a class="navbar-brand" href="/"><i class="fas fa-seedling me-2"></i>PITAHAYA PERÚ</a>
-      <div class="ms-auto">
-        <a href="/" class="btn btn-outline-light btn-sm"><i class="fas fa-store me-1"></i> Seguir comprando</a>
-      </div>
-    </div>
-  </nav>
+<!-- Fragmento de Comprobante (Inyectado por el Router SPA) -->
+<link rel="stylesheet" href="/css/cliente/pages/comprobante.css">
 
-  <main class="container py-4">
-    <div class="text-center mb-4 no-print">
-      <div class="success-icon"><i class="fas fa-check"></i></div>
-      <h1 class="h3 text-success mb-2">¡Pedido generado exitosamente!</h1>
-      <p class="text-muted">Tu comprobante ha sido generado. Puedes descargarlo o imprimirlo.</p>
-    </div>
+<main class="container py-4">
+  <div class="text-center mb-4 no-print">
+    <div class="success-icon animate__animated animate__zoomIn"><i class="fas fa-check"></i></div>
+    <h1 class="h3 text-success fw-bold mb-2">¡Pedido generado exitosamente!</h1>
+    <p class="text-muted">Tu comprobante ha sido generado. Puedes descargarlo o imprimirlo.</p>
+  </div>
 
-    <div class="comprobante-container">
-      <div class="comprobante-header">
-        <div class="row align-items-center">
-          <div class="col-md-8">
-            <h2 class="mb-1"><i class="fas fa-seedling me-2"></i>PITAHAYA PERÚ S.A.C.</h2>
-            <p class="mb-0">RUC: 20123456789</p>
-            <p class="mb-0">Jr. Los Frutales 123, Lima - Perú</p>
-            <p class="mb-0">Teléfono: (01) 234-5678</p>
+  <div class="comprobante-container shadow-lg animate__animated animate__fadeInUp">
+    <!-- Cabecera Verde (Imagen 1) -->
+    <div class="comprobante-header-premium p-4">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <div class="d-flex align-items-center mb-2">
+            <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo" class="comprobante-logo me-3">
+            <h2 class="h4 mb-0 fw-bold">PITAHAYA PERÚ S.A.C.</h2>
           </div>
-          <div class="col-md-4 text-md-end">
-            <div class="comprobante-numero">
-              <div class="fw-bold" id="tipoComprobante">BOLETA</div>
-              <div id="numeroComprobante">BO000-001</div>
-            </div>
+          <div class="company-details small opacity-90">
+            <p class="mb-0"><i class="fas fa-id-card me-2"></i>RUC: 20610389148</p>
+            <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>MZA. 44 LOTE. 24 ASC. POPULAR LOMAS DE ANCON LIMA</p>
+            <p class="mb-0"><i class="fas fa-phone me-2"></i>Teléfono: +51 993 346 052</p>
+          </div>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <div class="badge-comprobante p-3 rounded-3 shadow-sm">
+            <div class="text-uppercase small fw-bold opacity-75" id="tipoComprobante">Boleta</div>
+            <div class="fs-4 fw-bold" id="numeroComprobante">BO000-007</div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="p-4">
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <h6 class="fw-bold text-primary mb-2">DATOS DEL CLIENTE</h6>
-            <p class="mb-1"><strong>Cliente:</strong> <span id="nombreCliente">-</span></p>
+    <!-- Cuerpo del Comprobante -->
+    <div class="p-4 bg-white">
+      <div class="row mb-4">
+        <div class="col-md-6 mb-3 mb-md-0">
+          <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+            <i class="fas fa-user me-2"></i>Datos del Cliente
+          </h6>
+          <div class="data-box p-3 rounded-3 border-start border-4 border-primary bg-light">
+            <p class="mb-1"><strong>Cliente:</strong> <span id="nombreCliente">Cargando...</span></p>
             <p class="mb-1"><strong>Documento:</strong> <span id="documentoCliente">-</span></p>
             <p class="mb-1"><strong>Teléfono:</strong> <span id="telefonoCliente">-</span></p>
             <p class="mb-0"><strong>Email:</strong> <span id="emailCliente">-</span></p>
           </div>
-          <div class="col-md-6">
-            <h6 class="fw-bold text-primary mb-2">DATOS DEL PEDIDO</h6>
+        </div>
+        <div class="col-md-6">
+          <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+            <i class="fas fa-file-invoice me-2"></i>Datos del Pedido
+          </h6>
+          <div class="data-box p-3 rounded-3 border-start border-4 border-success bg-light">
             <p class="mb-1"><strong>Fecha:</strong> <span id="fechaPedido">-</span></p>
             <p class="mb-1"><strong>Hora:</strong> <span id="horaPedido">-</span></p>
             <p class="mb-1"><strong>Método de pago:</strong> <span id="metodoPago">-</span></p>
-            <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-warning">Pendiente</span></p>
+            <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-warning text-dark px-3 rounded-pill">Pendiente</span></p>
           </div>
         </div>
+      </div>
 
-        <h6 class="fw-bold text-primary mb-3">DETALLE DE PRODUCTOS</h6>
-        <div class="table-responsive">
-          <table class="table table-comprobante">
-            <thead>
-              <tr>
-                <th>Descripción</th>
-                <th class="text-center">Cant.</th>
-                <th class="text-end">P. Unit.</th>
-                <th class="text-end">Total</th>
-              </tr>
-            </thead>
-            <tbody id="detalleProductos"></tbody>
-          </table>
-        </div>
+      <!-- Tabla de Productos -->
+      <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+        <i class="fas fa-shopping-basket me-2"></i>Detalle de Productos
+      </h6>
+      <div class="table-responsive rounded-3 border overflow-hidden mb-4">
+        <table class="table table-hover mb-0">
+          <thead class="bg-primary text-white">
+            <tr>
+              <th class="ps-4">Descripción</th>
+              <th class="text-center">Cant.</th>
+              <th class="text-end">P. Unit.</th>
+              <th class="text-end pe-4">Total</th>
+            </tr>
+          </thead>
+          <tbody id="detalleProductos">
+            <!-- Inyectado por JS -->
+          </tbody>
+        </table>
+      </div>
 
-        <div class="row justify-content-end">
-          <div class="col-md-4">
-            <div class="total-section">
-              <div class="d-flex justify-content-between mb-2">
-                <span>Subtotal:</span>
-                <span id="subtotalComprobante">S/ 0.00</span>
-              </div>
-              <div class="d-flex justify-content-between mb-2">
-                <span>IGV (18%):</span>
-                <span id="igvComprobante">S/ 0.00</span>
-              </div>
-              <hr>
-              <div class="d-flex justify-content-between fw-bold fs-5">
-                <span>TOTAL:</span>
-                <span id="totalComprobante" class="text-primary">S/ 0.00</span>
-              </div>
+      <!-- Sección de Totales -->
+      <div class="row justify-content-end">
+        <div class="col-md-5 col-lg-4">
+          <div class="totals-card p-3 rounded-3 bg-light border">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">Subtotal:</span>
+              <span class="fw-bold" id="subtotalComprobante">S/ 0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted">IGV (18%):</span>
+              <span class="fw-bold" id="igvComprobante">S/ 0.00</span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fs-5 fw-bold text-dark">TOTAL:</span>
+              <span class="fs-4 fw-bold text-primary" id="totalComprobante">S/ 0.00</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="mt-4 pt-3 border-top text-center text-muted">
-          <p class="mb-1">¡Gracias por tu compra!</p>
-          <p class="mb-0 small">Este comprobante es válido como documento de venta.</p>
-        </div>
+      <!-- Footer Comprobante -->
+      <div class="mt-5 pt-4 border-top text-center">
+        <p class="mb-1 fw-bold text-muted">¡Gracias por tu compra!</p>
+        <p class="small text-muted mb-0">Este comprobante es válido como documento de venta y será validado por SUNAT.</p>
       </div>
     </div>
+  </div>
 
-    <div class="text-center mt-4 no-print">
-      <button onclick="window.print()" class="btn btn-outline-primary me-2">
-        <i class="fas fa-print me-1"></i> Imprimir
+  <!-- Botones de Acción (No Print) -->
+  <div class="text-center mt-5 no-print animate__animated animate__fadeInUp animate__delay-1s">
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <button onclick="window.print()" class="btn btn-outline-dark px-4 py-2 rounded-pill shadow-sm">
+        <i class="fas fa-print me-2"></i> Imprimir
       </button>
-      <button id="btnDescargar" class="btn btn-primary me-2">
-        <i class="fas fa-download me-1"></i> Descargar PDF
+      <button id="btnDescargar" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm">
+        <i class="fas fa-file-pdf me-2"></i> Descargar PDF
       </button>
-      <a href="/" class="btn btn-outline-success">
-        <i class="fas fa-store me-1"></i> Seguir comprando
+      <a href="/" class="btn btn-success px-5 py-2 rounded-pill shadow-sm fw-bold">
+        <i class="fas fa-store me-2"></i> Seguir comprando
       </a>
     </div>
-  </main>
+  </div>
+</main>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-  <script src="/javascript/tienda/comprobante.js" defer></script>
-</body>
-</html>
+<script src="/javascript/tienda/comprobante.js"></script>

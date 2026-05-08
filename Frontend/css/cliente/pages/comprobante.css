@@ -1,81 +1,158 @@
 /* ============================================================
-   comprobante.css — Página: Comprobante de Pedido
-   Estilos específicos de comprobante.html
-   Requiere: theme.css + components.css cargados antes
+   comprobante.css — Diseño Premium (SUNAT-Ready)
+   Pitahaya Perú S.A.C.
    ============================================================ */
 
-/* ── NAVBAR DEL COMPROBANTE ─────────────────────────────────── */
-.navbar-comprobante {
-  background: var(--color-green);
+:root {
+    --receipt-primary: #2e7d32;
+    --receipt-secondary: #4caf50;
+    --receipt-bg: #fdfdfd;
+}
+
+/* ── CONTENEDOR PRINCIPAL ──────────────────────────────────── */
+.comprobante-container {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 900px;
+    margin: 0 auto;
+    border: 1px solid #eee;
+}
+
+/* ── CABECERA PREMIUM (Imagen 1) ────────────────────────────── */
+.comprobante-header-premium {
+    background: linear-gradient(135deg, var(--receipt-primary) 0%, var(--receipt-secondary) 100%);
+    color: #fff;
+}
+
+.comprobante-header-premium h2 {
+    letter-spacing: -0.5px;
+}
+
+.comprobante-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    background-color: #fff; /* Asegura fondo blanco si el logo es transparente */
+    flex-shrink: 0;
+}
+
+.company-details p {
+    margin-bottom: 2px;
+}
+
+/* Badge de Boleta/Factura */
+.badge-comprobante {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    text-align: center;
+}
+
+/* ── SECCIONES DE DATOS ─────────────────────────────────────── */
+.section-title {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+}
+
+.data-box {
+    height: 100%;
+}
+
+.data-box p {
+    font-size: 0.95rem;
+    color: #444;
+}
+
+/* ── TABLA DE PRODUCTOS ─────────────────────────────────────── */
+.table thead th {
+    background: var(--receipt-primary);
+    border: none;
+    padding: 14px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.table tbody td {
+    padding: 14px;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── SECCIÓN DE TOTALES ─────────────────────────────────────── */
+.totals-card {
+    border: 1px solid #e0e0e0;
 }
 
 /* ── ÍCONO DE ÉXITO ─────────────────────────────────────────── */
 .success-icon {
-  width:           80px;
-  height:          80px;
-  background:      linear-gradient(135deg, var(--color-green), var(--color-green-mid));
-  border-radius:   50%;
-  display:         flex;
-  align-items:     center;
-  justify-content: center;
-  margin:          0 auto 1.5rem;
-  font-size:       2rem;
-  color:           #fff;
-  box-shadow:      0 4px 16px rgba(46, 125, 50, 0.30);
+    width: 70px;
+    height: 70px;
+    background: var(--receipt-primary);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 
-/* ── CONTENEDOR DEL COMPROBANTE ─────────────────────────────── */
-.comprobante-container {
-  background:    #fff;
-  border-radius: var(--radius-md);
-  box-shadow:    var(--shadow-md);
-  overflow:      hidden;
-  max-width:     860px;
-  margin:        0 auto;
-}
-
-/* ── CABECERA DEL COMPROBANTE ───────────────────────────────── */
-.comprobante-header {
-  background:    linear-gradient(135deg, var(--color-green), var(--color-green-mid));
-  color:         #fff;
-  padding:       2rem;
-}
-
-.comprobante-header h2 { margin: 0 0 0.25rem; font-weight: 700; }
-.comprobante-header p  { margin: 0; opacity: 0.90; font-size: 0.95rem; }
-
-/* ── NÚMERO / TIPO DE COMPROBANTE ───────────────────────────── */
-.comprobante-numero {
-  background:    rgba(255, 255, 255, 0.20);
-  border-radius: var(--radius-sm);
-  padding:       0.75rem 1.25rem;
-  text-align:    center;
-  font-size:     1.1rem;
-  letter-spacing: 0.5px;
-}
-
-/* ── TABLA DE PRODUCTOS ─────────────────────────────────────── */
-.table-comprobante thead tr {
-  background: linear-gradient(45deg, var(--color-green), var(--color-green-mid));
-  color:      #fff;
-}
-.table-comprobante thead th { border: none; padding: 12px; font-weight: 600; }
-.table-comprobante tbody td { vertical-align: middle; padding: 12px; }
-
-/* ── SECCIÓN DE TOTALES ─────────────────────────────────────── */
-.total-section {
-  background:    #f8f9fa;
-  border-radius: var(--radius-sm);
-  padding:       1.25rem;
-  border:        1px solid #e9ecef;
-}
-
-/* ── UTILIDAD: OCULTAR EN IMPRESIÓN ─────────────────────────── */
+/* ── CONFIGURACIÓN DE IMPRESIÓN ─────────────────────────────── */
 @media print {
-  .no-print { display: none !important; }
+    .no-print { display: none !important; }
+    
+    body {
+        background: #fff !important;
+        margin: 0;
+        padding: 0;
+    }
 
-  .comprobante-container {
-    box-shadow: none;
-    border:     1px solid #ddd;
-  }
+    .comprobante-container {
+        box-shadow: none !important;
+        border: 1px solid #ccc;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Forzar fondo verde en impresión */
+    .comprobante-header-premium {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: var(--receipt-primary) !important;
+        color: #fff !important;
+    }
+
+    .table thead th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background: var(--receipt-primary) !important;
+        color: #fff !important;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* Animaciones */
+.animate__animated {
+    animation-duration: 0.6s;
 }

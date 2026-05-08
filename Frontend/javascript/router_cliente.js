@@ -7,6 +7,7 @@
         '/': '/html/cliente/inicio.html',
         '/mi-cuenta': '/html/cliente/miCuenta.html',
         '/checkout': '/html/cliente/checkout.html',
+        '/comprobante': '/html/cliente/comprobante.html',
         '/producto': '/html/cliente/producto_detalle.html',
         '/login': '/html/cliente/loginagroconecta.html',
         '/registro': '/html/cliente/registroagroconecta.html',

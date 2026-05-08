@@ -136,7 +136,7 @@
             if (['token', 'token_cliente', 'cliente'].includes(e.key)) {
                 updateAuthUI();
                 updateCartBadge();
-                if (getToken()) syncCartFromServer();
+                if (getToken() && window.CartService) window.CartService.syncFromServer();
             }
         });
     };

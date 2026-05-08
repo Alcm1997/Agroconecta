@@ -40,19 +40,30 @@ exports.crear = async (req, res) => {
     const carritoService = require('../Services/carritoService');
     await carritoService.vaciar(id_cliente).catch(err => console.error('Error al vaciar carrito post-venta:', err));
 
+    // ✅ MEJORA: Enriquecer las líneas con los nombres de los productos que vienen del frontend
+    // para que el comprobante se muestre completo sin consultas adicionales
+    const itemsFinales = (resultado.items_detalle || []).map(ln => {
+      const original = items.find(it => Number(it.id_producto) === Number(ln.id_producto));
+      return {
+        ...ln,
+        nombre: original ? original.nombre : 'Producto'
+      };
+    });
+
     // Respuesta exitosa con datos completos para el comprobante
     res.status(201).json({
       success: true,
       message: 'Pedido creado exitosamente',
       id_pedido: resultado.id_pedido,
+      id_comprobante: resultado.id_comprobante,
       tipo_comprobante: resultado.tipo_comprobante,
       numero_comprobante: resultado.numero_comprobante,
       total: resultado.total,
       subtotal: resultado.subtotal,
       igv: resultado.igv,
-      fecha_pedido: resultado.fecha_pedido || new Date().toISOString(),
-      estado: resultado.estado || 'Pendiente',
-      items_detalle: resultado.items_detalle || []
+      fecha_pedido: new Date().toISOString(),
+      estado: 'Pendiente',
+      items_detalle: itemsFinales
     });
 
   } catch (error) {

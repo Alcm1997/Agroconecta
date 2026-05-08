@@ -143,7 +143,16 @@ async function crearPedidoConComprobante({ id_cliente, id_tipo_pago = null, item
     }
 
     await client.query('COMMIT');
-    return { id_pedido, id_comprobante, numero_comprobante: numero, total, tipo_comprobante: tipoComprobante };
+    return { 
+      id_pedido, 
+      id_comprobante, 
+      numero_comprobante: numero, 
+      total, 
+      subtotal, 
+      igv, 
+      tipo_comprobante: tipoComprobante,
+      items_detalle: lineas
+    };
   } catch (err) {
     await client.query('ROLLBACK');
     throw err;
