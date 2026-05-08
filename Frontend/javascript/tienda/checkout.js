@@ -198,6 +198,10 @@
           if (btn) {
             btn.classList.remove('btn-outline-secondary');
             btn.classList.add('btn-outline-primary');
+            
+            // ✅ CIERRE AUTOMÁTICO: Usamos la API de Bootstrap para cerrar el menú
+            const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(btn);
+            if (bsDropdown) bsDropdown.hide();
           }
 
           // Mostrar el formulario correspondiente
