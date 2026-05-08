@@ -84,6 +84,36 @@
     box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 
+/* ── RESPONSIVE MOBILE AJUSTES ──────────────────────────────── */
+@media (max-width: 768px) {
+    .comprobante-header-premium { padding: 1.5rem !important; }
+    .comprobante-logo { width: 40px; height: 40px; }
+    
+    .table thead th, .table tbody td {
+        padding: 10px 8px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Alineación perfecta de cabeceras con contenido */
+    .table thead th.text-end, .table tbody td.text-end { 
+        padding-right: 12px !important; 
+    }
+
+    .table tbody td .fw-bold { font-size: 0.85rem; }
+    
+    /* Prevenir que los precios se corten o salten de línea */
+    .text-end { white-space: nowrap; }
+
+    /* Ajuste de anchos de columna para optimizar espacio */
+    .table th:nth-child(1) { width: 45%; } /* Descripción */
+    .table th:nth-child(2) { width: 15%; text-align: center; } /* Cant */
+    .table th:nth-child(3) { width: 20%; text-align: right; } /* P. Unit */
+    .table th:nth-child(4) { width: 20%; text-align: right; } /* Total */
+
+    .totals-card { padding: 1rem !important; }
+    .fs-4 { font-size: 1.25rem !important; }
+}
+
 /* ── CONFIGURACIÓN DE IMPRESIÓN (SUNAT A4) ──────────────────── */
 .print-only-layout { display: none; }
 

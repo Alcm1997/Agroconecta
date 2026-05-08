@@ -260,6 +260,31 @@ html:has(body.auth-bg)::-webkit-scrollbar {
   width: 100%;
 }
 
+/* 5. Ajustes Mobile para Autenticación */
+@media (max-width: 768px) {
+  .auth-nav-wrapper {
+    padding: 0 15px;
+  }
+  
+  .navbar-auth .brand-auth {
+    font-size: 0.95rem;
+  }
+
+  .navbar-auth .brand-auth img {
+    height: 32px;
+    width: 32px;
+    margin-right: 8px;
+  }
+
+  .auth-bg #app-content {
+    padding: 25px 15px 40px 15px;
+  }
+
+  .login-card, .registro-card, .recuperar-card, .verificar-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
 .login-title,
 .registro-title,
 .recuperar-title,
