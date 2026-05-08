@@ -77,6 +77,51 @@
                 </div>
               </div>
 
+              <!-- Formulario Dinámico de Pago -->
+              <div id="paymentFormContainer" class="mb-3 animate__animated animate__fadeIn" style="display: none;">
+                <!-- Formulario Tarjeta -->
+                <div id="formTarjeta" class="payment-details-box p-3 border rounded-3 bg-light" style="display: none;">
+                  <h6 class="mb-3"><i class="fas fa-credit-card me-2"></i>Datos de Tarjeta</h6>
+                  <div class="mb-2">
+                    <input type="text" class="form-control" id="cardNum" placeholder="0000 0000 0000 0000" maxlength="19">
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-7">
+                      <input type="text" class="form-control" id="cardExp" placeholder="MM/AA" maxlength="5">
+                    </div>
+                    <div class="col-5">
+                      <input type="text" class="form-control" id="cardCvv" placeholder="CVV" maxlength="3">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Formulario Yape -->
+                <div id="formYape" class="payment-details-box p-3 border rounded-3 border-purple-light" style="display: none; background-color: #fcf6ff;">
+                  <h6 class="text-purple mb-3"><i class="fas fa-mobile-alt me-2"></i>Pago con Yape</h6>
+                  <div class="mb-2">
+                    <label class="small text-muted">Número de celular</label>
+                    <input type="text" class="form-control border-purple" id="yapePhone" placeholder="987 654 321" maxlength="9">
+                  </div>
+                  <div class="mb-0">
+                    <label class="small text-muted">Código de aprobación</label>
+                    <input type="text" class="form-control border-purple" id="yapeCode" placeholder="000000" maxlength="6">
+                  </div>
+                </div>
+
+                <!-- Formulario Plin -->
+                <div id="formPlin" class="payment-details-box p-3 border rounded-3 border-teal-light" style="display: none; background-color: #f4fdfc;">
+                  <h6 class="text-teal mb-3"><i class="fas fa-mobile-alt me-2"></i>Pago con Plin</h6>
+                  <div class="mb-2">
+                    <label class="small text-muted">Número de celular</label>
+                    <input type="text" class="form-control border-teal" id="plinPhone" placeholder="987 654 321" maxlength="9">
+                  </div>
+                  <div class="mb-0">
+                    <label class="small text-muted">Código de verificación</label>
+                    <input type="text" class="form-control border-teal" id="plinCode" placeholder="000000" maxlength="6">
+                  </div>
+                </div>
+              </div>
+
               <button id="btnPedir" class="btn btn-checkout w-100">
                 <i class="fas fa-file-invoice me-2"></i> REALIZAR PEDIDO
               </button>

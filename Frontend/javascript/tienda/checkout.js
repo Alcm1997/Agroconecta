@@ -175,7 +175,7 @@
       container.innerHTML = '';
       tipos.forEach(t => {
         const li = document.createElement('li');
-        li.innerHTML = `<a class="dropdown-item" href="#" data-id="${t.id_tipo_pago}">${t.descripcion}</a>`;
+        li.innerHTML = `<button class="dropdown-item" type="button" data-id="${t.id_tipo_pago}">${t.descripcion}</button>`;
         container.appendChild(li);
       });
 
@@ -183,22 +183,53 @@
       container.querySelectorAll('.dropdown-item').forEach(item => {
         item.addEventListener('click', (e) => {
           e.preventDefault();
+          e.stopPropagation(); // Evitar que el Router SPA intente capturar el clic
+          
           const id = e.target.dataset.id;
           const text = e.target.textContent;
           
-          document.getElementById('tipoPago').value = id;
-          document.getElementById('selectedPaymentText').textContent = text;
-          
-          // Aplicar estilo de seleccionado al botón
+          const input = document.getElementById('tipoPago');
+          const label = document.getElementById('selectedPaymentText');
           const btn = document.getElementById('paymentDropdown');
-          btn.classList.remove('btn-outline-secondary');
-          btn.classList.add('btn-outline-primary');
+
+          if (input) input.value = id;
+          if (label) label.textContent = text;
+          
+          if (btn) {
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-outline-primary');
+          }
+
+          // Mostrar el formulario correspondiente
+          togglePaymentForms(id);
         });
       });
 
     } catch (e) {
       console.error('Error cargando pagos:', e);
     }
+  }
+
+  function togglePaymentForms(id) {
+    const container = document.getElementById('paymentFormContainer');
+    const fTarjeta = document.getElementById('formTarjeta');
+    const fYape = document.getElementById('formYape');
+    const fPlin = document.getElementById('formPlin');
+
+    if (!container) return;
+    
+    // Ocultar todos primero
+    container.style.display = 'block';
+    fTarjeta.style.display = 'none';
+    fYape.style.display = 'none';
+    fPlin.style.display = 'none';
+
+    // ID 1: Tarjeta, 2: Yape, 3: Plin (según AgroConecta.sql)
+    const numId = Number(id);
+    if (numId === 1) fTarjeta.style.display = 'block';
+    else if (numId === 2) fYape.style.display = 'block';
+    else if (numId === 3) fPlin.style.display = 'block';
+    else container.style.display = 'none';
   }
 
   async function placeOrder() {
@@ -211,6 +242,23 @@
     if (!tp || !tp.value) {
         Swal.fire('Atención', 'Selecciona un método de pago', 'warning');
         return;
+    }
+
+    // Validación de campos según el método
+    const id = Number(tp.value);
+    if (id === 1) { // Tarjeta
+      const n = document.getElementById('cardNum').value;
+      const e = document.getElementById('cardExp').value;
+      const c = document.getElementById('cardCvv').value;
+      if (!n || !e || !c) return Swal.fire('Atención', 'Completa los datos de tu tarjeta', 'warning');
+    } else if (id === 2) { // Yape
+      const p = document.getElementById('yapePhone').value;
+      const c = document.getElementById('yapeCode').value;
+      if (!p || !c) return Swal.fire('Atención', 'Completa los datos de tu Yape', 'warning');
+    } else if (id === 3) { // Plin
+      const p = document.getElementById('plinPhone').value;
+      const c = document.getElementById('plinCode').value;
+      if (!p || !c) return Swal.fire('Atención', 'Completa los datos de tu Plin', 'warning');
     }
 
     try {
@@ -264,11 +312,14 @@
     const btn = document.getElementById('btnPedir');
     if (btn) btn.addEventListener('click', placeOrder);
 
-    // ✅ REACCIÓN SPA: Escuchamos el evento global del CartService
-    window.addEventListener('cartUpdated', () => {
-        console.log('Checkout: Cambios detectados en el carrito, actualizando vista...');
-        loadAndRender();
-    });
+    // ✅ REACCIÓN SPA: Evitamos duplicar el listener si el script se vuelve a ejecutar
+    if (!window._checkoutCartListener) {
+        window._checkoutCartListener = () => {
+            console.log('Checkout: Cambios detectados en el carrito, actualizando vista...');
+            loadAndRender();
+        };
+        window.addEventListener('cartUpdated', window._checkoutCartListener);
+    }
   };
 
   initCheckout();
