@@ -1,5 +1,5 @@
 /* ============================================================
-   comprobante.css — Diseño Premium (SUNAT-Ready)
+   comprobante.css — Diseño Unificado (Web & SUNAT Print)
    Pitahaya Perú S.A.C.
    ============================================================ */
 
@@ -9,7 +9,10 @@
     --receipt-bg: #fdfdfd;
 }
 
-/* ── CONTENEDOR PRINCIPAL ──────────────────────────────────── */
+/* ── ESTILOS COMPARTIDOS ───────────────────────────────────── */
+.animate__animated { animation-duration: 0.6s; }
+
+/* ── VISTA WEB (PREMIUM) ────────────────────────────────────── */
 .comprobante-container {
     background: #fff;
     border-radius: 12px;
@@ -19,14 +22,9 @@
     border: 1px solid #eee;
 }
 
-/* ── CABECERA PREMIUM (Imagen 1) ────────────────────────────── */
 .comprobante-header-premium {
     background: linear-gradient(135deg, var(--receipt-primary) 0%, var(--receipt-secondary) 100%);
     color: #fff;
-}
-
-.comprobante-header-premium h2 {
-    letter-spacing: -0.5px;
 }
 
 .comprobante-logo {
@@ -35,15 +33,10 @@
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.6);
-    background-color: #fff; /* Asegura fondo blanco si el logo es transparente */
+    background-color: #fff;
     flex-shrink: 0;
 }
 
-.company-details p {
-    margin-bottom: 2px;
-}
-
-/* Badge de Boleta/Factura */
 .badge-comprobante {
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(4px);
@@ -51,7 +44,6 @@
     text-align: center;
 }
 
-/* ── SECCIONES DE DATOS ─────────────────────────────────────── */
 .section-title {
     font-size: 0.85rem;
     letter-spacing: 1px;
@@ -59,16 +51,9 @@
     padding-bottom: 8px;
 }
 
-.data-box {
-    height: 100%;
-}
+.data-box { height: 100%; }
+.data-box p { font-size: 0.95rem; color: #444; }
 
-.data-box p {
-    font-size: 0.95rem;
-    color: #444;
-}
-
-/* ── TABLA DE PRODUCTOS ─────────────────────────────────────── */
 .table thead th {
     background: var(--receipt-primary);
     border: none;
@@ -83,16 +68,8 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
-.table tbody tr:last-child td {
-    border-bottom: none;
-}
+.totals-card { border: 1px solid #e0e0e0; }
 
-/* ── SECCIÓN DE TOTALES ─────────────────────────────────────── */
-.totals-card {
-    border: 1px solid #e0e0e0;
-}
-
-/* ── ÍCONO DE ÉXITO ─────────────────────────────────────────── */
 .success-icon {
     width: 70px;
     height: 70px;
@@ -107,52 +84,114 @@
     box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
 }
 
-/* ── CONFIGURACIÓN DE IMPRESIÓN ─────────────────────────────── */
+/* ── CONFIGURACIÓN DE IMPRESIÓN (SUNAT A4) ──────────────────── */
+.print-only-layout { display: none; }
+
 @media print {
-    .no-print { display: none !important; }
-    
-    body {
-        background: #fff !important;
+    /* 1. Ocultar interfaz web */
+    nav, footer, .navbar, .footer-cliente, .web-view-only, .no-print {
+        display: none !important;
+    }
+
+    /* 2. Formatear contenedor de página (Margen 0 para ocultar URL/Fecha) */
+    @page {
+        size: A4;
+        margin: 0; /* Esto elimina el localhost y la fecha */
+    }
+
+    body { background: #fff !important; margin: 0; padding: 0; }
+    main, .container { display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+
+    /* 3. Plantilla de Impresión */
+    .print-only-layout {
+        display: block !important;
+        width: 210mm; /* Ancho total A4 */
+        min-height: 297mm;
         margin: 0;
-        padding: 0;
+        padding: 15mm; /* Margen interno real para que no se pegue al borde */
+        box-sizing: border-box;
+        font-family: 'Arial', sans-serif;
+        color: #000;
+        font-size: 10pt;
+        background: #fff !important;
     }
 
-    .comprobante-container {
-        box-shadow: none !important;
-        border: 1px solid #ccc;
+    .print-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        border-bottom: 1.5px solid #000;
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .print-brand-name { font-size: 18pt; font-weight: bold; color: #000; margin: 0; }
+    .print-company-info p { margin: 2px 0; font-size: 9pt; }
+
+    .print-ruc-box {
+        border: 2px solid #000;
+        padding: 10px;
+        text-align: center;
+        min-width: 280px;
+    }
+
+    .ruc-number { font-size: 13pt; font-weight: bold; margin: 0; }
+    .ruc-title { font-size: 11pt; font-weight: bold; margin: 5px 0; text-transform: uppercase; }
+    .ruc-id { font-size: 13pt; font-weight: bold; margin: 0; }
+
+    .print-info-section { margin-bottom: 15px; }
+    .print-info-row { display: flex; margin-bottom: 4px; }
+    .print-info-col { flex: 1; }
+
+    .print-table {
         width: 100%;
-        max-width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        border: 1px solid #000; /* Cierre exterior del cuadro */
     }
 
-    .container {
-        width: 100% !important;
-        max-width: 100% !important;
-        padding: 0 !important;
-    }
-
-    /* Forzar fondo verde en impresión */
-    .comprobante-header-premium {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        background: var(--receipt-primary) !important;
+    .print-table th {
+        background-color: #2c3e50 !important;
         color: #fff !important;
-    }
-
-    .table thead th {
+        padding: 8px;
+        border: 1px solid #000;
         -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        background: var(--receipt-primary) !important;
-        color: #fff !important;
     }
 
-    .bg-light {
-        background-color: #f8f9fa !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    .print-table td {
+        border: 1px solid #000; /* Bordes negros técnicos */
+        padding: 6px 8px;
     }
-}
 
-/* Animaciones */
-.animate__animated {
-    animation-duration: 0.6s;
+    .print-footer-section {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+
+    .print-total-words { width: 65%; font-size: 9pt; font-style: italic; }
+    .print-totals-box { width: 30%; }
+
+    .print-total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 2px 0;
+    }
+
+    .print-total-row.final {
+        border-top: 2px solid #000;
+        font-weight: bold;
+        font-size: 11pt;
+        margin-top: 5px;
+        padding-top: 5px;
+    }
+
+    .print-legal-note {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 8pt;
+        color: #000;
+        border-top: 1px dashed #000;
+        padding-top: 10px;
+    }
 }

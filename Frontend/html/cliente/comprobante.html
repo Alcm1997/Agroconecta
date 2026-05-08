@@ -1,127 +1,196 @@
 <!-- Fragmento de Comprobante (Inyectado por el Router SPA) -->
 <link rel="stylesheet" href="/css/cliente/pages/comprobante.css">
 
-<main class="container py-4">
-  <div class="text-center mb-4 no-print">
-    <div class="success-icon animate__animated animate__zoomIn"><i class="fas fa-check"></i></div>
-    <h1 class="h3 text-success fw-bold mb-2">¡Pedido generado exitosamente!</h1>
-    <p class="text-muted">Tu comprobante ha sido generado. Puedes descargarlo o imprimirlo.</p>
-  </div>
+<main class="container py-5">
+  
+  <!-- ── VISTA WEB EXCLUSIVA (Se oculta al imprimir) ──────────────── -->
+  <div class="web-view-only">
+    
+    <!-- Mensaje de Éxito -->
+    <div class="text-center mb-4">
+      <div class="success-icon animate__animated animate__zoomIn">
+        <i class="fas fa-check"></i>
+      </div>
+      <h1 class="h3 text-success fw-bold mb-2">¡Pedido generado exitosamente!</h1>
+      <p class="text-muted">Tu comprobante ha sido generado. Puedes descargarlo o imprimirlo.</p>
+    </div>
 
-  <div class="comprobante-container shadow-lg animate__animated animate__fadeInUp">
-    <!-- Cabecera Verde (Imagen 1) -->
-    <div class="comprobante-header-premium p-4">
-      <div class="row align-items-center">
-        <div class="col-md-8">
-          <div class="d-flex align-items-center mb-2">
-            <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo" class="comprobante-logo me-3">
-            <h2 class="h4 mb-0 fw-bold">PITAHAYA PERÚ S.A.C.</h2>
+    <!-- Contenedor Premium (Versión Web) -->
+    <div class="comprobante-container shadow-lg animate__animated animate__fadeInUp">
+      
+      <!-- Cabecera Verde -->
+      <div class="comprobante-header-premium p-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <div class="d-flex align-items-center mb-2">
+              <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo" class="comprobante-logo me-3">
+              <h2 class="h4 mb-0 fw-bold">PITAHAYA PERÚ S.A.C.</h2>
+            </div>
+            <div class="company-details small opacity-90">
+              <p class="mb-0"><i class="fas fa-id-card me-2"></i>RUC: 20610389148</p>
+              <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>MZA. 44 LOTE. 24 ASC. POPULAR LOMAS DE ANCON LIMA</p>
+              <p class="mb-0"><i class="fas fa-phone me-2"></i>Teléfono: +51 993 346 052</p>
+            </div>
           </div>
-          <div class="company-details small opacity-90">
-            <p class="mb-0"><i class="fas fa-id-card me-2"></i>RUC: 20610389148</p>
-            <p class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>MZA. 44 LOTE. 24 ASC. POPULAR LOMAS DE ANCON LIMA</p>
-            <p class="mb-0"><i class="fas fa-phone me-2"></i>Teléfono: +51 993 346 052</p>
+          <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="badge-comprobante p-3 rounded-3">
+              <div class="text-uppercase small fw-bold opacity-75" id="tipoComprobante">Boleta</div>
+              <div class="fs-4 fw-bold" id="numeroComprobante">BO000-000</div>
+            </div>
           </div>
         </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-          <div class="badge-comprobante p-3 rounded-3 shadow-sm">
-            <div class="text-uppercase small fw-bold opacity-75" id="tipoComprobante">Boleta</div>
-            <div class="fs-4 fw-bold" id="numeroComprobante">BO000-007</div>
+      </div>
+
+      <!-- Cuerpo del Comprobante -->
+      <div class="p-4 bg-white">
+        <div class="row mb-4">
+          <!-- Datos Cliente -->
+          <div class="col-md-6 mb-3 mb-md-0">
+            <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+              <i class="fas fa-user me-2"></i>Datos del Cliente
+            </h6>
+            <div class="data-box p-3 rounded-3 border-start border-4 border-primary bg-light">
+              <p class="mb-1"><strong>Cliente:</strong> <span id="nombreCliente">Cargando...</span></p>
+              <p class="mb-1"><strong>Documento:</strong> <span id="documentoCliente">-</span></p>
+              <p class="mb-1"><strong>Teléfono:</strong> <span id="telefonoCliente">-</span></p>
+              <p class="mb-0"><strong>Email:</strong> <span id="emailCliente">-</span></p>
+            </div>
           </div>
+          <!-- Datos Pedido -->
+          <div class="col-md-6">
+            <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+              <i class="fas fa-file-invoice me-2"></i>Datos del Pedido
+            </h6>
+            <div class="data-box p-3 rounded-3 border-start border-4 border-success bg-light">
+              <p class="mb-1"><strong>Fecha:</strong> <span id="fechaPedido">-</span></p>
+              <p class="mb-1"><strong>Hora:</strong> <span id="horaPedido">-</span></p>
+              <p class="mb-1"><strong>Método de pago:</strong> <span id="metodoPago">-</span></p>
+              <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-warning text-dark px-3 rounded-pill">Pendiente</span></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla Productos -->
+        <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
+          <i class="fas fa-shopping-basket me-2"></i>Detalle de Productos
+        </h6>
+        <div class="table-responsive rounded-3 border overflow-hidden mb-4">
+          <table class="table table-hover mb-0">
+            <thead class="bg-primary text-white">
+              <tr>
+                <th class="ps-4">Descripción</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-end">P. Unit.</th>
+                <th class="text-end pe-4">Total</th>
+              </tr>
+            </thead>
+            <tbody id="detalleProductos"></tbody>
+          </table>
+        </div>
+
+        <!-- Totales -->
+        <div class="row justify-content-end">
+          <div class="col-md-5 col-lg-4">
+            <div class="totals-card p-3 rounded-3 bg-light border">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal:</span>
+                <span class="fw-bold" id="subtotalComprobante">S/ 0.00</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">IGV (18%):</span>
+                <span class="fw-bold" id="igvComprobante">S/ 0.00</span>
+              </div>
+              <hr class="my-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fs-5 fw-bold text-dark">TOTAL:</span>
+                <span class="fs-4 fw-bold text-primary" id="totalComprobante">S/ 0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Web -->
+        <div class="mt-5 pt-4 border-top text-center">
+          <p class="mb-1 fw-bold text-muted">¡Gracias por tu compra!</p>
+          <p class="small text-muted mb-0">Este comprobante es válido como documento de venta y será validado por SUNAT.</p>
         </div>
       </div>
     </div>
 
-    <!-- Cuerpo del Comprobante -->
-    <div class="p-4 bg-white">
-      <div class="row mb-4">
-        <div class="col-md-6 mb-3 mb-md-0">
-          <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
-            <i class="fas fa-user me-2"></i>Datos del Cliente
-          </h6>
-          <div class="data-box p-3 rounded-3 border-start border-4 border-primary bg-light">
-            <p class="mb-1"><strong>Cliente:</strong> <span id="nombreCliente">Cargando...</span></p>
-            <p class="mb-1"><strong>Documento:</strong> <span id="documentoCliente">-</span></p>
-            <p class="mb-1"><strong>Teléfono:</strong> <span id="telefonoCliente">-</span></p>
-            <p class="mb-0"><strong>Email:</strong> <span id="emailCliente">-</span></p>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
-            <i class="fas fa-file-invoice me-2"></i>Datos del Pedido
-          </h6>
-          <div class="data-box p-3 rounded-3 border-start border-4 border-success bg-light">
-            <p class="mb-1"><strong>Fecha:</strong> <span id="fechaPedido">-</span></p>
-            <p class="mb-1"><strong>Hora:</strong> <span id="horaPedido">-</span></p>
-            <p class="mb-1"><strong>Método de pago:</strong> <span id="metodoPago">-</span></p>
-            <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-warning text-dark px-3 rounded-pill">Pendiente</span></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tabla de Productos -->
-      <h6 class="section-title text-primary fw-bold text-uppercase mb-3">
-        <i class="fas fa-shopping-basket me-2"></i>Detalle de Productos
-      </h6>
-      <div class="table-responsive rounded-3 border overflow-hidden mb-4">
-        <table class="table table-hover mb-0">
-          <thead class="bg-primary text-white">
-            <tr>
-              <th class="ps-4">Descripción</th>
-              <th class="text-center">Cant.</th>
-              <th class="text-end">P. Unit.</th>
-              <th class="text-end pe-4">Total</th>
-            </tr>
-          </thead>
-          <tbody id="detalleProductos">
-            <!-- Inyectado por JS -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Sección de Totales -->
-      <div class="row justify-content-end">
-        <div class="col-md-5 col-lg-4">
-          <div class="totals-card p-3 rounded-3 bg-light border">
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-muted">Subtotal:</span>
-              <span class="fw-bold" id="subtotalComprobante">S/ 0.00</span>
-            </div>
-            <div class="d-flex justify-content-between mb-2">
-              <span class="text-muted">IGV (18%):</span>
-              <span class="fw-bold" id="igvComprobante">S/ 0.00</span>
-            </div>
-            <hr class="my-2">
-            <div class="d-flex justify-content-between align-items-center">
-              <span class="fs-5 fw-bold text-dark">TOTAL:</span>
-              <span class="fs-4 fw-bold text-primary" id="totalComprobante">S/ 0.00</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer Comprobante -->
-      <div class="mt-5 pt-4 border-top text-center">
-        <p class="mb-1 fw-bold text-muted">¡Gracias por tu compra!</p>
-        <p class="small text-muted mb-0">Este comprobante es válido como documento de venta y será validado por SUNAT.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Botones de Acción (No Print) -->
-  <div class="text-center mt-5 no-print animate__animated animate__fadeInUp animate__delay-1s">
-    <div class="d-flex flex-wrap justify-content-center gap-3">
-      <button onclick="window.print()" class="btn btn-outline-dark px-4 py-2 rounded-pill shadow-sm">
+    <!-- Botones de Acción -->
+    <div class="text-center mt-4 mb-5 btn-group-print no-print">
+      <button class="btn btn-outline-dark rounded-pill px-4 me-2" onclick="window.print()">
         <i class="fas fa-print me-2"></i> Imprimir
       </button>
-      <button id="btnDescargar" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm">
+      <button class="btn btn-danger rounded-pill px-4 me-2" id="btnDescargar">
         <i class="fas fa-file-pdf me-2"></i> Descargar PDF
       </button>
-      <a href="/" class="btn btn-success px-5 py-2 rounded-pill shadow-sm fw-bold">
-        <i class="fas fa-store me-2"></i> Seguir comprando
+      <a href="/" class="btn btn-success rounded-pill px-4">
+        <i class="fas fa-shopping-basket me-2"></i> Seguir comprando
       </a>
     </div>
+
+  </div> <!-- Fin de web-view-only -->
+
+  <!-- ── PLANTILLA OFICIAL DE IMPRESIÓN (SUNAT STYLE) ───────────── -->
+  <div id="comprobanteImpresion" class="print-only-layout">
+    
+    <div class="print-header">
+      <div class="print-company-info">
+        <h1 class="print-brand-name">PITAHAYA PERÚ S.A.C.</h1>
+        <p>MZA. 44 LOTE. 24 ASC. POPULAR LOMAS DE ANCON LIMA</p>
+        <p>Tel: +51 993 346 052 | Email: ventas@agroconecta.pe</p>
+      </div>
+      <div class="print-ruc-box">
+        <p class="ruc-number">R.U.C. 20610389148</p>
+        <p class="ruc-title" id="printTipoComprobante">BOLETA DE VENTA ELECTRÓNICA</p>
+        <p class="ruc-id" id="printNumeroComprobante">B000-000</p>
+      </div>
+    </div>
+
+    <div class="print-info-section">
+      <div class="print-info-row">
+        <div class="print-info-col"><strong>Señor(es):</strong> <span id="printNombreCliente"></span></div>
+        <div class="print-info-col"><strong>Fecha:</strong> <span id="printFecha"></span></div>
+      </div>
+      <div class="print-info-row">
+        <div class="print-info-col"><strong>DNI/RUC:</strong> <span id="printDocCliente"></span></div>
+        <div class="print-info-col"><strong>Moneda:</strong> SOLES (S/)</div>
+      </div>
+      <div class="print-info-row">
+        <div class="print-info-col"><strong>Dirección:</strong> <span id="printDireccionCliente">-</span></div>
+        <div class="print-info-col"><strong>Método:</strong> <span id="printMetodo"></span></div>
+      </div>
+    </div>
+
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th width="12%">CANT.</th>
+          <th width="58%">DESCRIPCIÓN</th>
+          <th width="15%">P. UNIT.</th>
+          <th width="15%">TOTAL</th>
+        </tr>
+      </thead>
+      <tbody id="printDetalle"></tbody>
+    </table>
+
+    <div class="print-footer-section">
+      <div class="print-total-words">
+        <p><strong>SON:</strong> <span id="totalLetras"></span></p>
+      </div>
+      <div class="print-totals-box">
+        <div class="print-total-row"><span>Op. Gravadas:</span> <span id="printSubtotal"></span></div>
+        <div class="print-total-row"><span>I.G.V. (18%):</span> <span id="printIgv"></span></div>
+        <div class="print-total-row final"><span>Importe Total:</span> <span id="printTotal"></span></div>
+      </div>
+    </div>
+
+    <div class="print-legal-note">
+      <p>Representación impresa de la Boleta de Venta Electrónica. Puede ser consultada en el portal de la SUNAT.</p>
+    </div>
   </div>
+
 </main>
 
 <script src="/javascript/tienda/comprobante.js"></script>
