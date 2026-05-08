@@ -67,11 +67,33 @@ window.initActualizarUsuario = async function(userId) {
             });
         }
 
-        // 4. Submit formulario
+        // 4. Alternar visibilidad de contraseña
+        document.querySelectorAll('.toggle-password').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const input = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        // 5. Submit formulario
         const form = document.getElementById('formActualizarUsuario');
         if (form) {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                const passInput = document.getElementById('password');
+                const passConfirmInput = document.getElementById('passwordConfirm');
+                
                 const datos = {
                     nombres: (document.getElementById('nombres') || {}).value?.trim(),
                     apellidos: (document.getElementById('apellidos') || {}).value?.trim(),
@@ -79,7 +101,23 @@ window.initActualizarUsuario = async function(userId) {
                     username: (document.getElementById('username') || {}).value?.trim(),
                     id_cargo: parseInt((document.getElementById('id_cargo') || {}).value)
                 };
+
+                // Si hay algo escrito en la contraseña, validarla y enviarla
+                if (passInput.value) {
+                    const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,15}$/;
+                    if (!passRegex.test(passInput.value)) {
+                        Swal.fire({ icon: 'error', title: 'Seguridad insuficiente', text: 'La nueva contraseña debe tener entre 8 y 15 caracteres, e incluir letras, números y al menos un símbolo.', confirmButtonColor: '#d33' });
+                        return;
+                    }
+                    if (passInput.value !== passConfirmInput.value) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Las contraseñas no coinciden.', confirmButtonColor: '#d33' });
+                        return;
+                    }
+                    datos.contraseña = passInput.value;
+                }
+
                 try {
+                    if (loadingOverlay) loadingOverlay.style.display = 'flex';
                     const res = await fetch(`/api/panel/users/${userId}`, {
                         method: 'PUT',
                         headers: {
@@ -88,6 +126,9 @@ window.initActualizarUsuario = async function(userId) {
                         },
                         body: JSON.stringify(datos)
                     });
+
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
+
                     if (res.ok) {
                         if (typeof Swal !== 'undefined') {
                             await Swal.fire({
@@ -104,9 +145,15 @@ window.initActualizarUsuario = async function(userId) {
                         }
                     } else {
                         const err = await res.json().catch(() => ({}));
-                        alert(err.message || 'No se pudo actualizar el usuario');
+                        const msg = err.message || 'No se pudo actualizar el usuario';
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#d33' });
+                        } else {
+                            alert(msg);
+                        }
                     }
                 } catch (error) {
+                    if (loadingOverlay) loadingOverlay.style.display = 'none';
                     console.error('Error actualizando:', error);
                     alert('Error de conexión');
                 }

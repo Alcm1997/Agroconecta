@@ -13,6 +13,13 @@
   top: 0;
 }
 
+#cartButton {
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
 .navbar-cliente .navbar-brand {
   font-weight: 700;
   color: var(--color-white) !important;
@@ -61,11 +68,30 @@
 
 /* ── HERO SECTION (agroconecta) ─────────────────────────────── */
 .hero-section {
-  background: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, .6)),
-    url('/imagenes_pitahaya/hero_section.jpg') no-repeat center right / cover;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url('/imagenes_pitahaya/hero_premium.png') no-repeat center center / cover;
   color: #fff;
-  padding: 100px 0;
+  padding: 140px 0;
   margin-bottom: 30px;
+  transition: all 0.5s ease-in-out;
+}
+
+/* Ajuste específico para pantallas grandes (Desktop) */
+@media (min-width: 992px) {
+  .hero-section {
+    background-position: center right; /* En escritorio mostramos más detalle de la derecha */
+    padding: 160px 0;
+  }
+}
+
+.hero-section .container {
+  max-width: 850px;
+  position: relative;
+  z-index: 2;
+}
+
+.shadow-text {
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 /* ── SECTION TITLE ──────────────────────────────────────────── */
@@ -292,10 +318,10 @@ html:has(body.auth-bg)::-webkit-scrollbar {
   transition: var(--transition-base);
 }
 
-.btn-auth-gradient:hover {
-  background: linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
-  transform: translateY(-2px);
-  color: white;
+.btn-auth-gradient, .btn-lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-auth-outline {

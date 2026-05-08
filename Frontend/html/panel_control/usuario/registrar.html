@@ -1,4 +1,4 @@
-﻿<div class="loading-overlay" id="loadingOverlay" style="display:none;">
+<div class="loading-overlay" id="loadingOverlay" style="display:none;">
     <div class="loading-content">
         <i class="fas fa-spinner loading-spinner"></i>
         <p class="mt-2 mb-0">Preparando formulario...</p>
@@ -52,19 +52,29 @@
 
         <div class="row">
             <div class="col-md-6">
-                <div class="mb-3 position-relative">
+                <div class="mb-3">
                     <label for="password" class="form-label">
                         <i class="fas fa-lock me-1"></i>Contraseña
                     </label>
-                    <input type="password" class="form-control" id="password" required placeholder="********">
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="password" required placeholder="********">
+                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="mb-3 position-relative">
+                <div class="mb-3">
                     <label for="passwordConfirm" class="form-label">
                         <i class="fas fa-lock me-1"></i>Confirmar Contraseña
                     </label>
-                    <input type="password" class="form-control" id="passwordConfirm" required placeholder="Repita la contraseña">
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="passwordConfirm" required placeholder="Repita la contraseña">
+                        <button class="btn btn-outline-secondary toggle-password" type="button" data-target="passwordConfirm">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

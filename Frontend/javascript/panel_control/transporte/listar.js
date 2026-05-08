@@ -47,9 +47,6 @@
                         <button class="btn btn-outline-primary" onclick="editarTransportista(${t.id_transportista})" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-outline-danger" onclick="eliminarTransportista(${t.id_transportista})" title="Eliminar">
-                            <i class="fas fa-trash"></i>
-                        </button>
                     </div>
                 </td>
             </tr>
@@ -183,9 +180,6 @@
                     <div class="btn-group btn-group-sm">
                         <button class="btn btn-outline-primary" onclick="editarVehiculo(${v.id_vehiculo})" title="Editar">
                             <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-outline-danger" onclick="eliminarVehiculo(${v.id_vehiculo})" title="Eliminar">
-                            <i class="fas fa-trash"></i>
                         </button>
                     </div>
                 </td>

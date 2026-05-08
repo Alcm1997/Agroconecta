@@ -165,18 +165,37 @@
   // ========== Lógica de Pago ==========
   async function loadTiposPago() {
     try {
-      const tp = document.getElementById('tipoPago');
-      if (!tp) return;
+      const container = document.getElementById('paymentOptions');
+      if (!container) return;
+      
       const r = await fetch('/api/tienda/tipos-pago');
       if (!r.ok) return;
       const tipos = await r.json();
-      tp.innerHTML = '<option value="">Seleccione método de pago...</option>';
+      
+      container.innerHTML = '';
       tipos.forEach(t => {
-        const o = document.createElement('option');
-        o.value = t.id_tipo_pago;
-        o.textContent = t.descripcion;
-        tp.appendChild(o);
+        const li = document.createElement('li');
+        li.innerHTML = `<a class="dropdown-item" href="#" data-id="${t.id_tipo_pago}">${t.descripcion}</a>`;
+        container.appendChild(li);
       });
+
+      // Manejar click en las opciones
+      container.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = e.target.dataset.id;
+          const text = e.target.textContent;
+          
+          document.getElementById('tipoPago').value = id;
+          document.getElementById('selectedPaymentText').textContent = text;
+          
+          // Aplicar estilo de seleccionado al botón
+          const btn = document.getElementById('paymentDropdown');
+          btn.classList.remove('btn-outline-secondary');
+          btn.classList.add('btn-outline-primary');
+        });
+      });
+
     } catch (e) {
       console.error('Error cargando pagos:', e);
     }
@@ -241,10 +260,7 @@
   const initCheckout = () => {
     loadTiposPago();
     loadAndRender();
-    const tp = document.getElementById('tipoPago');
-    if (tp) tp.addEventListener('change', () => {
-        // Podríamos renderizar campos específicos según pago aquí
-    });
+    
     const btn = document.getElementById('btnPedir');
     if (btn) btn.addEventListener('click', placeOrder);
 

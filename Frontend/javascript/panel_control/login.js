@@ -1,4 +1,4 @@
-﻿// Variables globales
+// Variables globales
         let isLoading = false;
 
         // Función para mostrar/ocultar contraseña (igual que en loginagroconecta)
@@ -117,6 +117,12 @@
 
                 if (!password) {
                     showError('Por favor ingresa tu contraseña');
+                    passwordInput.focus();
+                    return;
+                }
+
+                if (password.length > 15) {
+                    showError('La contraseña no puede exceder los 15 caracteres');
                     passwordInput.focus();
                     return;
                 }

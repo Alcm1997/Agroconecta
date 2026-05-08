@@ -55,32 +55,41 @@
 }
 .nav-tabs .nav-link i { margin-right: 8px; }
 
-/* Botones del perfil */
+/* Estilos base compartidos para botones de acción (Código Limpio) */
+.btn-actualizar, .btn-volver {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         12px 30px;
+  border-radius:   50px;
+  font-weight:     bold;
+  font-size:       1.05rem;
+  transition:      var(--transition-base);
+  text-decoration: none;
+  white-space:     nowrap; /* Evita que el texto se rompa en móvil */
+  border:          none;
+}
+.btn-actualizar i, .btn-volver i { margin-right: 10px; }
+
+/* Botones específicos */
 .btn-actualizar {
-  background:    linear-gradient(45deg, var(--color-primary), #FF6B6B);
-  border:        none;
-  color:         white;
-  padding:       12px 30px;
-  border-radius: 25px;
-  font-weight:   bold;
-  font-size:     1.1rem;
+  background: linear-gradient(45deg, var(--color-primary), #FF6B6B);
+  color:      white;
 }
 .btn-actualizar:hover {
-  background:  linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
-  transform:   translateY(-2px);
-  color:       white;
+  background: linear-gradient(45deg, var(--color-primary-dark), #E53E3E);
+  transform:  translateY(-2px);
+  color:      white;
 }
+
 .btn-volver {
-  background:      #6c757d;
-  color:           white;
-  padding:         10px 25px;
-  border-radius:   20px;
-  text-decoration: none;
+  background: #6c757d;
+  color:      white;
 }
 .btn-volver:hover {
-  background:      #5a6268;
-  color:           white;
-  text-decoration: none;
+  background: #5a6268;
+  color:      white;
+  transform:  translateY(-2px);
 }
 
 /* Zona de peligro */

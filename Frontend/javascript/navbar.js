@@ -67,9 +67,9 @@
         try {
             const cart = window.CartService.getCart();
             const total = cart.reduce((acc, item) => acc + (Number(item.cantidad) || 0), 0);
-            btn.innerHTML = `<i class="fas fa-shopping-cart me-1"></i> ${total > 0 ? `Carrito (${total})` : 'Carrito de Compras'}`;
+            btn.innerHTML = `<i class="fas fa-shopping-cart me-2"></i> ${total > 0 ? `Carrito (${total})` : 'Carrito de Compras'}`;
         } catch (e) {
-            btn.innerHTML = `<i class="fas fa-shopping-cart me-1"></i> Carrito de Compras`;
+            btn.innerHTML = `<i class="fas fa-shopping-cart me-2"></i> Carrito de Compras`;
         }
     };
 

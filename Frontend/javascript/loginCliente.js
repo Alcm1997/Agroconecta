@@ -1,120 +1,133 @@
-function togglePassword() {
-    const passwordInput = document.getElementById('contrasena');
-    const icon = document.getElementById('iconoPassword');
+/**
+ * loginCliente.js - Lógica de inicio de sesión (SPA Compatible)
+ */
+(function() {
+    "use strict";
 
-    // Cambiar tipo de input
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-    } else {
-        passwordInput.type = 'password';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-    }
-}
+    function togglePassword() {
+        const passwordInput = document.getElementById('contrasena');
+        const icon = document.getElementById('iconoPassword');
+        if (!passwordInput || !icon) return;
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('loginForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const email = document.getElementById('email').value;
-        const contrasenaInput = document.getElementById('contrasena');
-        const contrasena = contrasenaInput.value;
-
-        // Validación de longitud
-        if (contrasena.length < 8 || contrasena.length > 15) {
-            contrasenaInput.classList.add('is-invalid');
-            document.getElementById('loginError').textContent = 'La contraseña debe tener entre 8 y 15 caracteres.';
-            return;
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
         } else {
-            contrasenaInput.classList.remove('is-invalid');
-            document.getElementById('loginError').textContent = '';
+            passwordInput.type = 'password';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
         }
+    }
+    // Exponer al HTML si es necesario por onclick inline
+    window.togglePassword = togglePassword;
 
+    async function sincronizarCarritoAlLogin(token, id_cliente) {
         try {
-            const response = await fetch('/api/client/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, contrasena })
-            });
+            const carritoTemporal = JSON.parse(localStorage.getItem('cart_tmp') || '[]');
 
-            const result = await response.json();
-
-            if (response.ok) {
-                // Guardar token en localStorage
-                localStorage.setItem('token', result.token);
-                localStorage.setItem('token_cliente', result.token);
-
-                // ✅ NUEVO: Guardar datos del cliente para identificar su carrito
-                if (result.cliente) {
-                    localStorage.setItem('cliente', JSON.stringify(result.cliente));
-
-                    // ✅ NUEVO: Sincronizar carrito temporal con el del servidor
-                    await sincronizarCarritoAlLogin(result.token, result.cliente.id_cliente);
-                }
-
-                Swal.fire({
-                    title: '¡Login Exitoso!',
-                    text: 'Serás redirigido en un momento.',
-                    icon: 'success',
-                    timer: 2000, // La alerta se cierra automáticamente después de 2 segundos
-                    showConfirmButton: false, // Oculta el botón "Aceptar"
-                    allowOutsideClick: false
-                }).then(() => {
-                    // Redirige al usuario después de que la alerta se cierre
-                    window.location.href = '/';
+            if (carritoTemporal.length > 0) {
+                const response = await fetch('/api/client/carrito/sincronizar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ items: carritoTemporal })
                 });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data && data.data.items) {
+                        localStorage.setItem(`cart_${id_cliente}`, JSON.stringify(data.data.items));
+                        localStorage.removeItem('cart_tmp');
+                    }
+                }
             } else {
-                document.getElementById('loginError').textContent = result.message || 'Error al iniciar sesión';
+                const response = await fetch('/api/client/carrito', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.data && data.data.items) {
+                        localStorage.setItem(`cart_${id_cliente}`, JSON.stringify(data.data.items));
+                    }
+                }
             }
         } catch (error) {
-            document.getElementById('loginError').textContent = 'Error de conexión';
+            console.error('Error sincronizando carrito:', error);
         }
-    });
-});
-
-// ✅ NUEVA FUNCIÓN: Sincronizar carrito al hacer login
-async function sincronizarCarritoAlLogin(token, id_cliente) {
-    try {
-        // Obtener carrito temporal (productos agregados sin login)
-        const carritoTemporal = JSON.parse(localStorage.getItem('cart_tmp') || '[]');
-
-        if (carritoTemporal.length > 0) {
-            // Si hay productos temporales, enviarlos al servidor para fusionar
-            const response = await fetch('/api/client/carrito/sincronizar', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ items: carritoTemporal })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.items) {
-                    // Guardar carrito fusionado en localStorage del usuario
-                    localStorage.setItem(`cart_${id_cliente}`, JSON.stringify(data.items));
-                    // Limpiar carrito temporal
-                    localStorage.removeItem('cart_tmp');
-                    console.log('✅ Carrito sincronizado y fusionado correctamente');
-                }
-            }
-        } else {
-            // Si no hay productos temporales, solo cargar el carrito del servidor
-            const response = await fetch('/api/client/carrito', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data.success && data.items) {
-                    localStorage.setItem(`cart_${id_cliente}`, JSON.stringify(data.items));
-                    console.log('✅ Carrito cargado desde el servidor');
-                }
-            }
-        }
-    } catch (error) {
-        console.error('Error sincronizando carrito:', error);
-        // No bloquear el login si falla la sincronización
     }
-}
+
+    const initLogin = function () {
+        const loginForm = document.getElementById('loginForm');
+        if (!loginForm) return;
+
+        loginForm.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const contrasenaInput = document.getElementById('contrasena');
+            const contrasena = contrasenaInput.value;
+            const errorEl = document.getElementById('loginError');
+
+            if (contrasena.length < 8 || contrasena.length > 15) {
+                contrasenaInput.classList.add('is-invalid');
+                if (errorEl) errorEl.textContent = 'La contraseña debe tener entre 8 y 15 caracteres.';
+                return;
+            } else {
+                contrasenaInput.classList.remove('is-invalid');
+                if (errorEl) errorEl.textContent = '';
+            }
+
+            try {
+                const response = await fetch('/api/client/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, contrasena })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    const tokenString = (result.token || '').replace(/^"|"$/g, '').trim();
+                    localStorage.setItem('token', tokenString);
+                    localStorage.setItem('token_cliente', tokenString);
+
+                    if (result.cliente) {
+                        localStorage.setItem('cliente', JSON.stringify(result.cliente));
+                        await sincronizarCarritoAlLogin(tokenString, result.cliente.id_cliente);
+                    }
+
+                    Swal.fire({
+                        title: '¡Login Exitoso!',
+                        text: 'Serás redirigido en un momento.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        allowOutsideClick: false
+                    }).then(() => {
+                        if (window.navigateTo) {
+                            window.navigateTo('/');
+                        } else {
+                            window.location.href = '/';
+                        }
+                        
+                        setTimeout(() => {
+                            window.dispatchEvent(new CustomEvent('authUpdated'));
+                            if (window.navbarController && window.navbarController.updateAuthUI) {
+                                window.navbarController.updateAuthUI();
+                            }
+                        }, 300);
+                    });
+                } else {
+                    if (errorEl) errorEl.textContent = result.message || 'Error al iniciar sesión';
+                }
+            } catch (error) {
+                if (errorEl) errorEl.textContent = 'Error de conexión';
+            }
+        });
+    };
+
+    initLogin();
+
+})();

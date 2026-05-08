@@ -7,7 +7,11 @@
         '/': '/html/cliente/inicio.html',
         '/mi-cuenta': '/html/cliente/miCuenta.html',
         '/checkout': '/html/cliente/checkout.html',
-        '/producto': '/html/cliente/producto_detalle.html'
+        '/producto': '/html/cliente/producto_detalle.html',
+        '/login': '/html/cliente/loginagroconecta.html',
+        '/registro': '/html/cliente/registroagroconecta.html',
+        '/recuperar-contrasena': '/html/cliente/recuperarcontrasenaagroconecta.html',
+        '/verificar-codigo': '/html/cliente/verificarcodigoagroconecta.html'
     };
 
     const loadView = async (url) => {
@@ -32,7 +36,25 @@
             
             const html = await response.text();
             
-            // 4. Inyectar HTML en el DOM
+            // 4. Manejar el Shell (Navbar y Footer globales)
+            const mainNav = document.querySelector('.navbar-cliente');
+            const authNav = document.getElementById('authNavbar');
+            const mainFooter = document.querySelector('.footer-cliente');
+            const isAuthRoute = ['/login', '/registro', '/recuperar-contrasena', '/verificar-codigo'].includes(pathname);
+
+            if (isAuthRoute) {
+                if (mainNav) mainNav.style.display = 'none';
+                if (authNav) authNav.style.display = 'block';
+                if (mainFooter) mainFooter.style.display = 'none';
+                document.body.classList.add('auth-bg');
+            } else {
+                if (mainNav) mainNav.style.display = 'flex';
+                if (authNav) authNav.style.display = 'none';
+                if (mainFooter) mainFooter.style.display = 'block';
+                document.body.classList.remove('auth-bg');
+            }
+
+            // 5. Inyectar HTML en el DOM
             appContent.innerHTML = html;
 
             // 5. Extraer y re-ejecutar etiquetas <script> inyectadas
@@ -62,6 +84,9 @@
                 } else {
                     window.scrollTo(0, 0);
                 }
+                
+                // NOTIFICAR NAVEGACIÓN SPA COMPLETADA
+                window.dispatchEvent(new CustomEvent('spaNavigation', { detail: { path: pathname } }));
             }, 100);
 
         } catch (error) {

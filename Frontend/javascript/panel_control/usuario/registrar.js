@@ -66,20 +66,56 @@ window.initRegistrarUsuario = async function () {
     await cargarCargos();
     hideLoading();
 
+    // Alternar visibilidad de contraseña
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
     // Validaciones
     function validar() {
         if (!nombres.value.trim() || !apellidos.value.trim() ||
             !email.value.trim() || !username.value.trim() ||
             !password.value || !passwordConfirm.value || !id_cargo.value) {
-            alert('Completa todos los campos requeridos.');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'warning', title: 'Campos incompletos', text: 'Completa todos los campos requeridos.', confirmButtonColor: '#2E7D32' });
+            } else {
+                alert('Completa todos los campos requeridos.');
+            }
             return false;
         }
-        if (password.value.length < 6) {
-            alert('La contraseña debe tener al menos 6 caracteres.');
+
+        // Regex: 8-15 caracteres, al menos una letra, un número y un símbolo
+        const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,15}$/;
+        if (!passRegex.test(password.value)) {
+            const msg = 'La contraseña debe tener entre 8 y 15 caracteres, e incluir letras, números y al menos un símbolo.';
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Seguridad insuficiente', text: msg, confirmButtonColor: '#d33' });
+            } else {
+                alert(msg);
+            }
             return false;
         }
+
         if (password.value !== passwordConfirm.value) {
-            alert('Las contraseñas no coinciden.');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Las contraseñas no coinciden.', confirmButtonColor: '#d33' });
+            } else {
+                alert('Las contraseñas no coinciden.');
+            }
             return false;
         }
         return true;
@@ -128,6 +164,8 @@ window.initRegistrarUsuario = async function () {
 
                 console.log('📡 Status registro:', res.status);
                 const data = await res.json().catch(() => ({}));
+                
+                hideLoading(); // ← Lo quitamos AQUÍ antes de la alerta
 
                 if (res.ok) {
                     if (typeof Swal !== 'undefined') {
@@ -146,17 +184,21 @@ window.initRegistrarUsuario = async function () {
                         window.location.href = '/panel-control#usuarios';
                     }
                 } else {
-                    alert(data.message || 'No se pudo registrar el usuario.');
+                    const errorMsg = data.message || 'No se pudo registrar el usuario.';
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'error', title: 'Error de registro', text: errorMsg, confirmButtonColor: '#d33' });
+                    } else {
+                        alert(errorMsg);
+                    }
+                    
                     if (res.status === 401 || res.status === 403) {
-                        // Sesión inválida
                         window.location.href = '/panel-login';
                     }
                 }
             } catch (error) {
+                hideLoading(); // ← También en caso de error de red
                 console.error('❌ Error registrando usuario:', error);
                 alert('Error de conexión.');
-            } finally {
-                hideLoading();
             }
         });
     }

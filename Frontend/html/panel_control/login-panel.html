@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -42,13 +42,12 @@
             <div class="mb-3 position-relative">
                 <label for="password" class="form-label">Contraseña</label>
                 <input type="password" class="form-control pe-5" id="password" name="password" required
-                    autocomplete="current-password">
+                    autocomplete="current-password" maxlength="15">
                 <span onclick="togglePassword()"
                     style="position:absolute; top:72.5%; right:18px; transform:translateY(-50%); cursor:pointer; color:#666; font-size: 1.3em;">
                     <i class="fa-solid fa-eye-slash" id="iconoPassword"></i>
                 </span>
             </div>
-
             <div id="loginError" class="error-message">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 <span id="errorText"></span>

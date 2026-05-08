@@ -3,31 +3,12 @@
    Estilos específicos de recuperarcontrasenaagroconecta.html
    ============================================================ */
 
-/* Reset total — elimina bordes blancos y scrollbar no deseado */
-html, body {
-  margin:     0 !important;
-  padding:    0 !important;
-  border:     none !important;
-  outline:    none !important;
-  width:      100%;
-  height:     100%;
-  overflow:   hidden; /* Sin barra deslizadora lateral */
-}
+/* Estilos específicos para el fragmento de recuperar contraseña */
 
-/* Flex column para que el navbar empuje el contenido hacia abajo */
-.auth-bg {
-  display:        flex !important;
-  flex-direction: column !important;
-  min-height:     100vh;
-  padding-top:    64px !important; /* Espacio para el navbar fixed */
-}
-
-/* Card centrada en el espacio restante */
 .recuperar-card {
   max-width:  400px;
   width:      100%;
   text-align: center;
-  margin:     auto; /* Centra vertical y horizontalmente */
 }
 
 /* ── Subtítulo y descripción ──────────────────────────────── */

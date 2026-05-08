@@ -1,76 +1,41 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitahaya Perú - Recuperar Contraseña</title>
-    <link rel="shortcut icon" href="/icono/favicon.ico" />
-    <link rel="icon" type="image/png" href="/icono/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/icono/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/icono/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Capa 1: tokens y variables globales -->
-    <link rel="stylesheet" href="/css/cliente/theme.css">
-    <!-- Capa 2: componentes reutilizables (incluye .navbar-auth, .auth-bg, .recuperar-card, etc.) -->
-    <link rel="stylesheet" href="/css/cliente/components.css">
-    <!-- Capa 3: estilos exclusivos de esta página -->
-    <link rel="stylesheet" href="/css/cliente/pages/recuperar.css">
-</head>
-<body class="auth-bg">
+<!-- Fragmento de Recuperar Contraseña -->
+<link rel="stylesheet" href="/css/cliente/pages/recuperar.css">
 
-    <!-- Navbar idéntico al del login y registro -->
-    <nav class="navbar-auth">
-        <a href="/" class="navbar-auth-brand">
-            <img src="/imagenes_pitahaya/pitahaya.png" alt="Logo Pitahaya Perú">
-            Pitahaya Perú
-        </a>
-        <a href="/" class="navbar-auth-back">
-            <i class="fas fa-arrow-left"></i> Volver a la tienda
-        </a>
-    </nav>
-
-    <!-- Card centrada en el espacio debajo del navbar -->
-    <div class="recuperar-card">
-        <div class="text-center mb-4">
-            <h2 class="recuperar-title">¿Olvidaste tu contraseña?</h2>
-            <div class="icono-container">
-                <i class="fas fa-lock icono-secondary"></i>
-            </div>
-        </div>
-
-        <h6 class="subtitle">Recuperar cuenta</h6>
-        <p class="descripcion">Ingresa tu correo para buscar tu cuenta de AgroConecta.</p>
-
-        <form id="recuperarForm">
-            <div class="mb-3">
-                <label for="email" class="form-label">Correo*</label>
-                <input type="email"
-                       class="form-control"
-                       id="email"
-                       name="email"
-                       placeholder="example@hotmail.com"
-                       required>
-                <div class="invalid-feedback">
-                    Por favor ingresa un correo electrónico válido.
-                </div>
-            </div>
-
-            <button type="submit" class="btn-buscar" id="buscarBtn">
-                <i class="fas fa-search me-2"></i>Buscar cuenta
-            </button>
-        </form>
-
-        <div class="text-center mt-3">
-            <button type="button" class="btn-iniciar" onclick="irAlLogin()">
-                <i class="fas fa-arrow-left me-2"></i>Inicia sesión
-            </button>
+<div class="recuperar-card">
+    <div class="text-center mb-4">
+        <h2 class="recuperar-title">¿Olvidaste tu contraseña?</h2>
+        <div class="icono-container">
+            <i class="fas fa-lock icono-secondary"></i>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.24/dist/sweetalert2.all.min.js"></script>
-    <script src="/javascript/recuperarContrasena.js"></script>
-</body>
-</html>
+    <h6 class="subtitle">Recuperar cuenta</h6>
+    <p class="descripcion">Ingresa tu correo para buscar tu cuenta de AgroConecta.</p>
+
+    <form id="recuperarForm">
+        <div class="mb-3">
+            <label for="email" class="form-label">Correo*</label>
+            <input type="email"
+                   class="form-control"
+                   id="email"
+                   name="email"
+                   placeholder="example@hotmail.com"
+                   required>
+            <div class="invalid-feedback">
+                Por favor ingresa un correo electrónico válido.
+            </div>
+        </div>
+
+        <button type="submit" class="btn-buscar" id="buscarBtn">
+            <i class="fas fa-search me-2"></i>Buscar cuenta
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+        <button type="button" class="btn-iniciar" onclick="window.navigateTo('/login')">
+            <i class="fas fa-arrow-left me-2"></i>Inicia sesión
+        </button>
+    </div>
+</div>
+
+<script src="/javascript/recuperarContrasena.js"></script>

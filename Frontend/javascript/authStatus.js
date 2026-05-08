@@ -112,6 +112,10 @@ async function initAuthUI() {
 
   const cliente = mapToCliente(user);
   localStorage.setItem('cliente', JSON.stringify(cliente));
+  
+  // ✅ NUEVO: Avisar al sincronizador que ya tenemos identidad
+  window.dispatchEvent(new CustomEvent('cartUpdated'));
+
   const displayName = buildDisplayName(cliente);
 
   if (clientNameEl && clientDropdown) {

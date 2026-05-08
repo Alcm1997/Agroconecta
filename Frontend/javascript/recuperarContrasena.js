@@ -1,126 +1,89 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('recuperarForm');
-    const emailInput = document.getElementById('email');
-    const submitBtn = document.getElementById('buscarBtn');
+/**
+ * recuperarContrasena.js - Lógica de recuperación de contraseña (SPA Compatible)
+ */
+(function() {
+    "use strict";
 
-    // Manejar envío del formulario
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        enviarCodigoRecuperacion();
-    });
-
-    // Validación en tiempo real
-    emailInput.addEventListener('input', function() {
-        validarEmail();
-    });
-});
-
-function validarEmail() {
-    const email = document.getElementById('email').value.trim();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (email && !emailRegex.test(email)) {
-        document.getElementById('email').classList.add('is-invalid');
-        return false;
-    } else {
-        document.getElementById('email').classList.remove('is-invalid');
-        return true;
-    }
-}
-
-async function enviarCodigoRecuperacion() {
-    const email = document.getElementById('email').value.trim();
-    
-    // Validaciones
-    if (!email) {
-        Swal.fire({
-            title: 'Campo Requerido',
-            text: 'Por favor ingresa tu correo electrónico',
-            icon: 'warning',
-            confirmButtonColor: '#E91E63'
-        });
-        return;
-    }
-
-    if (!validarEmail()) {
-        Swal.fire({
-            title: 'Correo Inválido',
-            text: 'Por favor ingresa un correo electrónico válido',
-            icon: 'error',
-            confirmButtonColor: '#E91E63'
-        });
-        return;
-    }
-
-    try {
-        // Mostrar loading
-        Swal.fire({
-            title: 'Enviando código...',
-            text: 'Por favor espera mientras verificamos tu cuenta',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        // Enviar solicitud al backend
-        const response = await fetch('/api/recovery/send-code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email: email })
-        });
-
-        const resultado = await response.json();
-
-        if (response.ok) {
-            // Éxito - Mostrar mensaje y redirigir
-            Swal.fire({
-                title: '📧 ¡Código Enviado!',
-                html: `
-                    <p>Hemos enviado un código de verificación a:</p>
-                    <strong style="color: #E91E63;">${email}</strong>
-                    <p style="margin-top: 15px; font-size: 14px; color: #666;">
-                        El código expira en <strong>10 minutos</strong>. Revisa tu bandeja de entrada y spam.
-                    </p>
-                `,
-                icon: 'success',
-                confirmButtonText: 'Ingresar Código',
-                confirmButtonColor: '#E91E63',
-                allowOutsideClick: false
-            }).then(() => {
-                // GUARDAR TIMESTAMP DE EXPIRACIÓN (10 minutos a futuro)
-                const expirationTime = Date.now() + (10 * 60 * 1000);
-                sessionStorage.setItem('recoveryExpiration', expirationTime);
-
-                // Redirigir a la página de ingreso de código
-                window.location.href = `/verificar-codigo?email=${encodeURIComponent(email)}`;
-            });
+    function validarEmail() {
+        const el = document.getElementById('email');
+        if (!el) return false;
+        const email = el.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        
+        if (email && !emailRegex.test(email)) {
+            el.classList.add('is-invalid');
+            return false;
         } else {
-            // Error del servidor
-            Swal.fire({
-                title: 'Error',
-                text: resultado.message || 'No se pudo enviar el código. Inténtalo más tarde.',
-                icon: 'error',
-                confirmButtonColor: '#E91E63'
-            });
+            el.classList.remove('is-invalid');
+            return true;
+        }
+    }
+
+    async function enviarCodigoRecuperacion() {
+        const el = document.getElementById('email');
+        if (!el) return;
+        const email = el.value.trim();
+        
+        if (!email) {
+            Swal.fire('Campo Requerido', 'Ingresa tu correo electrónico', 'warning');
+            return;
         }
 
-    } catch (error) {
-        console.error('Error al enviar código:', error);
-        Swal.fire({
-            title: 'Error de Conexión',
-            text: 'No se pudo conectar con el servidor. Verifica tu conexión a internet.',
-            icon: 'error',
-            confirmButtonColor: '#E91E63'
-        });
-    }
-}
+        if (!validarEmail()) {
+            Swal.fire('Correo Inválido', 'Ingresa un correo electrónico válido', 'error');
+            return;
+        }
 
-// Función para ir al login
-function irAlLogin() {
-    window.location.href = '/login';
-}
+        try {
+            Swal.fire({
+                title: 'Enviando código...',
+                text: 'Verificando cuenta',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            const response = await fetch('/api/recovery/send-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    title: '📧 ¡Código Enviado!',
+                    html: `Código enviado a: <strong style="color: #E91E63;">${email}</strong>`,
+                    icon: 'success',
+                    confirmButtonText: 'Ingresar Código',
+                    confirmButtonColor: '#E91E63'
+                }).then(() => {
+                    sessionStorage.setItem('recoveryExpiration', Date.now() + (10 * 60 * 1000));
+                    const nextUrl = `/verificar-codigo?email=${encodeURIComponent(email)}`;
+                    if (window.navigateTo) window.navigateTo(nextUrl);
+                    else window.location.href = nextUrl;
+                });
+            } else {
+                Swal.fire('Error', resultado.message || 'No se pudo enviar el código.', 'error');
+            }
+        } catch (error) {
+            Swal.fire('Error de Conexión', 'No se pudo conectar con el servidor.', 'error');
+        }
+    }
+
+    const initRecuperar = () => {
+        const form = document.getElementById('recuperarForm');
+        const emailInput = document.getElementById('email');
+        if (!form || !emailInput) return;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarCodigoRecuperacion();
+        });
+
+        emailInput.addEventListener('input', validarEmail);
+    };
+
+    initRecuperar();
+
+})();

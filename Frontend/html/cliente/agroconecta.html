@@ -45,27 +45,27 @@
           <li class="nav-item"><a class="nav-link" href="/#frutas">Frutas</a></li>
           <li class="nav-item"><a class="nav-link" href="/#contacto">Contacto</a></li>
         </ul>
-        <div class="d-flex align-items-center">
+        <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 mt-3 mt-lg-0">
           <!-- Botón Iniciar Sesión (Invitado) -->
-          <button id="loginButton" class="btn login-btn me-2" style="display: none;">
+          <button id="loginButton" class="btn login-btn" style="display: none;">
             <i class="fas fa-user me-1"></i> Iniciar Sesión
           </button>
 
           <!-- Dropdown Cliente (Logueado) -->
-          <div id="clientDropdown" class="dropdown me-2" style="display: none;">
-            <button class="btn login-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <div id="clientDropdown" class="dropdown" style="display: none;">
+            <button class="btn login-btn dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user-circle me-1"></i> <span id="clientName">Cliente</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow">
+            <ul class="dropdown-menu dropdown-menu-end shadow w-100">
               <li><a class="dropdown-item" href="/mi-cuenta"><i class="fas fa-id-card me-2"></i>Mi Cuenta</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><button class="dropdown-item text-danger" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</button></li>
+              <li><button class="dropdown-item text-danger w-100 text-start" id="logoutButton"><i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión</button></li>
             </ul>
           </div>
 
           <!-- Botón Carrito -->
           <button id="cartButton" class="btn btn-outline-light">
-            <i class="fas fa-shopping-cart me-1"></i> Carrito de Compras
+            <i class="fas fa-shopping-cart me-2"></i> Carrito de Compras
           </button>
         </div>
       </div>

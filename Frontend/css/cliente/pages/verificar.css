@@ -3,26 +3,14 @@
    Estilos específicos de verificarcodigoagroconecta.html
    ============================================================ */
 
-/* Reset total — elimina bordes blancos del navegador */
-html, body {
-  margin:     0 !important;
-  padding:    0 !important;
-  border:     none !important;
-  outline:    none !important;
-  overflow-x: hidden;
-}
+/* Estilos específicos para el fragmento de verificación */
 
-.container {
-  display:         flex;
-  justify-content: center;
-  align-items:     center;
-  min-height:      calc(100vh - 64px); /* resta la altura del navbar */
-  width:           100%;
-  padding-top:     100px; /* Mas espacio para que no este pegado al navbar */
-  padding-bottom:  40px;  /* aire en la parte inferior */
+.verificar-card { 
+  width: 100%;
+  max-width: 500px; /* Unificado con el estándar de tarjetas pequeñas */
+  margin: 0 auto;
+  text-align: center; 
 }
-
-.verificar-card { max-width: 450px; text-align: center; }
 
 /* Email enviado */
 .email-enviado {

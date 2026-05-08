@@ -9,16 +9,11 @@
 
     // Función de inicialización
     const initSearch = () => {
-        // Esperar un momento para que agroconecta.js cargue los productos
-        setTimeout(initSearchAndFilters, 1000);
+        initSearchAndFilters();
     };
 
-    // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initSearch);
-    } else {
-        initSearch();
-    }
+    // Ejecutar inicialización inmediata para SPA
+    initSearch();
 
     function initSearchAndFilters() {
         const searchInput = document.getElementById('searchInput');
@@ -227,6 +222,85 @@
       </div>`;
     }
 
+    function bindCalcAndCart(products) {
+        products.forEach(p => {
+            const idQty = `qty_${p.id_producto}`;
+            const idNds = `opt_${p.id_producto}_nds`;
+            const idTot = `tot_${p.id_producto}`;
+            const idUp = `up_${p.id_producto}`;
+            
+            const elQty = document.getElementById(idQty);
+            const elNds = document.getElementById(idNds);
+            const elTot = document.getElementById(idTot);
+            const elUp = document.getElementById(idUp);
+            const btnAdd = document.querySelector(`[data-add="${p.id_producto}"]`);
+
+            const getEffectivePrice = (qty) => {
+                let price = parseFloat(p.precio_unitario);
+                if (p.descuentos && Array.isArray(p.descuentos)) {
+                    const discount = p.descuentos.find(d => 
+                        qty >= d.cantidad_minima && 
+                        (!d.cantidad_maxima || qty <= d.cantidad_maxima)
+                    );
+                    if (discount) price = parseFloat(discount.precio_descuento);
+                }
+                return price;
+            };
+
+            const update = () => {
+                const qty = parseFloat(elQty?.value) || 0;
+                let unitPrice = getEffectivePrice(qty);
+                
+                if (elNds && elNds.checked) {
+                    unitPrice += parseFloat(elNds.dataset.price || 0);
+                }
+
+                if (elUp) elUp.textContent = `S/ ${unitPrice.toFixed(2)}`;
+                if (elTot) elTot.textContent = `S/ ${(unitPrice * qty).toFixed(2)}`;
+            };
+
+            if (elQty) elQty.addEventListener('input', update);
+            if (elNds) elNds.addEventListener('change', update);
+
+            if (btnAdd) {
+                btnAdd.onclick = () => {
+                    const qty = parseFloat(elQty?.value) || 0;
+                    if (qty <= 0) return;
+
+                    let unitPrice = getEffectivePrice(qty);
+                    let extraKey = '';
+                    let opciones = [];
+
+                    if (elNds && elNds.checked) {
+                        unitPrice += parseFloat(elNds.dataset.price || 0);
+                        extraKey = 'NDS';
+                        opciones.push({ id_opcion: elNds.dataset.op, nombre: 'NDS' });
+                    }
+
+                    if (typeof window.addToCart === 'function') {
+                        window.addToCart({
+                            id_producto: p.id_producto,
+                            nombre: p.nombre,
+                            imagen_url: p.imagen_url,
+                            precio_unitario: unitPrice,
+                            cantidad: qty,
+                            extra_key: extraKey,
+                            opciones: opciones
+                        });
+                        
+                        const originalText = btnAdd.innerHTML;
+                        btnAdd.innerHTML = '<i class="fas fa-check me-2"></i>¡Agregado!';
+                        btnAdd.classList.replace('btn-primary', 'btn-success');
+                        setTimeout(() => {
+                            btnAdd.innerHTML = originalText;
+                            btnAdd.classList.replace('btn-success', 'btn-primary');
+                        }, 2000);
+                    }
+                };
+            }
+        });
+    }
+
     function toggleSection(sectionId, show) {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -247,7 +321,6 @@
         }
     }
 
-    // Utilidad debounce
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -259,5 +332,9 @@
             timeout = setTimeout(later, wait);
         };
     }
+
+    // Exponer al objeto global para agroconecta.js
+    window.createProductCard = createProductCard;
+    window.bindCalcAndCart = bindCalcAndCart;
 
 })();

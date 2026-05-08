@@ -3,9 +3,10 @@
 
   const S = v => `S/ ${Number(v || 0).toFixed(2)}`;
 
-  // Obtener token
+  // Obtener token (Sincronizado con el resto de la app)
   function getToken() {
-    return localStorage.getItem('token') || '';
+    const t = localStorage.getItem('token_cliente') || localStorage.getItem('token') || '';
+    return (t || '').replace(/^"|"$/g, '').trim();
   }
 
   // Cargar pedidos del cliente
