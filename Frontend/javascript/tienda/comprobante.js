@@ -29,24 +29,32 @@
     }
 
     function normalizarCliente(cliente) {
-        if (!cliente) return { nombres: '', apellidos: '', numero_documento: '', telefono: '', email: '' };
-        if (cliente.tipo_cliente === 'juridico') {
+        if (!cliente) return { nombre_completo: 'Cliente', numero_documento: '', telefono: '', email: '' };
+        
+        // Si ya tiene nombre_completo (viene del DTO en el backend) lo usamos directamente
+        if (cliente.nombre_completo) {
             return {
-                nombres: cliente.razon_social || '',
-                apellidos: '',
+                nombre_completo: cliente.nombre_completo,
                 numero_documento: cliente.numero_documento || '',
                 telefono: cliente.telefono || '',
-                email: cliente.email || ''
-            };
-        } else {
-            return {
-                nombres: cliente.nombres || '',
-                apellidos: cliente.apellidos || '',
-                numero_documento: cliente.numero_documento || '',
-                telefono: cliente.telefono || '',
-                email: cliente.email || ''
+                email: cliente.email || '',
+                direccion: cliente.direccion || 'LIMA, PERÚ'
             };
         }
+
+        // Lógica de respaldo para datos sin procesar
+        const esJuridico = cliente.tipo_cliente === 'Jurídica' || cliente.tipo_cliente === 'juridico' || !!cliente.razon_social;
+        const nombre = esJuridico 
+            ? (cliente.razon_social || 'Cliente') 
+            : `${cliente.nombres || ''} ${cliente.apellidos || ''}`.trim() || 'Cliente';
+
+        return {
+            nombre_completo: nombre,
+            numero_documento: cliente.numero_documento || '',
+            telefono: cliente.telefono || '',
+            email: cliente.email || '',
+            direccion: cliente.direccion || 'LIMA, PERÚ'
+        };
     }
 
     async function loadComprobanteData() {
@@ -60,6 +68,9 @@
             const perfilCompleto = await obtenerPerfilCliente();
             if (perfilCompleto) {
                 data.cliente = normalizarCliente(perfilCompleto);
+            } else if (data.cliente) {
+                // Si no hay perfil pero hay datos en el pedido, los normalizamos también
+                data.cliente = normalizarCliente(data.cliente);
             }
 
             renderComprobante(data);
@@ -118,7 +129,7 @@
     function renderComprobante(data) {
         // Cliente
         const c = data.cliente || {};
-        const nombreDisplay = `${c.nombres || ''} ${c.apellidos || ''}`.trim() || 'Cliente';
+        const nombreDisplay = c.nombre_completo || 'Cliente';
         
         // Elementos Web
         document.getElementById('nombreCliente').textContent = nombreDisplay;
