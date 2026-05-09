@@ -4,7 +4,7 @@
 (function () {
   "use strict";
 
-  const S = v => `S/ ${Number(v || 0).toFixed(2)}`;
+  const S = v => `S/\u00A0${Number(v || 0).toFixed(2)}`;
   const IGV_RATE = 0.18;
 
   const getToken = () => {
@@ -279,7 +279,8 @@
       const phoneCheck = PF.validatePhone(p);
       if (!phoneCheck.valid) return Swal.fire('Atención', phoneCheck.msg, 'warning');
 
-      if (c.length !== 6) return Swal.fire('Atención', 'El código de aprobación debe tener 6 dígitos', 'warning');
+      const codeCheck = PF.validateCode(c);
+      if (!codeCheck.valid) return Swal.fire('Atención', codeCheck.msg, 'warning');
     }
 
     try {
@@ -331,7 +332,10 @@
         title: '¡Gracias por tu compra!',
         text: 'Tu pedido ha sido procesado correctamente.',
         icon: 'success',
-        confirmButtonColor: '#2E7D32'
+        confirmButtonColor: '#2E7D32',
+        customClass: {
+          popup: 'swal2-modal-responsive'
+        }
       }).then(() => {
         window.navigateTo('/comprobante');
       });
@@ -425,7 +429,7 @@
       });
     }
 
-    // --- Máscara Celulares (Yape/Plin) ---
+    // --- Máscara Celulares y Códigos (Yape/Plin/CVV) ---
     ['yapePhone', 'plinPhone'].forEach(id => {
       const el = document.getElementById(id);
       if (el) {
@@ -452,6 +456,16 @@
               e.target.classList.add('is-valid');
             }
           }
+        });
+      }
+    });
+
+    ['yapeCode', 'plinCode', 'cardCvv'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', (e) => {
+          // Solo permitir números
+          e.target.value = e.target.value.replace(/\D/g, '');
         });
       }
     });

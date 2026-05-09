@@ -101,10 +101,85 @@
   margin-top:    2rem;
 }
 
+/* Nuevo contenedor para dar marco a la tabla (Ajuste visual solicitado) */
+.pedidos-card {
+  background: var(--color-surface, white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-md, 12px);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+  margin-bottom: 1.5rem;
+  transition: var(--transition-base);
+}
+
+.pedidos-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 576px) {
+  .pedidos-card {
+    padding: 1rem;
+    border-radius: var(--radius-sm, 8px);
+    margin-bottom: 1rem;
+  }
+}
+
 /* Tabla de pedidos */
-.mi-cuenta-wrapper .table          { background: white; border-radius: 10px; overflow: hidden; }
+.mi-cuenta-wrapper .table          { background: white; border-radius: 10px; overflow: hidden; margin-bottom: 0; }
 .mi-cuenta-wrapper .table thead    { background: linear-gradient(45deg, var(--color-green), var(--color-green-mid)); color: white; }
-.mi-cuenta-wrapper .table th       { border: none; padding: 12px; font-weight: 600; }
-.mi-cuenta-wrapper .table td       { vertical-align: middle; padding: 12px; }
-.mi-cuenta-wrapper .badge          { padding: 6px 12px; font-size: 0.85rem; }
-#pedidosContainer .btn-sm { margin: 2px; }
+.mi-cuenta-wrapper .table th       { border: none; padding: 12px; font-weight: 600; white-space: nowrap; }
+.mi-cuenta-wrapper .table td       { vertical-align: middle; padding: 12px; border-bottom: 1px solid #f1f1f1; }
+.mi-cuenta-wrapper .table tr:last-child td { border-bottom: none; }
+.mi-cuenta-wrapper .badge          { padding: 6px 12px; font-size: 0.85rem; border-radius: 50px; }
+#pedidosContainer .btn-sm { margin: 2px; border-radius: 6px; }
+
+/* Ajuste para que el contenedor responsive no corte la sombra si se añade */
+.table-responsive {
+  scrollbar-width: thin;
+  padding-bottom: 5px;
+}
+
+/* Animación de entrada suave para cambios de vista */
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos específicos para la vista de detalle */
+.detail-table-wrapper {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow-x: auto; /* Cambiado de hidden a auto para permitir scroll universal */
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  background: white;
+}
+
+.detail-table-wrapper .table {
+  margin-bottom: 0;
+  min-width: 600px; /* Asegura que la tabla no se comprima demasiado en móviles */
+}
+
+.detail-table-wrapper .table th {
+  background-color: #f8f9fa !important;
+  color: #444 !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #eee;
+  white-space: nowrap; /* Evita que el texto de cabecera se rompa */
+}
+
+.detail-table-wrapper .table td {
+  padding: 14px 12px;
+}
+
+.detail-table-wrapper .table tfoot td {
+  background-color: #fafafa;
+  border-top: 2px solid #eee;
+}

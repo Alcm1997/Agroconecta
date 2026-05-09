@@ -110,7 +110,10 @@
                         icon: 'success',
                         timer: 1500,
                         showConfirmButton: false,
-                        allowOutsideClick: false
+                        allowOutsideClick: false,
+                        customClass: {
+                            popup: 'swal2-modal-responsive'
+                        }
                     }).then(() => {
                         if (window.navigateTo) {
                             window.navigateTo('/');

@@ -124,3 +124,24 @@ body {
   border-color: var(--color-primary);
   box-shadow:   0 0 0 .2rem var(--color-primary-shadow);
 }
+
+/* ── SweetAlert2 Responsivo Global ─────────────────────────── */
+@media (max-width: 576px) {
+  .swal2-popup.swal2-modal-responsive {
+    width: 85% !important;
+    padding: 1.5rem 1rem !important;
+    border-radius: 20px !important;
+  }
+  .swal2-popup.swal2-modal-responsive .swal2-title {
+    font-size: 1.2rem !important;
+    padding-top: 0.5rem !important;
+  }
+  .swal2-popup.swal2-modal-responsive .swal2-html-container {
+    font-size: 0.9rem !important;
+    margin: 0.5rem 0 0 !important;
+  }
+  .swal2-popup.swal2-modal-responsive .swal2-icon {
+    transform: scale(0.8);
+    margin-top: 10px !important;
+  }
+}

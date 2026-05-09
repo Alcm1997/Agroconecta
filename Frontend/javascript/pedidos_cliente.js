@@ -1,5 +1,6 @@
 // Sistema de seguimiento de pedidos para clientes
 (function () {
+  let cachePedidos = []; // Cache para navegación rápida entre lista y detalle
 
   const S = v => `S/ ${Number(v || 0).toFixed(2)}`;
 
@@ -25,9 +26,9 @@
       }
 
       const data = await response.json();
-      const pedidos = data.pedidos || [];
+      cachePedidos = data.pedidos || [];
 
-      if (pedidos.length === 0) {
+      if (cachePedidos.length === 0) {
         container.innerHTML = `
           <div class="alert alert-info">
             <i class="fas fa-info-circle me-2"></i>
@@ -37,7 +38,7 @@
         return;
       }
 
-      renderPedidos(pedidos);
+      renderPedidos(cachePedidos);
     } catch (error) {
       console.error('Error cargando pedidos:', error);
       container.innerHTML = `
@@ -49,27 +50,29 @@
     }
   }
 
-  // Renderizar pedidos
+  // Renderizar pedidos (Lista principal)
   function renderPedidos(pedidos) {
     const container = document.getElementById('pedidosContainer');
 
     container.innerHTML = `
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Pedido #</th>
-              <th>Fecha</th>
-              <th>Total</th>
-              <th>Estado</th>
-              <th>Comprobante</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${pedidos.map(p => renderPedidoRow(p)).join('')}
-          </tbody>
-        </table>
+      <div class="pedidos-card fade-in">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Pedido #</th>
+                <th>Fecha</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Comprobante</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pedidos.map(p => renderPedidoRow(p)).join('')}
+            </tbody>
+          </table>
+        </div>
       </div>
     `;
   }
@@ -89,7 +92,7 @@
         <td>
           ${pedido.numero_comprobante || '-'}
           ${pedido.id_comprobante ? `
-            <button class="btn btn-sm btn-outline-primary" onclick="verComprobante(${pedido.id_pedido})">
+            <button class="btn btn-sm btn-outline-primary" title="Ver Comprobante" onclick="verComprobante(${pedido.id_pedido})">
               <i class="fas fa-file-invoice"></i>
             </button>
           ` : ''}
@@ -108,6 +111,74 @@
     `;
   }
 
+  // Renderizar Vista de Detalle (Integrada en la card)
+  function renderDetallePedido(pedido) {
+    const container = document.getElementById('pedidosContainer');
+    const fecha = new Date(pedido.fecha_pedido).toLocaleDateString('es-ES');
+    
+    container.innerHTML = `
+      <div class="pedidos-card fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+          <h5 class="mb-0 text-success">
+            <i class="fas fa-receipt me-2"></i>Detalle del Pedido #${pedido.id_pedido}
+          </h5>
+          <button class="btn btn-sm btn-secondary rounded-pill px-3" onclick="window.cargarPedidosCache()">
+            <i class="fas fa-arrow-left me-2"></i>Volver al Historial
+          </button>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <label class="small text-muted d-block">Fecha</label>
+            <span class="fw-bold">${fecha}</span>
+          </div>
+          <div class="col-md-3">
+            <label class="small text-muted d-block">Estado</label>
+            ${getEstadoBadge(pedido.estado)}
+          </div>
+          <div class="col-md-3">
+            <label class="small text-muted d-block">Método de Pago</label>
+            <span class="fw-bold text-uppercase">${pedido.tipo_pago || '-'}</span>
+          </div>
+          <div class="col-md-3">
+            <label class="small text-muted d-block">Total del Pedido</label>
+            <span class="fs-5 fw-bold text-success">${S(pedido.total)}</span>
+          </div>
+        </div>
+
+        <h6 class="mb-3"><i class="fas fa-shopping-basket me-2"></i>Productos solicitados:</h6>
+        <div class="table-responsive detail-table-wrapper">
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr class="text-nowrap">
+                <th>Producto</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-end">P. Unitario</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${(pedido.items || []).map(item => `
+                <tr>
+                  <td>${item.nombre_producto}</td>
+                  <td class="text-center">${item.cantidad}</td>
+                  <td class="text-end">${S(item.precio_unitario)}</td>
+                  <td class="text-end fw-bold">${S(item.subtotal)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="text-end fw-bold py-3">TOTAL:</td>
+                <td class="text-end fw-bold text-success py-3 fs-5">${S(pedido.total)}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    `;
+  }
+
   // Obtener badge de estado
   function getEstadoBadge(estado) {
     const badges = {
@@ -118,11 +189,10 @@
     return badges[estado] || `<span class="badge bg-secondary">${estado}</span>`;
   }
 
-  // Ver comprobante: obtiene datos y abre ventana de impresión profesional
+  // Ver comprobante
   window.verComprobante = async function (idPedido) {
     const token = getToken();
     try {
-      // Obtener datos del comprobante y del pedido en paralelo
       const [rComp, rPed] = await Promise.all([
         fetch(`/api/client/pedidos/${idPedido}/comprobante`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -200,8 +270,18 @@
   }
 
 
-  // Ver detalle del pedido
+  // Ver detalle del pedido (Ahora In-Place)
   window.verDetallePedido = async function (idPedido) {
+    const container = document.getElementById('pedidosContainer');
+    
+    // Loader temporal mientras llega el detalle
+    container.innerHTML = `
+      <div class="pedidos-card text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-2 text-muted">Cargando detalles del pedido...</p>
+      </div>
+    `;
+
     try {
       const token = getToken();
       const response = await fetch(`/api/client/pedidos/${idPedido}`, {
@@ -211,32 +291,12 @@
       if (!response.ok) throw new Error('Error al cargar detalle');
 
       const data = await response.json();
-      const pedido = data.pedido;
-
-      // Poblar el modal estático
-      document.getElementById('detalleModalTitle').textContent = `Detalle del Pedido #${pedido.id_pedido}`;
-      document.getElementById('detalleFecha').textContent = new Date(pedido.fecha_pedido).toLocaleDateString('es-ES');
-      document.getElementById('detalleEstado').innerHTML = getEstadoBadge(pedido.estado);
-      document.getElementById('detalleTipoPago').textContent = pedido.tipo_pago || '-';
-      document.getElementById('detalleTotal').textContent = S(pedido.total);
-
-      const tbody = document.getElementById('detalleProductosBody');
-      tbody.innerHTML = (pedido.items || []).map(item => `
-        <tr>
-          <td>${item.nombre_producto}</td>
-          <td>${item.cantidad}</td>
-          <td>${S(item.precio_unitario)}</td>
-          <td>${S(item.subtotal)}</td>
-        </tr>
-      `).join('');
-
-      // Mostrar modal
-      const modal = new bootstrap.Modal(document.getElementById('modalDetallePedido'));
-      modal.show();
+      renderDetallePedido(data.pedido);
 
     } catch (error) {
       console.error('Error:', error);
       alert('Error al cargar el detalle del pedido');
+      renderPedidos(cachePedidos); // Volver a la lista en caso de error
     }
   };
 
@@ -260,7 +320,7 @@
 
       if (response.ok && data.success) {
         alert('Pedido cancelado exitosamente');
-        cargarPedidos(); // Recargar lista
+        cargarPedidos(); // Recargar lista completa
       } else {
         alert(data.message || 'Error al cancelar el pedido');
       }
@@ -270,22 +330,24 @@
     }
   };
 
-  // Inicializar al cargar la página
-  // Función de inicialización
+  // Exponer función de carga desde cache para el botón volver
+  window.cargarPedidosCache = () => {
+    renderPedidos(cachePedidos);
+  };
+
+  // Inicialización
   const initPedidos = () => {
     if (document.getElementById('pedidosContainer')) {
       cargarPedidos();
     }
   };
 
-  // Ejecutar inicialización si el DOM ya cargó (SPA) o esperar a que cargue
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initPedidos);
   } else {
     initPedidos();
   }
 
-  // Exponer función globalmente
   window.cargarPedidos = cargarPedidos;
 
 })();

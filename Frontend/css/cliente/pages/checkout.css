@@ -63,8 +63,24 @@
 
 /* Tabla del carrito */
 .checkout-container .table    { margin-bottom: 0; }
-.checkout-container .table th { border-top: none; font-weight: 600; color: var(--color-green); }
-.checkout-container .table td { vertical-align: middle; padding: 14px 8px; }
+.checkout-container .table th { 
+  border-top: none; 
+  font-weight: 600; 
+  color: var(--color-green);
+  white-space: nowrap; /* Evita que "P. Unit." o "Total" se rompan en móvil */
+}
+.checkout-container .table td { 
+  vertical-align: middle; 
+  padding: 14px 8px; 
+}
+
+/* Forzar que las columnas de precios no se rompan */
+.checkout-container .table td:nth-child(3),
+.checkout-container .table td:nth-child(5) {
+  white-space: nowrap;
+  min-width: 100px;
+}
+
 .checkout-container .table-responsive { width: 100% !important; }
 
 .checkout-container .product-img { width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius-sm); }

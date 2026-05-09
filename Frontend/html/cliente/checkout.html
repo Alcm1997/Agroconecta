@@ -93,7 +93,7 @@
                       <input type="text" class="form-control" id="cardExp" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
                     </div>
                     <div class="col-5">
-                      <input type="text" class="form-control" id="cardCvv" placeholder="CVV" maxlength="3" autocomplete="cc-csc">
+                      <input type="text" class="form-control" id="cardCvv" placeholder="CVV" maxlength="3" autocomplete="cc-csc" inputmode="numeric" pattern="[0-9]*">
                     </div>
                   </div>
                 </div>
@@ -107,7 +107,7 @@
                   </div>
                   <div class="mb-0">
                     <label class="small text-muted">Código de aprobación</label>
-                    <input type="text" class="form-control border-purple" id="yapeCode" placeholder="000000" maxlength="6">
+                    <input type="text" class="form-control border-purple" id="yapeCode" placeholder="000000" maxlength="6" inputmode="numeric" pattern="[0-9]*">
                   </div>
                 </div>
 
@@ -120,7 +120,7 @@
                   </div>
                   <div class="mb-0">
                     <label class="small text-muted">Código de verificación</label>
-                    <input type="text" class="form-control border-teal" id="plinCode" placeholder="000000" maxlength="6">
+                    <input type="text" class="form-control border-teal" id="plinCode" placeholder="000000" maxlength="6" inputmode="numeric" pattern="[0-9]*">
                   </div>
                 </div>
               </div>

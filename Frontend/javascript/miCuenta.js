@@ -288,7 +288,14 @@
             });
 
             if (response.ok) {
-                Swal.fire('¡Éxito!', 'Datos actualizados', 'success');
+                Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Datos actualizados',
+                    icon: 'success',
+                    customClass: {
+                        popup: 'swal2-modal-responsive'
+                    }
+                });
                 toggleEdicion(false);
                 cargarPerfilUsuario();
                 window.dispatchEvent(new CustomEvent('authUpdated'));

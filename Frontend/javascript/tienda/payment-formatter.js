@@ -151,6 +151,17 @@
          */
         unformat(value) {
             return value.replace(/\D/g, '');
+        },
+
+        /**
+         * Valida códigos de aprobación (Yape, Plin, etc.)
+         * Regla: Exactamente 6 dígitos numéricos.
+         */
+        validateCode(value) {
+            if (!/^\d{6}$/.test(value)) {
+                return { valid: false, msg: 'El código debe tener exactamente 6 dígitos numéricos' };
+            }
+            return { valid: true };
         }
     };
 
