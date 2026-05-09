@@ -28,12 +28,15 @@
                 if (clientDropdown) {
                     clientDropdown.style.display = 'block';
                     if (clientNameEl) {
-                        const nombre = cliente.nombres || cliente.nombre || '';
-                        const apellido = cliente.apellidos || cliente.apellido || '';
-                        const fullName = `${nombre} ${apellido}`.trim() || 'Cliente';
+                        // Usar nombre_completo si existe (provisto por DTO), de lo contrario calcular
+                        const displayName = cliente.nombre_completo || 
+                            (cliente.tipo_cliente === 'Jurídica' 
+                                ? (cliente.razon_social || 'Cliente')
+                                : `${cliente.nombres || ''} ${cliente.apellidos || ''}`.trim() || 'Cliente'
+                            );
                         
-                        if (clientNameEl.textContent !== fullName) {
-                            clientNameEl.textContent = fullName;
+                        if (clientNameEl.textContent !== displayName) {
+                            clientNameEl.textContent = displayName;
                         }
                     }
 

@@ -127,8 +127,8 @@ exports.updatePassword = async (email, hashedPassword) => {
 // ✅ NUEVA FUNCIÓN: Para reactivar cliente si es necesario (admin)
 exports.reactivateClient = async (id) => {
   const result = await pool.query(
-    'UPDATE cliente SET estado = $1 WHERE id_cliente = $2 RETURNING *',
-    ['Activo', id]
+    "UPDATE cliente SET estado = 'Activo' WHERE id_cliente = $1 RETURNING *",
+    [id]
   );
   return result.rows[0];
 };
@@ -153,30 +153,17 @@ exports.getClientByDocumentExcluding = async (numero_documento, id_cliente) => {
   return result.rows[0];
 };
 
-exports.getAllClientsAnyStatus = async () => {
-  const result = await pool.query('SELECT * FROM cliente ORDER BY id_cliente DESC');
-  return result.rows;
-};
-
-// Todos los clientes sin filtrar por estado
+// Obtener todos los clientes sin filtrar por estado (para el panel)
 exports.getAllClientsAnyStatus = async () => {
   const { rows } = await pool.query('SELECT * FROM cliente ORDER BY id_cliente DESC');
   return rows;
 };
 
-// Reactivar
-exports.reactivateClient = async (id) => {
-  const { rows } = await pool.query(
-    "UPDATE cliente SET estado = 'Activo' WHERE id_cliente = $1 RETURNING *",
-    [id]
-  );
-  return rows[0];
-};
 
-// SOLO AGREGAR esta función si no existe
+
+// Obtener cliente por ID con campos específicos
 exports.obtenerPorId = async (id_cliente) => {
   try {
-    const pool = require('../config/database');
     const query = `
       SELECT id_cliente, nombres, apellidos, numero_documento, telefono, email, 
              tipo_cliente, razon_social

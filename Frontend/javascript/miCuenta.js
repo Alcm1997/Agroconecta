@@ -10,6 +10,55 @@
         return (t || '').replace(/^"|"$/g, '').trim();
     };
 
+    const formatTelefono = (valor) => {
+        if (!valor) return '';
+        let v = valor.replace(/\D/g, '');
+        if (v.length > 9) v = v.slice(0, 9);
+        const parts = v.match(/.{1,3}/g);
+        return parts ? parts.join(' ') : v;
+    };
+
+    const calcularFortaleza = (password) => {
+        let score = 0;
+        if (!password) return { score: 0, label: 'Esperando...', class: '' };
+        if (password.length >= 8) score += 25;
+        if (/[A-Z]/.test(password)) score += 25;
+        if (/[0-9]/.test(password)) score += 25;
+        if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 25;
+        if (score <= 25) return { score, label: 'Débil', class: 'strength-weak' };
+        if (score <= 50) return { score, label: 'Regular', class: 'strength-medium' };
+        if (score <= 75) return { score, label: 'Buena', class: 'strength-good' };
+        return { score, label: 'Fuerte', class: 'strength-strong' };
+    };
+
+    const actualizarMedidorFortaleza = (fortaleza) => {
+        const meterBar = document.getElementById('meterBar');
+        const meterText = document.getElementById('meterText')?.querySelector('span');
+        if (meterBar && meterText) {
+            meterBar.className = 'meter-bar';
+            if (fortaleza.class) meterBar.classList.add(fortaleza.class);
+            meterText.textContent = fortaleza.label;
+            if (fortaleza.score <= 25) meterText.style.color = '#ff4d4d';
+            else if (fortaleza.score <= 50) meterText.style.color = '#ffa500';
+            else if (fortaleza.score <= 75) meterText.style.color = '#ffd700';
+            else meterText.style.color = '#2ecc71';
+        }
+    };
+
+    window.togglePassword = (inputId, iconId) => {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input && icon) {
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            }
+        }
+    };
+
     // --- Funciones de Carga de Datos ---
     async function cargarPerfilUsuario() {
         try {
@@ -47,7 +96,7 @@
             'numero_documento': cliente.numero_documento || '',
             'numero_documento_juridica': cliente.numero_documento || '',
             'email': cliente.email || '',
-            'telefono': cliente.telefono || '',
+            'telefono': formatTelefono(cliente.telefono || ''),
             'direccion': cliente.direccion || ''
         };
 
@@ -176,19 +225,56 @@
             const formData = new FormData(form);
             const datos = Object.fromEntries(formData);
 
-            // Validaciones básicas
+            // Validaciones y limpieza
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const passRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,15}$/;
+
+            if (!datos.email || datos.email.length > 50 || !emailRegex.test(datos.email)) {
+                Swal.fire('Correo Inválido', 'Máximo 50 caracteres y formato válido.', 'error');
+                return;
+            }
+
+            if (datos.direccion && datos.direccion.length > 150) {
+                Swal.fire('Dirección Inválida', 'Máximo 150 caracteres.', 'error');
+                return;
+            }
+
+            if (datos.contrasena && datos.contrasena.trim() !== '') {
+                if (!passRegex.test(datos.contrasena)) {
+                    Swal.fire('Contraseña Débil', 'Debe tener 8-15 caracteres, incluir letras, números y un símbolo.', 'error');
+                    return;
+                }
+                if (datos.contrasena !== datos.confirmar_contrasena) {
+                    Swal.fire('Error', 'Las contraseñas no coinciden.', 'error');
+                    return;
+                }
+            }
+
+            datos.telefono = (datos.telefono || '').replace(/\s/g, '');
+            if (datos.telefono.length !== 9) {
+                Swal.fire('Teléfono Inválido', 'Debe tener exactamente 9 dígitos.', 'error');
+                return;
+            }
+
             if (datos.tipo_cliente === 'Natural') {
                 datos.numero_documento = (datos.numero_documento || '').replace(/\D/g, '').slice(0, 8);
                 if (datos.numero_documento.length !== 8) {
                     Swal.fire('DNI inválido', 'Debe tener 8 dígitos', 'error');
                     return;
                 }
+                datos.razon_social = null;
             } else {
                 datos.numero_documento = (datos.numero_documento_juridica || '').replace(/\D/g, '').slice(0, 11);
                 if (datos.numero_documento.length !== 11) {
                     Swal.fire('RUC inválido', 'Debe tener 11 dígitos', 'error');
                     return;
                 }
+                if (!datos.razon_social || datos.razon_social.length > 60) {
+                    Swal.fire('Razón Social Inválida', 'Es obligatoria y máximo 60 caracteres.', 'error');
+                    return;
+                }
+                datos.nombres = null;
+                datos.apellidos = null;
             }
 
             const token = getToken();
@@ -224,12 +310,32 @@
         const btnEditar = document.getElementById('btnEditarPerfil');
         const btnGuardar = document.getElementById('btnGuardarCambios');
         const btnCancelar = document.getElementById('btnCancelarEdicion');
-        const seccionPass = document.getElementById('seccionPassword');
+        const secPass = document.getElementById('seccionPassword');
+        const passMeter = document.getElementById('passwordStrength');
 
         if (btnEditar) btnEditar.style.display = habilitar ? 'none' : 'inline-block';
         if (btnGuardar) btnGuardar.style.display = habilitar ? 'inline-block' : 'none';
         if (btnCancelar) btnCancelar.style.display = habilitar ? 'inline-block' : 'none';
-        if (seccionPass) seccionPass.style.display = habilitar ? 'block' : 'none';
+        if (secPass) secPass.style.display = habilitar ? 'block' : 'none';
+        if (passMeter) passMeter.style.display = 'none'; // Ocultar al deshabilitar/resetear
+        
+        if (!habilitar) {
+            const passInput = document.getElementById('contrasena');
+            const passConfirm = document.getElementById('confirmar_contrasena');
+            if (passInput) {
+                passInput.value = '';
+                passInput.type = 'password';
+            }
+            if (passConfirm) {
+                passConfirm.value = '';
+                passConfirm.type = 'password';
+            }
+            // Resetear iconos de ojo
+            const iconNueva = document.getElementById('iconoNueva');
+            const iconConfirmar = document.getElementById('iconoConfirmar');
+            if (iconNueva) iconNueva.className = 'fa-solid fa-eye-slash';
+            if (iconConfirmar) iconConfirmar.className = 'fa-solid fa-eye-slash';
+        }
     };
 
     // --- Inicialización ---
@@ -252,6 +358,26 @@
             form.addEventListener('submit', e => {
                 e.preventDefault();
                 actualizarPerfil();
+            });
+        }
+
+        const telefonoInput = document.getElementById('telefono');
+        if (telefonoInput) {
+            telefonoInput.addEventListener('input', function() {
+                this.value = formatTelefono(this.value);
+            });
+        }
+
+        const contrasenaInput = document.getElementById('contrasena');
+        const strengthContainer = document.getElementById('passwordStrength');
+        if (contrasenaInput && strengthContainer) {
+            contrasenaInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    strengthContainer.style.display = 'block';
+                    actualizarMedidorFortaleza(calcularFortaleza(this.value));
+                } else {
+                    strengthContainer.style.display = 'none';
+                }
             });
         }
 

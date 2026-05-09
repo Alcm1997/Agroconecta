@@ -90,15 +90,19 @@ exports.validarLogin = (req, res, next) => {
 };
 
 exports.validarActualizacionPerfil = (req, res, next) => {
-    const { tipo_cliente, numero_documento, email, contrasena, telefono } = req.body;
+    const { tipo_cliente, numero_documento, email, contrasena, telefono, razon_social, direccion } = req.body;
 
     if (email && (email.length > 50 || !emailRegex.test(email))) {
-        return res.status(400).json({ message: 'Correo electrónico inválido.' });
+        return res.status(400).json({ message: 'Correo electrónico inválido (máx. 50 caracteres).' });
+    }
+
+    if (direccion && direccion.length > 150) {
+        return res.status(400).json({ message: 'La dirección es demasiado larga (máx. 150 caracteres).' });
     }
 
     if (contrasena && contrasena.trim() !== '' && !passRegex.test(contrasena)) {
         return res.status(400).json({ 
-            message: 'La nueva contraseña debe cumplir con los requisitos de seguridad.' 
+            message: 'La nueva contraseña debe tener entre 8 y 15 caracteres, incluir letras, números y un símbolo.' 
         });
     }
 
@@ -110,8 +114,13 @@ exports.validarActualizacionPerfil = (req, res, next) => {
         if (tipo_cliente === 'Natural' && !/^\d{8}$/.test(numero_documento)) {
             return res.status(400).json({ message: 'DNI inválido.' });
         }
-        if (tipo_cliente === 'Jurídica' && !/^20\d{9}$/.test(numero_documento)) {
-            return res.status(400).json({ message: 'RUC inválido (debe empezar con 20).' });
+        if (tipo_cliente === 'Jurídica') {
+            if (!/^20\d{9}$/.test(numero_documento)) {
+                return res.status(400).json({ message: 'RUC inválido (debe empezar con 20).' });
+            }
+            if (razon_social && razon_social.length > 60) {
+                return res.status(400).json({ message: 'La razón social es demasiado larga (máx. 60 caracteres).' });
+            }
         }
     }
 

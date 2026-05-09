@@ -44,11 +44,11 @@
                                         <div id="campos_natural">
                                             <div class="mb-3">
                                                 <label for="nombres" class="form-label">Nombres</label>
-                                                <input type="text" class="form-control" id="nombres" name="nombres" autocomplete="given-name" disabled>
+                                                <input type="text" class="form-control" id="nombres" name="nombres" maxlength="50" autocomplete="given-name" disabled>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="apellidos" class="form-label">Apellidos</label>
-                                                <input type="text" class="form-control" id="apellidos" name="apellidos" autocomplete="family-name" disabled>
+                                                <input type="text" class="form-control" id="apellidos" name="apellidos" maxlength="50" autocomplete="family-name" disabled>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="numero_documento" class="form-label">DNI</label>
@@ -59,7 +59,7 @@
                                         <div id="campos_juridica" style="display:none;">
                                             <div class="mb-3">
                                                 <label for="razon_social" class="form-label">Razón Social</label>
-                                                <input type="text" class="form-control" id="razon_social" name="razon_social" autocomplete="organization" disabled>
+                                                <input type="text" class="form-control" id="razon_social" name="razon_social" maxlength="60" autocomplete="organization" disabled>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="numero_documento_juridica" class="form-label">RUC</label>
@@ -69,18 +69,18 @@
                                         
                                         <div class="mb-3">
                                             <label for="email" class="form-label">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="email" name="email" autocomplete="email" disabled>
+                                            <input type="email" class="form-control" id="email" name="email" maxlength="50" autocomplete="email" disabled>
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="telefono" class="form-label">Teléfono</label>
-                                            <input type="text" class="form-control" id="telefono" name="telefono" maxlength="9" autocomplete="tel" disabled>
+                                            <input type="text" class="form-control" id="telefono" name="telefono" maxlength="11" autocomplete="tel" disabled>
                                         </div>
                                         <div class="mb-3">
                                             <label for="direccion" class="form-label">Dirección</label>
-                                            <input type="text" class="form-control" id="direccion" name="direccion" autocomplete="street-address" disabled>
+                                            <input type="text" class="form-control" id="direccion" name="direccion" maxlength="150" autocomplete="street-address" disabled>
                                         </div>
                                         <div class="mb-3">
                                             <label for="id_distrito" class="form-label">Departamento - Distrito</label>
@@ -99,13 +99,31 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="contrasena" class="form-label">Nueva Contraseña</label>
-                                                <input type="password" class="form-control" id="contrasena" name="contrasena" placeholder="Mínimo 6 caracteres">
+                                                <div class="password-input-container">
+                                                    <input type="password" class="form-control pe-5" id="contrasena" name="contrasena" maxlength="15" placeholder="8-15 caracteres">
+                                                    <span class="password-toggle" onclick="togglePassword('contrasena', 'iconoNueva')">
+                                                        <i class="fa-solid fa-eye-slash" id="iconoNueva"></i>
+                                                    </span>
+                                                </div>
+                                                
+                                                <!-- Medidor de fortaleza -->
+                                                <div id="passwordStrength" class="password-strength-meter mt-2" style="display: none;">
+                                                    <div class="meter-bar-container">
+                                                        <div id="meterBar" class="meter-bar"></div>
+                                                    </div>
+                                                    <div id="meterText" class="meter-text">Fortaleza: <span>Esperando...</span></div>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="confirmar_contrasena" class="form-label">Confirmar Contraseña</label>
-                                                <input type="password" class="form-control" id="confirmar_contrasena" name="confirmar_contrasena" placeholder="Repita la contraseña">
+                                                <div class="password-input-container">
+                                                    <input type="password" class="form-control pe-5" id="confirmar_contrasena" name="confirmar_contrasena" maxlength="15" placeholder="Repita la contraseña">
+                                                    <span class="password-toggle" onclick="togglePassword('confirmar_contrasena', 'iconoConfirmar')">
+                                                        <i class="fa-solid fa-eye-slash" id="iconoConfirmar"></i>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
