@@ -112,6 +112,19 @@
             });
         }
 
+        const telefonoInput = document.getElementById('telefono');
+        if (telefonoInput) {
+            telefonoInput.addEventListener('input', function() {
+                // Eliminar no numéricos
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 9) value = value.slice(0, 9);
+                
+                // Formatear: XXX XXX XXX
+                const parts = value.match(/.{1,3}/g);
+                this.value = parts ? parts.join(' ') : value;
+            });
+        }
+
         registroForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const contrasena = document.getElementById('contrasena').value;
@@ -123,8 +136,8 @@
 
             const tipo_cliente = document.getElementById('tipo_cliente').value;
             let numero_documento = (tipo_cliente === 'Natural') 
-                ? document.getElementById('numero_documento')?.value 
-                : document.getElementById('numero_documento_juridica')?.value;
+                ? document.getElementById('dni')?.value 
+                : document.getElementById('ruc')?.value;
 
             const id_distrito = document.getElementById('id_distrito').value;
             if (!id_distrito) {
@@ -139,7 +152,7 @@
                 razon_social: document.getElementById('razon_social')?.value || '',
                 numero_documento,
                 email: document.getElementById('email').value,
-                telefono: document.getElementById('telefono').value,
+                telefono: document.getElementById('telefono').value.replace(/\s/g, ''),
                 direccion: document.getElementById('direccion').value,
                 id_distrito: parseInt(id_distrito),
                 contrasena: contrasena

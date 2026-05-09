@@ -66,9 +66,15 @@
             e.preventDefault();
 
             const email = document.getElementById('email').value;
+            const errorEl = document.getElementById('loginError');
+
+            if (email.length > 50) {
+                if (errorEl) errorEl.textContent = 'El correo electrónico no puede exceder los 50 caracteres.';
+                return;
+            }
+
             const contrasenaInput = document.getElementById('contrasena');
             const contrasena = contrasenaInput.value;
-            const errorEl = document.getElementById('loginError');
 
             if (contrasena.length < 8 || contrasena.length > 15) {
                 contrasenaInput.classList.add('is-invalid');

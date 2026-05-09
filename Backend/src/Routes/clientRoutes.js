@@ -4,11 +4,13 @@ const clientController = require('../Controllers/clientController');
 const pedidoController = require('../Controllers/pedidoController');
 const authMiddleware = require('../Middleware/auth'); // Middleware para verificar JWT
 
+const { validarRegistro, validarLogin, validarActualizacionPerfil } = require('../Validators/clientValidator');
+
 // ========== RUTAS ESPECÍFICAS (deben ir ANTES de /:id) ==========
 
 // Registro y Login
-router.post('/register', clientController.registerClient);
-router.post('/login', clientController.loginClient);
+router.post('/register', validarRegistro, clientController.registerClient);
+router.post('/login', validarLogin, clientController.loginClient);
 
 // Verificaciones
 router.post('/check-email', clientController.checkClientByEmail);
@@ -17,7 +19,7 @@ router.post('/check-document', clientController.checkClientByDocument);
 // Perfil del cliente autenticado
 router.get('/me', authMiddleware, clientController.me);
 router.get('/profile', authMiddleware, clientController.getProfile);
-router.put('/profile', authMiddleware, clientController.updateProfile);
+router.put('/profile', authMiddleware, validarActualizacionPerfil, clientController.updateProfile);
 router.delete('/account', authMiddleware, clientController.deleteMyAccount);
 
 // ✅ Rutas de pedidos del cliente (específicas, antes de /:id)
