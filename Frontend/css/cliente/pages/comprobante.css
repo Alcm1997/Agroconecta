@@ -56,6 +56,7 @@
 
 .table thead th {
     background: var(--receipt-primary);
+    color: #fff !important;
     border: none;
     padding: 14px;
     font-size: 0.9rem;
@@ -185,6 +186,7 @@
         color: #fff !important;
         padding: 8px;
         border: 1px solid #000;
+        print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
     }
 
