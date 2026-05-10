@@ -105,10 +105,26 @@
             if (el) el.value = value;
         }
         
+        // Manejar Tipo de Cliente (Dropdown Custom)
+        const tipo = cliente.tipo_cliente || 'Natural';
+        const inputTipo = document.getElementById('tipo_cliente');
+        const labelTipo = document.getElementById('tipoClienteSelectedText');
+        if (inputTipo) inputTipo.value = tipo;
+        if (labelTipo) labelTipo.textContent = tipo;
+
         if (cliente.id_distrito) {
             setTimeout(() => {
                 cargarDistritoDelCliente(cliente.id_distrito);
             }, 500);
+        } else {
+            const depLabel = document.getElementById('depSelectedText');
+            const distLabel = document.getElementById('distSelectedText');
+            if (depLabel) depLabel.textContent = 'Seleccione departamento...';
+            if (distLabel) distLabel.textContent = 'Seleccione distrito...';
+            const inputDep = document.getElementById('id_departamento');
+            const inputDist = document.getElementById('id_distrito');
+            if (inputDep) inputDep.value = '';
+            if (inputDist) inputDist.value = '';
         }
         
         mostrarCamposCliente();
@@ -116,19 +132,44 @@
 
     async function cargarDistritoDelCliente(idDistrito) {
         try {
+            // 1. Obtener datos del distrito desde la API
             const response = await fetch(`/api/distritos/${idDistrito}`);
             if (!response.ok) return;
             const distrito = await response.json();
             
-            const selectDepartamento = document.getElementById('id_departamento');
-            if (selectDepartamento) {
-                selectDepartamento.value = distrito.id_departamento;
-                await cargarDistritosPorDepartamento(distrito.id_departamento);
+            const inputDep = document.getElementById('id_departamento');
+            const labelDep = document.getElementById('depSelectedText');
+            
+            if (inputDep && labelDep) {
+                // 2. Sincronizar Departamento
+                const idDep = distrito.id_departamento;
+                inputDep.value = idDep;
                 
+                // Buscar el nombre en la lista ya cargada
+                const depOptions = document.querySelectorAll('#depOptions .dropdown-item');
+                let depNombre = 'Departamento';
+                depOptions.forEach(opt => {
+                    if (opt.dataset.id == idDep) depNombre = opt.textContent;
+                });
+                labelDep.textContent = depNombre;
+                
+                // 3. Cargar Distritos de ese departamento
+                await cargarDistritosPorDepartamento(idDep);
+                
+                // 4. Sincronizar Distrito (pequeño delay para asegurar renderizado)
                 setTimeout(() => {
-                    const selectDistrito = document.getElementById('id_distrito');
-                    if (selectDistrito) selectDistrito.value = idDistrito;
-                }, 300);
+                    const inputDist = document.getElementById('id_distrito');
+                    const labelDist = document.getElementById('distSelectedText');
+                    if (inputDist && labelDist) {
+                        inputDist.value = idDistrito;
+                        const distOptions = document.querySelectorAll('#distOptions .dropdown-item');
+                        let distNombre = 'Distrito';
+                        distOptions.forEach(opt => {
+                            if (opt.dataset.id == idDistrito) distNombre = opt.textContent;
+                        });
+                        labelDist.textContent = distNombre;
+                    }
+                }, 100);
             }
         } catch (error) {
             console.error('Error al cargar distrito del cliente:', error);
@@ -141,36 +182,35 @@
             if (!response.ok) return;
             const departamentos = await response.json();
             
-            const selectDistrito = document.getElementById('id_distrito');
-            if (!selectDistrito) return;
+            const container = document.getElementById('depOptions');
+            if (!container) return;
 
-            const contenedorDistrito = selectDistrito.parentElement;
-            
-            // Evitar duplicados si ya existe el select de departamento (SPA navigation)
-            if (document.getElementById('id_departamento')) return;
-
-            const divDepartamento = document.createElement('div');
-            divDepartamento.className = 'mb-3';
-            divDepartamento.innerHTML = `
-                <label for="id_departamento" class="form-label">Departamento</label>
-                <select class="form-select" id="id_departamento" name="id_departamento" disabled>
-                    <option value="">Seleccione un departamento</option>
-                </select>
-            `;
-            
-            contenedorDistrito.parentNode.insertBefore(divDepartamento, contenedorDistrito);
-            const selectDepartamento = document.getElementById('id_departamento');
-            
+            container.innerHTML = '';
             departamentos.forEach(dep => {
-                const option = document.createElement('option');
-                option.value = dep.id_departamento;
-                option.textContent = dep.nombre_departamento;
-                selectDepartamento.appendChild(option);
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="dropdown-item" type="button" data-id="${dep.id_departamento}">${dep.nombre_departamento}</button>`;
+                container.appendChild(li);
             });
-            
-            selectDistrito.previousElementSibling.textContent = 'Distrito';
-            selectDepartamento.addEventListener('change', function() {
-                cargarDistritosPorDepartamento(this.value);
+
+            // Eventos de selección
+            container.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = e.target.dataset.id;
+                    const text = e.target.textContent;
+
+                    document.getElementById('id_departamento').value = id;
+                    document.getElementById('depSelectedText').textContent = text;
+                    
+                    // Reset distrito
+                    document.getElementById('id_distrito').value = '';
+                    document.getElementById('distSelectedText').textContent = 'Seleccione distrito...';
+                    
+                    cargarDistritosPorDepartamento(id);
+                    
+                    const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('depDropdown'));
+                    if (bsDropdown) bsDropdown.hide();
+                });
             });
             
         } catch (error) {
@@ -180,12 +220,13 @@
 
     async function cargarDistritosPorDepartamento(idDepartamento) {
         try {
-            const selectDistrito = document.getElementById('id_distrito');
-            if (!selectDistrito) return;
-            selectDistrito.innerHTML = '<option value="">Seleccione un distrito</option>';
+            const container = document.getElementById('distOptions');
+            if (!container) return;
+            container.innerHTML = '';
             
+            const btnDist = document.getElementById('distDropdown');
             if (!idDepartamento) {
-                selectDistrito.disabled = true;
+                if (btnDist) btnDist.disabled = true;
                 return;
             }
             
@@ -194,14 +235,28 @@
             const distritos = await response.json();
             
             distritos.forEach(distrito => {
-                const option = document.createElement('option');
-                option.value = distrito.id_distrito;
-                option.textContent = distrito.nombre_distrito;
-                selectDistrito.appendChild(option);
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="dropdown-item" type="button" data-id="${distrito.id_distrito}">${distrito.nombre_distrito}</button>`;
+                container.appendChild(li);
+            });
+
+            // Eventos de selección
+            container.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const id = e.target.dataset.id;
+                    const text = e.target.textContent;
+
+                    document.getElementById('id_distrito').value = id;
+                    document.getElementById('distSelectedText').textContent = text;
+                    
+                    const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('distDropdown'));
+                    if (bsDropdown) bsDropdown.hide();
+                });
             });
             
             const btnEditar = document.getElementById('btnEditarPerfil');
-            selectDistrito.disabled = (btnEditar && btnEditar.style.display !== 'none');
+            if (btnDist) btnDist.disabled = (btnEditar && btnEditar.style.display !== 'none');
             
         } catch (error) {
             console.error('Error al cargar distritos:', error);
@@ -314,6 +369,18 @@
         const inputs = form.querySelectorAll('input, select');
         inputs.forEach(input => input.disabled = !habilitar);
         
+        // Habilitar/Deshabilitar Dropdowns Custom
+        const btnTipo = document.getElementById('tipoClienteDropdown');
+        const btnDep = document.getElementById('depDropdown');
+        const btnDist = document.getElementById('distDropdown');
+        
+        if (btnTipo) btnTipo.disabled = !habilitar;
+        if (btnDep) btnDep.disabled = !habilitar;
+        if (btnDist) {
+            const hasDep = document.getElementById('id_departamento')?.value;
+            btnDist.disabled = !habilitar || !hasDep;
+        }
+
         const btnEditar = document.getElementById('btnEditarPerfil');
         const btnGuardar = document.getElementById('btnGuardarCambios');
         const btnCancelar = document.getElementById('btnCancelarEdicion');
@@ -353,11 +420,29 @@
             return;
         }
 
-        // Carga inicial
-        setTimeout(() => {
-            cargarPerfilUsuario();
-            cargarDepartamentos();
+        // Carga secuencial para evitar fallos de sincronización
+        setTimeout(async () => {
+            await cargarDepartamentos();
+            await cargarPerfilUsuario();
         }, 100);
+
+        // Eventos Dropdown Tipo de Cliente
+        document.querySelectorAll('#tipoClienteOptions .dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const val = e.target.dataset.value;
+                const input = document.getElementById('tipo_cliente');
+                const label = document.getElementById('tipoClienteSelectedText');
+                
+                if (input) input.value = val;
+                if (label) label.textContent = val;
+                
+                mostrarCamposCliente();
+                
+                const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('tipoClienteDropdown'));
+                if (bsDropdown) bsDropdown.hide();
+            });
+        });
 
         // Event Listeners
         const form = document.getElementById('perfilForm');

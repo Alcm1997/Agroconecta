@@ -61,48 +61,142 @@
     }
     window.togglePassword = togglePassword;
 
+    async function cargarDepartamentos() {
+        try {
+            const response = await fetch('/api/departamentos');
+            if (!response.ok) return;
+            const departamentos = await response.json();
+            
+            const container = document.getElementById('depOptions');
+            if (!container) return;
+
+            container.innerHTML = '';
+            departamentos.forEach(dep => {
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="dropdown-item" type="button" data-id="${dep.id_departamento}">${dep.nombre_departamento}</button>`;
+                container.appendChild(li);
+            });
+
+            container.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    const text = e.target.textContent;
+
+                    document.getElementById('id_departamento').value = id;
+                    document.getElementById('depSelectedText').textContent = text;
+                    
+                    document.getElementById('id_distrito').value = '';
+                    document.getElementById('distSelectedText').textContent = 'Seleccione distrito...';
+                    
+                    await cargarDistritosPorDepartamento(id);
+                    
+                    const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('depDropdown'));
+                    if (bsDropdown) bsDropdown.hide();
+                });
+            });
+        } catch (error) {
+            console.error('Error al cargar departamentos:', error);
+        }
+    }
+
+    async function cargarDistritosPorDepartamento(idDepartamento) {
+        try {
+            const container = document.getElementById('distOptions');
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const btnDist = document.getElementById('distDropdown');
+            if (!idDepartamento) {
+                if (btnDist) btnDist.disabled = true;
+                return;
+            }
+            
+            const response = await fetch(`/api/distritos/departamento/${idDepartamento}`);
+            if (!response.ok) return;
+            const distritos = await response.json();
+            
+            distritos.forEach(distrito => {
+                const li = document.createElement('li');
+                li.innerHTML = `<button class="dropdown-item" type="button" data-id="${distrito.id_distrito}">${distrito.nombre_distrito}</button>`;
+                container.appendChild(li);
+            });
+
+            container.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const text = e.target.textContent;
+
+                    document.getElementById('id_distrito').value = id;
+                    document.getElementById('distSelectedText').textContent = text;
+                    
+                    const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('distDropdown'));
+                    if (bsDropdown) bsDropdown.hide();
+                });
+            });
+            
+            if (btnDist) btnDist.disabled = false;
+        } catch (error) {
+            console.error('Error al cargar distritos:', error);
+        }
+    }
+
     const initRegistro = function() {
         const registroForm = document.getElementById('registroForm');
         if (!registroForm) return;
 
-        // Cargar departamentos al iniciar (Prevenir duplicados)
-        if (!document.getElementById('id_departamento')) {
-            fetch('/api/departamentos')
-                .then(res => res.json())
-                .then(departamentos => {
-                    const selectDepartamento = document.createElement('select');
-                    selectDepartamento.className = 'form-select mb-3';
-                    selectDepartamento.id = 'id_departamento';
-                    selectDepartamento.name = 'id_departamento';
-                    selectDepartamento.required = true;
-                    selectDepartamento.innerHTML = '<option value="">Seleccione un departamento</option>';
-                    departamentos.forEach(dep => {
-                        selectDepartamento.innerHTML += `<option value="${dep.id_departamento}">${dep.nombre_departamento}</option>`;
-                    });
-                    
-                    const elDistrito = document.getElementById('id_distrito');
-                    if (elDistrito) elDistrito.parentNode.insertBefore(selectDepartamento, elDistrito);
-                    
-                    selectDepartamento.addEventListener('change', function() {
-                        if (!this.value) return;
-                        fetch(`/api/distritos/departamento/${this.value}`)
-                            .then(res => res.json())
-                            .then(distritos => {
-                                const selectDistrito = document.getElementById('id_distrito');
-                                if (!selectDistrito) return;
-                                selectDistrito.innerHTML = '<option value="">Seleccione un distrito</option>';
-                                distritos.forEach(dis => {
-                                    selectDistrito.innerHTML += `<option value="${dis.id_distrito}">${dis.nombre_distrito}</option>`;
-                                });
-                                selectDistrito.disabled = false;
-                            });
-                    });
-                });
-        }
+        // Carga secuencial
+        setTimeout(async () => {
+            await cargarDepartamentos();
+        }, 100);
+
+        // Eventos Dropdown Tipo de Cliente
+        document.querySelectorAll('#tipoClienteOptions .dropdown-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const val = e.target.dataset.value;
+                document.getElementById('tipo_cliente').value = val;
+                document.getElementById('tipoClienteSelectedText').textContent = val;
+                mostrarCamposCliente();
+                const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(document.getElementById('tipoClienteDropdown'));
+                if (bsDropdown) bsDropdown.hide();
+            });
+        });
 
         mostrarCamposCliente();
-        const tipoCli = document.getElementById('tipo_cliente');
-        if (tipoCli) tipoCli.addEventListener('change', mostrarCamposCliente);
+
+        // Limitadores y Restricciones
+        const nombresInput = document.getElementById('nombres');
+        const apellidosInput = document.getElementById('apellidos');
+        const dniInput = document.getElementById('dni');
+        const rucInput = document.getElementById('ruc');
+        const direccionInput = document.getElementById('direccion');
+
+        if (nombresInput) {
+            nombresInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+        }
+
+        if (apellidosInput) {
+            apellidosInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+            });
+        }
+
+        if (dniInput) {
+            dniInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        }
+
+        if (rucInput) {
+            rucInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+                // Validación RUC: siempre empieza con 20
+                if (this.value.length > 0 && !this.value.startsWith('20')) {
+                    this.value = '20';
+                }
+            });
+        }
 
         const contrasenaInput = document.getElementById('contrasena');
         if (contrasenaInput) {

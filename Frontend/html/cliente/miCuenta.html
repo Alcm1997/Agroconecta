@@ -34,11 +34,17 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="tipo_cliente" class="form-label">Tipo de Cliente</label>
-                                            <select class="form-select" id="tipo_cliente" name="tipo_cliente" onchange="mostrarCamposCliente()" disabled>
-                                                <option value="Natural">Natural</option>
-                                                <option value="Jurídica">Jurídica</option>
-                                            </select>
+                                            <label class="form-label">Tipo de Cliente</label>
+                                            <div class="dropdown w-100" id="tipoClienteContainer">
+                                                <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="tipoClienteDropdown" data-bs-toggle="dropdown" aria-expanded="false" disabled style="background: #fff;">
+                                                    <span id="tipoClienteSelectedText">Natural</span>
+                                                </button>
+                                                <ul class="dropdown-menu w-100 shadow-sm" id="tipoClienteOptions">
+                                                    <li><button class="dropdown-item" type="button" data-value="Natural">Natural</button></li>
+                                                    <li><button class="dropdown-item" type="button" data-value="Jurídica">Jurídica</button></li>
+                                                </ul>
+                                                <input type="hidden" name="tipo_cliente" id="tipo_cliente" value="Natural">
+                                            </div>
                                         </div>
                                         
                                         <div id="campos_natural">
@@ -83,10 +89,24 @@
                                             <input type="text" class="form-control" id="direccion" name="direccion" maxlength="150" autocomplete="street-address" disabled>
                                         </div>
                                         <div class="mb-3">
-                                            <label for="id_distrito" class="form-label">Departamento - Distrito</label>
-                                            <select class="form-select" id="id_distrito" name="id_distrito" autocomplete="address-level2" disabled>
-                                                <option value="">Seleccione un distrito</option>
-                                            </select>
+                                            <label class="form-label">Departamento</label>
+                                            <div class="dropdown w-100" id="depContainer">
+                                                <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="depDropdown" data-bs-toggle="dropdown" aria-expanded="false" disabled style="background: #fff;">
+                                                    <span id="depSelectedText">Seleccione departamento...</span>
+                                                </button>
+                                                <ul class="dropdown-menu w-100 shadow-sm" id="depOptions" style="max-height: 250px; overflow-y: auto;"></ul>
+                                                <input type="hidden" name="id_departamento" id="id_departamento" value="">
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Distrito</label>
+                                            <div class="dropdown w-100" id="distContainer">
+                                                <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center" type="button" id="distDropdown" data-bs-toggle="dropdown" aria-expanded="false" disabled style="background: #fff;">
+                                                    <span id="distSelectedText">Seleccione distrito...</span>
+                                                </button>
+                                                <ul class="dropdown-menu w-100 shadow-sm" id="distOptions" style="max-height: 250px; overflow-y: auto;"></ul>
+                                                <input type="hidden" name="id_distrito" id="id_distrito" value="">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
