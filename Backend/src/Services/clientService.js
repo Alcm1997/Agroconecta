@@ -96,7 +96,7 @@ exports.desactivarCuenta = async (id) => {
         [id, 'Pendiente']
     );
 
-    if (parseInt(pedidosPendientes.rows[0].count) > 0) {
+    if (parseInt(pedidosPendientes.rows[0].total) > 0) {
         throw new Error('No puedes desactivar tu cuenta porque tienes pedidos pendientes.');
     }
 

@@ -362,6 +362,77 @@
             console.error('Error al actualizar:', error);
         }
     }
+    
+    async function confirmarEliminacionCuenta() {
+        try {
+            const result = await Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Tu cuenta se desactivará temporalmente. Para reactivarla, deberás contactar con soporte técnico.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E91E63',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-pause me-2"></i>Sí, desactivar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'swal2-modal-responsive'
+                }
+            });
+
+            if (result.isConfirmed) {
+                const token = getToken();
+                if (!token) return;
+
+                const response = await fetch('/api/client/account', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    await Swal.fire({
+                        title: 'Cuenta Desactivada',
+                        text: data.message || 'Tu sesión se cerrará ahora.',
+                        icon: 'success',
+                        confirmButtonColor: '#2E7D32',
+                        customClass: {
+                            popup: 'swal2-modal-responsive'
+                        }
+                    });
+                    
+                    // Limpiar sesión y redirigir
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.href = '/login';
+                } else {
+                    Swal.fire({
+                        title: 'No se pudo desactivar',
+                        text: data.message || 'Ocurrió un error inesperado.',
+                        icon: 'error',
+                        confirmButtonColor: '#E91E63',
+                        customClass: {
+                            popup: 'swal2-modal-responsive'
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error en confirmarEliminacionCuenta:', error);
+            Swal.fire({
+                title: 'Error de Conexión',
+                text: 'No se pudo comunicar con el servidor.',
+                icon: 'error',
+                customClass: {
+                    popup: 'swal2-modal-responsive'
+                }
+            });
+        }
+    }
 
     const toggleEdicion = (habilitar) => {
         const form = document.getElementById('perfilForm');
