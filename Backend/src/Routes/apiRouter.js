@@ -1,5 +1,25 @@
 const express = require('express');
 const router = express.Router();
+const pool = require('../config/database');
+
+// ✅ HEALTH CHECK (Estado del servidor y base de datos)
+router.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    return res.status(200).json({
+      status: 'ok',
+      database: 'connected',
+      uptime: Math.round(process.uptime()),
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return res.status(503).json({
+      status: 'error',
+      database: 'disconnected',
+      timestamp: new Date().toISOString()
+    });
+  }
+});
 
 // ✅ IMPORTACIÓN DE TODAS LAS RUTAS
 const clientRoutes = require('./clientRoutes');

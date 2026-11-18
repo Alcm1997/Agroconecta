@@ -15,6 +15,10 @@ app.use(express.json());
 // ✅ SERVIR ARCHIVOS ESTÁTICOS DEL FRONTEND
 app.use(express.static(path.join(__dirname, '../../Frontend')));
 
+// ✅ LOGGER HTTP CENTRALIZADO (después de estáticos para no saturar la consola)
+const requestLogger = require('./Middleware/requestLogger');
+app.use(requestLogger);
+
 // ✅ RUTAS DE LA API CENTRALIZADAS
 const apiRouter = require('./Routes/apiRouter');
 app.use('/api', apiRouter);
@@ -31,6 +35,7 @@ app.get([
   '/registro', 
   '/mi-cuenta', 
   '/checkout', 
+  '/comprobante',
   '/producto', 
   '/recuperar-contrasena', 
   '/verificar-codigo'
@@ -60,17 +65,37 @@ app.get('/panel-control/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../../Frontend/html/panel_control/menu.html'));
 });
 
-// ✅ FALLBACK: Si no encuentra una ruta, servir agroconecta.html
+// ✅ RUTAS DE PRUEBA DE CAÍDA CONTROLADA (Solo activas fuera de producción)
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/test-error-500', (req, res, next) => {
+    next(new Error('Simulación controlada de error 500 en vista'));
+  });
+  app.get('/api/test-error-500', (req, res, next) => {
+    next(new Error('Simulación controlada de error 500 en API'));
+  });
+}
+
+// ✅ FALLBACK 404: Diferencia API (JSON), navegador (HTML) y archivos estáticos
 app.use((req, res) => {
-  // Solo para rutas que no son de API ni archivos estáticos
-  if (!req.path.startsWith('/api/') && !req.path.includes('.')) {
-    res.sendFile(path.join(__dirname, '../../Frontend/html/cliente/agroconecta.html'));
-  } else if (req.path.startsWith('/api/')) {
-    res.status(404).json({ message: 'Ruta de API no encontrada' });
-  } else {
-    res.status(404).send('Archivo no encontrado');
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({
+      success: false,
+      message: 'Ruta de API no encontrada'
+    });
   }
+
+  if (req.accepts('html') && !req.path.includes('.')) {
+    return res
+      .status(404)
+      .sendFile(path.join(__dirname, '../../Frontend/html/errors/404.html'));
+  }
+
+  return res.status(404).send('Archivo no encontrado');
 });
+
+// ✅ MANEJADOR GLOBAL DE ERRORES (500 u otros errores no controlados)
+const errorHandler = require('./Middleware/errorHandler');
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 
